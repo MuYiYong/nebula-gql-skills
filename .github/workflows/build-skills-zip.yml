@@ -2,6 +2,11 @@ name: Build Nebula Skills Zip
 
 on:
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version without v prefix (e.g. 20260319)"
+        required: false
+        type: string
   push:
     branches:
       - main
@@ -9,7 +14,7 @@ on:
     - cron: "0 2 * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -23,7 +28,19 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Resolve release version
+        shell: bash
+        run: |
+          if [[ -n "${{ inputs.release_version }}" ]]; then
+            release_version="${{ inputs.release_version }}"
+          else
+            release_version="$(date -u +%Y%m%d)"
+          fi
+          echo "RELEASE_VERSION=${release_version}" >> "$GITHUB_ENV"
+
       - name: Build zip packages
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: python scripts/package_core_skills.py
 
       - name: Upload artifacts
@@ -33,3 +50,12 @@ jobs:
           path: |
             dist/*.zip
           if-no-files-found: error
+
+      - name: Create or update GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.RELEASE_VERSION }}
+          name: Nebula Skills v${{ env.RELEASE_VERSION }}
+          files: dist/*.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true
