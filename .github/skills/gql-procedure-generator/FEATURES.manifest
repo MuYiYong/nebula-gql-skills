@@ -1,0 +1,13 @@
+# Glob patterns are relative to the repository root.
+# These files are copied into dist/gql-procedure-generator/tests/features/.
+
+features/DataImportExport/*.feature
+features/analytic/**/*.feature
+features/delete/DeleteOnMem.feature
+features/dry_run/*.feature
+features/for/for.feature
+features/insert/InsertInsideProc.feature
+features/procedure/*.feature
+features/return/Finish.feature
+features/tempgraph/*.feature
+features/variable/*.feature

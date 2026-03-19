@@ -1,0 +1,85 @@
+graphTypeStatements:
+- >
+  CREATE GRAPH TYPE IF NOT EXISTS pagerank_graph_type AS {
+    NODE Person (LABEL Person {id INT PRIMARY KEY, name STRING}),
+    EDGE Knows (Person)-[LABEL Knows]->(Person)
+  }
+graphStatements:
+- >
+  CREATE DISTRIBUTED TEMPORARY GRAPH IF NOT EXISTS #pagerank_graph TYPED pagerank_graph_type FROM FILE {
+  NODE (v@Person{id:id, name:name}) FROM READ_CSV(
+  "file:///pagerank_node.csv"
+  ),
+  EDGE (id:src)-[e@Knows{}]->(id:dst) FROM READ_CSV(
+  "file:///pagerank_edge.csv"
+  )
+  }
+procedureStatements:
+- >
+  CREATE PROCEDURE IF NOT EXISTS pagerank(damping DOUBLE, total_nodes INT64) RETURNS (vid INT64, rank DOUBLE) AS {
+    VALUE cur_iter INT64 = 1
+    VALUE add_constant DOUBLE = (1.0 - 0.85) / total_nodes
+
+    VALUE delta SumAgg<DOUBLE> = 1.0
+    NODE VALUE current_score SumAgg<DOUBLE> = 0.0
+    NODE VALUE next_score SumAgg<DOUBLE> = 0.0
+    NODE VALUE out_edge SumAgg<INT64> = 0
+
+    TABLE t {vid INT64, score DOUBLE}
+    FILE  f {vid INT64, score DOUBLE} FORMAT CSV OPTIONS {PATH:"file:///pagerank_out/"}
+
+    MATCH (s:Person)-[e:Knows]->(t:Person)
+    PER PATH {
+      SET s.@out_edge += 1
+    }
+
+    MATCH (s:Person)
+    PER NODE (s) {
+      SET s.@current_score = 1.0 / total_nodes
+    }
+
+    LOG_INFO("Start Iteration")
+    WHILE cur_iter <= 30 AND @delta > 0.01 THEN {
+      SET @delta = 0.0
+
+      MATCH (s:Person)-[e:Knows]->(t:Person)
+      PER PATH {
+        SET t.@next_score += damping * s.@current_score / s.@out_edge
+      }
+
+      LOG_INFO("current iter: ", cur_iter)
+
+      MATCH (s:Person)
+      PER NODE (s) {
+        SET s.@next_score += add_constant
+      }
+
+      MATCH (s:Person)
+      PER NODE (s) {
+        SET @delta += abs(s.@next_score - s.@current_score)
+      }
+
+      MATCH (s:Person)
+      PER NODE (s) {
+        SET s.@current_score = s.@next_score
+        SET s.@next_score = 0
+      }
+      SET cur_iter = cur_iter + 1
+    }
+
+    LOG_INFO("Finish Iteration")
+    LOG_INFO("Final @delta: " , @delta)
+
+    MATCH (s:Person)
+    PER NODE (s) {
+      // example graph is small, append result both to file and table.
+      APPEND (s.id, s.@current_score) INTO TABLE t
+      APPEND (s.id, s.@current_score) INTO FILE f
+    }
+
+    FOR i IN result_table
+    RETURN i.vid AS vid, round(i.current_score, 5) AS rank
+  }
+submitStatements:
+- >
+  USE #pagerank_graph CALL pagerank(0.85, 4) RETURN vid, rank

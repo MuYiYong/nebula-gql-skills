@@ -1,0 +1,35 @@
+name: Build Nebula Skills Zip
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build zip packages
+        run: python scripts/package_core_skills.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nebula-skills-zips-${{ github.run_number }}
+          path: |
+            dist/*.zip
+          if-no-files-found: error
