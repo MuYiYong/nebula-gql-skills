@@ -24,7 +24,7 @@
 | 匹配计算 | supported | 作为算法与遍历的核心遍历原语 |
 | 原始值变量 | supported | 支持保守声明与使用 |
 | 活动集变量 | supported | 支持 `VALUE <name> ACTIVE_SET` 和 `FINALLY` 更新 |
-| 聚合值变量总览 | supported | 用于全局聚合器和点绑定聚合器规则 |
+| 聚合值变量总览 | supported | 用于全局聚合器和点绑定聚合器规则，使用时统一要求 `@`，仅在文档不支持隐式转换或目标类型必须固定时显式 `CAST(... AS ...)`，并按声明语法区分“必须初始化”与“声明时不要初始化” |
 | `ListAgg` | partial | 支持保守类型使用，不支持任意复杂嵌套展开 |
 | `SetAgg` | partial | 支持保守类型使用 |
 | `MapAgg` | partial | 支持保守键值类型，不扩展到复杂匿名结构 |

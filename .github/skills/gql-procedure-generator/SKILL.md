@@ -236,6 +236,8 @@ VALUE name = <value_expression>
 ### 2. Global aggregate variables
 - 全局聚合值变量在 `PER PATH` / `PER NODE` 内只能做 `+=`，不能做 `=`。
 - 它们的更新在整个匹配计算语句执行完成后才可见。
+- 全局聚合值变量声明时保持普通变量名；但只要进入“使用位置”，一律写成 `@agg_name`，不要裸写聚合变量名。
+- “使用位置”包括：`SET @agg_name = ...`、`SET @agg_name += ...`、`SET @agg_name.<member_function>(...)`、`LOG_INFO(@agg_name)`、`RETURN @agg_name`、`EXPORT @agg_name AS ...`、`FOR row IN @map_agg` 等任何把聚合值变量放进表达式或语句的位置。
 - 能不放在全局的状态，默认就不要放在全局；全局状态会削弱 `PER NODE` / `PER PATH` 的分布式与流式处理优势，并放大单机或局部内存压力。
 - 这条规则不仅是语义偏好，也是执行策略偏好：能随着 `PER NODE` / `PER PATH` 自然分发的状态，应尽量留在节点局部、路径局部、表变量、文件变量或活动集中，让计算更接近数据并减少全局汇聚。
 - 只要某个状态能下沉到节点局部、路径局部、表变量、文件变量或活动集，就优先下沉，不要先生成全局聚合器版本。
@@ -261,12 +263,25 @@ NODE VALUE seed_id INT
 - 在 `PER NODE` 中，点绑定聚合值变量既可 `+=`，也可 `=`。
 - `PER PATH` 中的点绑定聚合更新在该路径子句结束后才可见。
 - `PER NODE` 中的赋值和聚合更新立即可见。
+- 点绑定聚合值变量在任何使用位置都必须写成 `node_var.@agg_name` 或 `NODE(id_expr).@agg_name`；不要写成 `node_var.agg_name`、`NODE(id_expr).agg_name`，也不要把它当普通属性名。
+- 这条 `@` 规则同时覆盖读取、赋值、聚合、成员函数调用、日志、返回、导出等所有消费场景；只要在用点绑定聚合值变量，就保留 `.@` 前缀。
 - 只要状态可以稳定地挂在节点上，且后续逻辑按节点局部读取、覆盖或累积，默认优先使用 `NODE VALUE`；这通常比把逐点状态先堆进全局聚合器再回查更高效。
 - 典型适用场景包括：节点分数、节点访问标记、逐轮传播值、按点累积候选记录、按点维护去重集合。
 - 只有当结果语义本身就是全局单值、全局单列表，或必须跨点整体排序/整体合并后再消费时，再回退到全局聚合值变量。
 
 ### 4. Type discipline
-- 聚合器类型和右值必须一致。
+- 聚合值变量的声明类型、操作符和右值/消费位置类型必须匹配。
+- 聚合值变量定义时，不要默认补 `= <value_expression>`。只有声明语法明确要求初始值的聚合器，才在声明时写初始化右值。
+- 当前必须声明时初始化的稳定聚合器是：`SumAgg<T>`、`MinAgg<T>`、`MaxAgg<T>`、`AndAgg`、`OrAgg`。
+- 当前声明时不要初始化的稳定聚合器是：`AvgAgg<T>`、`ListAgg<T>`、`SetAgg<T>`、`MapAgg<K, V>`、`TopKAgg<K, SortFields>`。
+- 默认不要为了“看起来更安全”而滥加 `CAST`；若源值与目标类型本来一致，或文档已明确该场景支持隐式转换，就优先保持更直接的写法。
+- 只有在以下情况才显式写 `CAST(<expr> AS <target_type>)`：
+  - 用户明确要求强制类型转换或固定目标类型。
+  - 文档不支持相应隐式转换，或该隐式转换很可能报错。
+  - 需要把结果稳定到特定类型后再参与后续计算、返回、导出或比较。
+- 仓库文档已明确会尝试隐式转换的典型场景包括：函数入参、列表表达式、条件表达式分支、联合运算符、`INSERT`/`SET` 中与图属性类型对齐、`CALL` 过程入参与参数签名对齐。对这些场景，不要默认多包一层 `CAST`。
+- 这条规则同时适用于全局聚合值变量和 `NODE VALUE`。例如，`SET s.@out_edge += 1`、`SET @test_or += false` 这类已被 feature 验证的直写场景，不要强行改成 `CAST`；而 `VALUE similarity = CAST(t.@intersection AS DOUBLE) / union_size` 这类为了稳定后续数值计算结果的写法是合理的。
+- 当聚合值变量被赋给普通值变量、返回列、表列、导出列、日志函数参数或另一个聚合器时，先判断文档是否已支持隐式转换；只有在不支持或用户明确要求固定目标类型时，才写 `CAST(@agg_name AS TARGET_TYPE)` 或 `CAST(node.@agg_name AS TARGET_TYPE)`。
 - `ListAgg<T>`、`SetAgg<T>`、`MapAgg<K, V>` 的元素类型不要凭空扩展到未确认的匿名复杂结构。
 - 如果复杂返回结构不稳妥，优先退回多个标量返回列。
 - 聚合器选型可按需求粗分：
@@ -278,18 +293,24 @@ NODE VALUE seed_id INT
   - 前 K 保留：`TopKAgg`
 - 如果用户只说“收集全部结果”，优先 `ListAgg`；明确要求去重时再选 `SetAgg`。
 - 如果用户要按 key 维护累积状态，优先考虑 `MapAgg`，但不要在没有稳定 key/value 结构时强行生成它。
-- `AndAgg` 与 `OrAgg` 的输入类型必须是布尔值；若右值不是稳定的布尔表达式，不要把这两类聚合器当作通用状态容器。
+- `SumAgg<T>`、`MinAgg<T>`、`MaxAgg<T>` 声明时必须指定初始值；若用户没给稳定初值，不要擅自猜一个看似合理的数字。
+- `AvgAgg<T>` 声明时无须指定初始值，返回类型始终是 `DOUBLE`；不要生成 `VALUE avg AvgAgg<DOUBLE> = 0` 这类声明期初始化。
+- `AndAgg` 与 `OrAgg` 的输入类型必须是布尔值；若源值本来就是稳定布尔表达式，直接写入；只有源值不是布尔类型且确实需要强制转成布尔时，才使用 `CAST(<expr> AS BOOLEAN)`。
 - `AndAgg` / `OrAgg` 声明时必须指定初始值；它们的返回类型始终是 `BOOLEAN`。
+- `AndAgg` / `OrAgg` 本身不带类型参数；`AndAgg<BOOLEAN>`、`OrAgg<BOOLEAN>` 都是错误写法。合法形态是 `VALUE flag OrAgg = false`、`NODE VALUE flag AndAgg = true`。
 - `AndAgg` 的稳定初值是 `true`，`OrAgg` 的稳定初值是 `false`；若用户未给出初值，不要替他猜测或省略。
 - `AndAgg` / `OrAgg` 既可用 `+=` 聚合布尔值，也可用 `=` 直接覆盖布尔值；若需求是“累计是否还活跃/是否命中”，优先 `+=`。
 - `ListAgg<T>` 的高价值特性是保留插入顺序；它适合“完整保序收集”，不适合表达去重语义。
-- `ListAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `ListAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `ListAgg<T>`；若需求是整体替换与整体拼接，优先直接用这些稳定形态。
+- `ListAgg<T>` 声明时无须指定初始值；不要生成 `VALUE ids ListAgg<INT64> = []` 之类声明期初始化。
+- `ListAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `ListAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `ListAgg<T>`；若文档已支持相应隐式转换，就不要默认补 `CAST`；只有需要强制固定元素类型时，再把元素或列表显式 `CAST(...)` 到 `T` 或 `LIST<T>`。
 - `ListAgg<LIST<T>>` 是稳定形态，适合路径集合、随机游走轨迹、候选序列批次等嵌套列表状态；不要无端把这类结构降格成字符串拼接或匿名 RECORD 变体。
 - `SetAgg<T>` 的保守类型范围应收紧为文档稳定出现的基础键型，如 `INT`、`DOUBLE`、`STRING`；若元素类型超出这类稳定范围，不要默认选 `SetAgg`。
 - `SetAgg<T>` 虽然返回 `LIST<T>`，但语义是去重集合；不要依赖其返回顺序表达业务含义。
-- `SetAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `SetAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `SetAgg<T>`；其合并语义始终保持去重，不要把它当保序列表使用。
+- `SetAgg<T>` 声明时无须指定初始值；不要生成 `VALUE seen SetAgg<STRING> = []` 之类声明期初始化。
+- `SetAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `SetAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `SetAgg<T>`；若文档已支持相应隐式转换，就不要默认补 `CAST`；只有需要强制固定元素类型时，再显式 `CAST(...)` 到 `T` 或 `LIST<T>`；其合并语义始终保持去重，不要把它当保序列表使用。
 - `MapAgg<K, V>` 的 key 类型应保守限制在 `INT`、`DOUBLE`、`STRING`；value 类型应是嵌套聚合器，而不是任意普通标量或匿名复杂对象。
-- `MapAgg<K, V>` 的稳定输入应是 `TUPLE(key, value)`、等价的 `RECORD{_0: key, _1: value}`，或由这些键值对组成的 `LIST[...]`；若用户没有明确稳定 key/value 形状，不要生成 `MapAgg`。
+- `MapAgg<K, V>` 声明时无须指定初始值；不要生成 `VALUE buckets MapAgg<INT, SumAgg<INT>> = []`、`= {}` 或其它声明期初始化。
+- `MapAgg<K, V>` 的稳定输入应是 `TUPLE(key, value)`、等价的 `RECORD{_0: key, _1: value}`，或由这些键值对组成的 `LIST[...]`；若 key 或 value 已可按文档规则隐式转换，就不要默认补 `CAST`；只有需要强制固定键值类型时，再对字段显式 `CAST(...)` 后构造输入；若用户没有明确稳定 key/value 形状，不要生成 `MapAgg`。
 - 对同声明类型的 `MapAgg<K, V>` 变量，可做赋值或聚合；不同声明类型之间不要互相赋值或聚合。
 - `MapAgg` 的 value 类型默认优先嵌套聚合器，如 `SumAgg<T>`、`MaxAgg<T>`；不要把它写成任意普通标量 map。
 - `FOR row IN @map_agg` 的稳定消费结果是 `RECORD{_0: key, _1: value}`；若用户要展开 `MapAgg` 内容，默认按 `row._0` / `row._1` 生成。
@@ -305,21 +326,21 @@ NODE VALUE seed_id INT
 - 它支持：
   - `=` 右值为 `LIST<RECORD>` 或同类型 `TopKAgg`
   - `+=` 右值为 `RECORD` 或同类型 `TopKAgg`
-- `=` 不能直接接单条 `RECORD`；`+=` 不能直接接 `LIST<RECORD>`。输入记录中的字段必须与声明中的排序字段匹配。
-- `TopKAgg` 声明时无需显式初始值；其返回类型是排序后截断到前 K 条的 `LIST<RECORD>`。
-- `TopKAgg = []` 是稳定的“用空记录列表替换当前内容”写法，语义上可用于清空；若需求只是清空已有聚合器，优先 `clear()`，若需求是显式用一个记录列表整体替换，再使用 `=`。
-- `TopKAgg.min()` 返回当前保留的前 K 结果中按其排序规则排在最后的一条 `RECORD`；它更接近“当前 top-k 中最差的一条”，不是普通最小值函数。
+- `=` 不能直接接单条 `RECORD`；`+=` 不能直接接 `LIST<RECORD>`。输入记录中的字段必须与声明中的排序字段匹配；若字段值按文档可隐式转换，就不要默认补 `CAST`；只有需要强制固定字段类型时，才在 `RECORD` 内对字段显式 `CAST(...)`。
+- `TopKAgg` 声明时无须指定初始值；不要生成 `VALUE topk TopKAgg<...> = ...`。其返回类型是排序后截断到前 K 条的 `LIST<RECORD>`。
+- `SET @topk = []` 是稳定的“用空记录列表替换当前内容”写法，语义上可用于清空；若需求只是清空已有聚合器，优先 `SET @topk.clear()`，若需求是显式用一个记录列表整体替换，再使用 `=`。
+- `@topk.min()` / `node.@topk.min()` 返回当前保留的前 K 结果中按其排序规则排在最后的一条 `RECORD`；它更接近“当前 top-k 中最差的一条”，不是普通最小值函数。
 - 如果用户明确要“保留前 K 个候选记录”而不是简单数值聚合，可优先考虑 `TopKAgg`。
 
 ### 5A. Collection aggregator member functions
 - `ListAgg` 与 `SetAgg` 都支持 `size()` 与 `clear()`；只有在用户明确需要容器大小或清空语义时才生成这些成员函数调用。
-- `ListAgg = []` 也是稳定的清空写法；如果用户想表达“替换成一个新列表”或“用空列表重置”，可以用 `=`，如果只是过程式清空已有容器，优先 `clear()`。
+- `SET @list_agg = []` 也是稳定的清空写法；如果用户想表达“替换成一个新列表”或“用空列表重置”，可以用 `=`，如果只是过程式清空已有容器，优先 `SET @list_agg.clear()`。
 - `SetAgg` 还可使用 `contains_key(value)` 做成员检查；这只适合查询集合中是否已有某个值。
-- 未初始化或刚清空的 `ListAgg` / `SetAgg` 上，`size()` 稳定返回 `0`；如果需求只是判断容器当前是否为空，优先 `size()` 而不是编造额外状态位。
-- `MapAgg` 还可使用 `get(key)` 与 `contains_key(key)`；前者用于读取某个键对应的聚合值，后者用于判断键是否存在。
-- 未初始化或刚清空的 `MapAgg` 上，`size()` 稳定返回 `0`，`contains_key(key)` 稳定返回 `false`；若其 value 聚合器有稳定零值，`get(key)` 可作为保守默认值读取。
+- 未初始化或刚清空的 `@list_agg` / `@set_agg` 上，`size()` 稳定返回 `0`；如果需求只是判断容器当前是否为空，优先 `@agg.size()` 而不是编造额外状态位。
+- `MapAgg` 还可使用 `@map_agg.get(key)` 与 `@map_agg.contains_key(key)`；前者用于读取某个键对应的聚合值，后者用于判断键是否存在。
+- 未初始化或刚清空的 `@map_agg` 上，`size()` 稳定返回 `0`，`contains_key(key)` 稳定返回 `false`；若其 value 聚合器有稳定零值，`@map_agg.get(key)` 可作为保守默认值读取。
 - `TopKAgg` 也支持 `size()` 与 `clear()`；分别返回记录数量和清空内容。
-- `TopKAgg.min()` 返回按其排序规则排在最后一位的那条 `RECORD`；它不是普通数值最小值函数，不要在非 `TopKAgg` 语境里套用。
+- `@topk.min()` / `node.@topk.min()` 返回按其排序规则排在最后一位的那条 `RECORD`；它不是普通数值最小值函数，不要在非 `TopKAgg` 语境里套用。
 
 ### 6. Table variable
 - 表变量用于以表格形式存储数据，适合批量记录、批量插入输入、中间结果表和 `FOR` 外部展开。
@@ -421,17 +442,19 @@ CONTINUE
 
 ## Variable manipulation and logging rules
 - `SET` 支持三类操作：
-  - 赋值：`SET <primitive_or_agg_var> = <value_expression>`
-  - 聚合：`SET <aggregator_var> += <value_expression>`
-  - 成员函数：`SET <aggregator_var>.<member_function>(<args>)`
+  - 原始值变量赋值：`SET <primitive_var> = <value_expression>`
+  - 全局聚合值变量赋值或聚合：`SET @<aggregator_var> = <value_expression>`、`SET @<aggregator_var> += <value_expression>`
+  - 全局聚合值变量成员函数：`SET @<aggregator_var>.<member_function>(<args>)`
 - `ACTIVE_SET` 不适用这里的通用赋值规则；除 `FINALLY { SET active_set = ... | |= ... }` 外，不要生成针对 `ACTIVE_SET` 的 `SET` 语句。
 - 聚合器成员函数的保守支持范围：
   - `ListAgg`: `size()`, `clear()`
   - `SetAgg`: `size()`, `clear()`, `contains_key()`
   - `MapAgg`: `size()`, `clear()`, `contains_key()`, `get()`
   - `TopKAgg`: `size()`, `clear()`, `min()`
-- 点绑定聚合值变量在聚合语句中可通过 `node_var.@agg_name` 引用；用节点 ID 形式 `NODE(id_var).@agg_name` 时，只在聚合语句里使用。
+- 凡是全局聚合值变量进入表达式、日志、返回、导出、`FOR`、成员函数或 `SET` 语句，都必须写成 `@agg_name`；不要裸写聚合变量名。
+- 点绑定聚合值变量在聚合、赋值、读取、日志、返回和成员函数场景中都通过 `node_var.@agg_name` 或 `NODE(id_var).@agg_name` 引用。
 - `NODE(id_var).@agg_name` 适合跨节点更新或回写其它节点上的点绑定聚合状态；只有当 `id_var` 明确是稳定元素 ID 时才生成。
+- 如果聚合值变量在 `SET`、`LOG_*`、`RETURN`、`EXPORT`、表写入或其它表达式消费中遇到目标类型约束，先判断文档是否支持该隐式转换；只有不支持、会报错，或用户明确要求固定目标类型时，才显式 `CAST(... AS ...)`。
 - 日志语句保守语法：
 
 ```gql
@@ -558,12 +581,14 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 8. 如果用户想表达“下一轮 frontier / visited 集合”，先判断它是否真的是活动集；若是活动集，默认通过下一轮 `MATCH COMPUTE ... FINALLY` 重新更新；只有用户明确给出元素 ID 种子时，才考虑 `SET active_set = [<id>, ...]` 这类初始化。
 9. 如果要按点维护状态，优先使用 `NODE VALUE <name> <AggType> = <init>`。
 10. 如果某个聚合状态既能写成全局聚合器，也能自然挂在点上，默认先选 `NODE VALUE`；只有确实需要全局单值/全局单列表时才用全局聚合器。
-11. 如果某个状态只服务于单点、单路径或单轮局部计算，优先局部 `VALUE` 变量；不要把短生命周期临时状态抬升成全局值变量。
-12. 如果某个状态天然是路径批次、候选记录集或下一轮待扩展集合，优先使用 `TABLE`、文件变量或 `RETURN ... NEXT ...` 做中间状态传递，不要先生成全局聚合器双缓冲。
-13. 如果某个结果能在 `PER NODE` / `PER PATH` 中边产生边消费或边落盘，优先保留这种流式路径，不要为了“统一汇总”而过早引入全局缓存。
-14. 如果过程需要多阶段汇总或“先分组聚合、再继续结果整形”，显式用 `RETURN ... NEXT ...` 组织语句块。
-15. 若缺少命名信息，继续生成草稿，用清晰占位符补齐。
-16. 默认输出顺序：
+11. 一旦选择了聚合值变量，后续所有使用位置统一写成 `@agg_name`、`node.@agg_name` 或 `NODE(id_expr).@agg_name`，不要混入裸变量名或普通属性访问。
+12. 每次对聚合值变量做赋值、聚合、返回、导出、记录日志或继续参与表达式时，都检查类型是否匹配；若文档已支持该隐式转换，则优先保持简洁；只有隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式补 `CAST(... AS ...)`。
+13. 如果某个状态只服务于单点、单路径或单轮局部计算，优先局部 `VALUE` 变量；不要把短生命周期临时状态抬升成全局值变量。
+14. 如果某个状态天然是路径批次、候选记录集或下一轮待扩展集合，优先使用 `TABLE`、文件变量或 `RETURN ... NEXT ...` 做中间状态传递，不要先生成全局聚合器双缓冲。
+15. 如果某个结果能在 `PER NODE` / `PER PATH` 中边产生边消费或边落盘，优先保留这种流式路径，不要为了“统一汇总”而过早引入全局缓存。
+16. 如果过程需要多阶段汇总或“先分组聚合、再继续结果整形”，显式用 `RETURN ... NEXT ...` 组织语句块。
+17. 若缺少命名信息，继续生成草稿，用清晰占位符补齐。
+18. 默认输出顺序：
    - 完整过程或调用语句
    - 关键假设
    - 简短说明
@@ -608,6 +633,10 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 禁止把只在局部块内使用的短生命周期临时状态默认提升成全局值变量。
 - 禁止把天然可下沉到 `NODE VALUE`、表变量、文件变量或活动集的状态默认提升成全局聚合器。
 - 禁止把路径前沿、候选记录批次或 `next_frontier` 一类中间状态默认写成 `SET frontier_paths = next_frontier_paths` 这种全局聚合器整体赋值切换。
+- 禁止在使用全局聚合值变量时裸写变量名；必须写成 `@agg_name`。
+- 禁止把点绑定聚合值变量写成 `node.agg_name`、`NODE(id_expr).agg_name` 或普通属性访问；必须写成 `node.@agg_name` / `NODE(id_expr).@agg_name`。
+- 禁止把所有类型差异都机械地改写成 `CAST(... AS ...)`；只有文档不支持隐式转换、会报错，或用户明确要求固定目标类型时才显式转换。
+- 禁止生成 `AndAgg<BOOLEAN>`、`OrAgg<BOOLEAN>` 或任何给 `AndAgg` / `OrAgg` 添加类型参数的写法。
 - 禁止在多字段 top-k 需求里省略排序方向或排序字段类型，迫使模型靠默认行为猜测。
 - 禁止在没有明确需求时主动引入图变量或文件变量，增加无关复杂度。
 - 禁止把表变量、图变量、文件变量当作普通标量变量处理。
@@ -634,6 +663,11 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 如果存在临时局部状态，是否优先使用了局部 `VALUE`，而不是不必要的全局值变量？
 - 如果存在逐点状态，是否优先使用了 `NODE VALUE`，而不是默认退回全局聚合器？
 - 如果使用了全局聚合器，是否确实因为需要全局单值、全局列表、全局排序或跨点整体合并？
+- 所有全局聚合值变量在使用位置是否都写成了 `@agg_name`？
+- 所有点绑定聚合值变量在使用位置是否都写成了 `node.@agg_name` 或 `NODE(id_expr).@agg_name`？
+- 如果存在类型差异，是否先判断过文档是否支持该隐式转换，而不是机械地一律补 `CAST(... AS ...)`？
+- 只有在隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式补上了 `CAST(... AS ...)`？
+- 如果用了 `AndAgg` / `OrAgg`，是否确认其声明没有附带类型参数，例如没有生成 `OrAgg<BOOLEAN>`？
 - 是否把能下沉到节点局部、路径局部、表变量、文件变量或活动集的状态尽量留在局部，而不是过早提升到全局？
 - 如果存在路径前沿、候选批次或下一轮待扩展集合，是否优先采用 `TABLE` / 文件变量 / `RETURN ... NEXT ...`，而不是全局聚合器双缓冲？
 - 是否保留了 `PER NODE` / `PER PATH` 的分布式与流式处理优势，而不是为了统一汇总把大量中间状态提前收敛到全局变量？
