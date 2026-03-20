@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILLS_ROOT = ROOT / ".github" / "skills"
 DIST_ROOT = ROOT / "dist"
 EXCLUDED_SKILLS = {"planning-with-files"}
+
+
 def resolve_release_version() -> str:
     value = os.getenv("RELEASE_VERSION", "").strip()
     if value:
@@ -20,12 +22,21 @@ def resolve_release_version() -> str:
 
 RELEASE_VERSION = resolve_release_version()
 MEGA_BUNDLE_NAME = f"nebula-skills-v{RELEASE_VERSION}"
+ROOT_PACKAGE_DOCS = (
+    "README.md",
+    "README.zh-CN.md",
+    "README.en.md",
+    "INSTALL.md",
+    "PROMPTS.md",
+)
 PACKAGE_TOP_LEVEL_KEEP = {
     "EXAMPLES.md",
     "FEATURES_INDEX.md",
     "INSTALL.md",
     "PROMPTS.md",
     "README.md",
+    "README.en.md",
+    "README.zh-CN.md",
     "SKILL.md",
     "tests",
 }
@@ -82,9 +93,8 @@ def copy_skill_source(source_dir: Path, target_dir: Path) -> None:
 
 
 def copy_package_docs(target_dir: Path) -> None:
-    shutil.copy2(ROOT / "README.md", target_dir / "README.md")
-    shutil.copy2(ROOT / "INSTALL.md", target_dir / "INSTALL.md")
-    shutil.copy2(ROOT / "PROMPTS.md", target_dir / "PROMPTS.md")
+    for doc_name in ROOT_PACKAGE_DOCS:
+        shutil.copy2(ROOT / doc_name, target_dir / doc_name)
 
 
 def cleanup_target_dir(target_dir: Path) -> None:
@@ -149,9 +159,8 @@ def create_mega_bundle(specs: list[PackageSpec]) -> Path:
         shutil.rmtree(bundle_dir)
 
     (bundle_dir / ".github" / "skills").mkdir(parents=True, exist_ok=True)
-    shutil.copy2(ROOT / "README.md", bundle_dir / "README.md")
-    shutil.copy2(ROOT / "INSTALL.md", bundle_dir / "INSTALL.md")
-    shutil.copy2(ROOT / "PROMPTS.md", bundle_dir / "PROMPTS.md")
+    for doc_name in ROOT_PACKAGE_DOCS:
+        shutil.copy2(ROOT / doc_name, bundle_dir / doc_name)
 
     for spec in specs:
         packaged_skill_dir = DIST_ROOT / spec.name
