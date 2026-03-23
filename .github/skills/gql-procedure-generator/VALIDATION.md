@@ -20,6 +20,7 @@
 - 聚合器声明时是否只给“语法要求初始值”的类型写了 `= <value_expression>`？
 - 如果用了 `SumAgg` / `MinAgg` / `MaxAgg` / `AndAgg` / `OrAgg`，是否确认声明时都带了初始值？
 - 如果用了 `AvgAgg` / `ListAgg` / `SetAgg` / `MapAgg` / `TopKAgg`，是否确认声明时没有补初始值？
+- 如果用了 `SetAgg`，是否确认变量名本体不超过 15 个字符，且长度判断不把使用时的 `@` / `node.` 前缀算进去？
 - 如果存在类型差异，是否先判断过该场景是否属于文档支持的隐式转换，而不是机械地一律补 `CAST(... AS ...)`？
 - 只有在隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式写了 `CAST(... AS ...)`？
 - 如果用了 `AndAgg` / `OrAgg`，是否确认声明没有类型参数，例如没有写成 `OrAgg<BOOLEAN>`？
@@ -31,6 +32,7 @@
 - 如果某个算法只能想到普通 `MATCH` 写法，停止输出并改写成 `WHILE` + 单轮 `match_compute_statement`。
 - 如果聚合值变量被裸用或被写成普通属性访问，统一重写成 `@agg_name`、`node.@agg_name` 或 `NODE(id_expr).@agg_name`。
 - 如果给 `AvgAgg`、`ListAgg`、`SetAgg`、`MapAgg`、`TopKAgg` 声明补了初始值，直接删掉声明期初始化；若需求是重置内容，改写为后续 `SET` / `clear()`。
+- 如果 `SetAgg` 变量名超过 15 个字符，直接缩短声明名，并同步重写所有 `@name`、`node.@name`、`NODE(id_expr).@name` 引用。
 - 如果漏写了 `SumAgg`、`MinAgg`、`MaxAgg`、`AndAgg`、`OrAgg` 的声明初始值，停下来补齐与声明类型匹配的初始化右值。
 - 如果聚合值变量存在类型差异，先判断文档是否支持该隐式转换；只有不支持、会报错，或用户明确要求固定目标类型时，再补 `CAST(... AS ...)`。
 - 如果生成了 `OrAgg<BOOLEAN>`、`AndAgg<BOOLEAN>` 或其它带类型参数的布尔聚合器声明，直接改写成 `OrAgg` / `AndAgg` 无类型参数形式。

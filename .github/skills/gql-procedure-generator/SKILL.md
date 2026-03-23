@@ -307,6 +307,7 @@ NODE VALUE seed_id INT
 - `SetAgg<T>` 的保守类型范围应收紧为文档稳定出现的基础键型，如 `INT`、`DOUBLE`、`STRING`；若元素类型超出这类稳定范围，不要默认选 `SetAgg`。
 - `SetAgg<T>` 虽然返回 `LIST<T>`，但语义是去重集合；不要依赖其返回顺序表达业务含义。
 - `SetAgg<T>` 声明时无须指定初始值；不要生成 `VALUE seen SetAgg<STRING> = []` 之类声明期初始化。
+- `SetAgg` 变量名的声明标识符本体必须控制在 15 个字符以内；使用时附加的 `@` 前缀与 `node.` / `NODE(id_expr).` 访问前缀不计入长度。当前实现中，超过这个上限容易触发 bug，因此默认优先生成短名，如 `seen`、`seen_ids`、`frontier`。
 - `SetAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `SetAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `SetAgg<T>`；若文档已支持相应隐式转换，就不要默认补 `CAST`；只有需要强制固定元素类型时，再显式 `CAST(...)` 到 `T` 或 `LIST<T>`；其合并语义始终保持去重，不要把它当保序列表使用。
 - `MapAgg<K, V>` 的 key 类型应保守限制在 `INT`、`DOUBLE`、`STRING`；value 类型应是嵌套聚合器，而不是任意普通标量或匿名复杂对象。
 - `MapAgg<K, V>` 声明时无须指定初始值；不要生成 `VALUE buckets MapAgg<INT, SumAgg<INT>> = []`、`= {}` 或其它声明期初始化。
