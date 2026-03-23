@@ -28,6 +28,7 @@ If you want both skills in one step, use `nebula-skills-v<release_version>.zip`.
 ```text
 <workspace>/
   README.md
+  README.zh-CN.md
   INSTALL.md
   PROMPTS.md
   .github/
@@ -89,8 +90,9 @@ More examples are available in `PROMPTS.md`.
    - `gql-procedure-generator`
 2. 每个目录里都存在 `SKILL.md`
 3. 每个目录里都能看到 `README.md`、`INSTALL.md` 和 `tests/`
-4. 如果包内存在 `PROMPTS.md`，可直接用其中的示例提示词验证 skill 是否可调用
-5. 若你没有看到 `COVERAGE.md`、`SOURCE_MAP.md`、`VALIDATION.md` 之类文件，这是正常的；这些文件不属于最终面向使用者的发布内容
+4. 如果需要中文说明，根目录或 skill 目录下应存在 `README.zh-CN.md`
+5. 如果包内存在 `PROMPTS.md`，可直接用其中的示例提示词验证 skill 是否可调用
+6. 若你没有看到 `COVERAGE.md`、`SOURCE_MAP.md`、`VALIDATION.md` 之类文件，这是正常的；这些文件不属于最终面向使用者的发布内容
 
 ## 更新方式
 

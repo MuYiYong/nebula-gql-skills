@@ -25,7 +25,6 @@ MEGA_BUNDLE_NAME = f"nebula-skills-v{RELEASE_VERSION}"
 ROOT_PACKAGE_DOCS = (
     "README.md",
     "README.zh-CN.md",
-    "README.en.md",
     "INSTALL.md",
     "PROMPTS.md",
 )
@@ -35,7 +34,6 @@ PACKAGE_TOP_LEVEL_KEEP = {
     "INSTALL.md",
     "PROMPTS.md",
     "README.md",
-    "README.en.md",
     "README.zh-CN.md",
     "SKILL.md",
     "tests",

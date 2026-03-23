@@ -1,6 +1,6 @@
 # Nebula Skills 中文说明
 
-[返回语言入口](./README.md) · [English](./README.en.md)
+[English](./README.md)
 
 ## 快速跳转
 
@@ -69,7 +69,6 @@
 - `SKILL.md`
 - `README.md`
 - `README.zh-CN.md`
-- `README.en.md`
 - `INSTALL.md`
 - `PROMPTS.md`
 - `EXAMPLES.md`
@@ -102,7 +101,6 @@
 <workspace>/
   README.md
   README.zh-CN.md
-  README.en.md
   INSTALL.md
   PROMPTS.md
   .github/
@@ -119,13 +117,11 @@
     SKILL.md
     README.md
     README.zh-CN.md
-    README.en.md
     INSTALL.md
   gql-procedure-generator/
     SKILL.md
     README.md
     README.zh-CN.md
-    README.en.md
     INSTALL.md
 ```
 
@@ -146,7 +142,7 @@ python3 scripts/package_core_skills.py
 3. 按各自的 `FEATURES.manifest` 打入测试文件
 4. 生成 `FEATURES_INDEX.md`
 5. 生成版本化 zip 包
-6. 复制 `README.md`、`README.zh-CN.md`、`README.en.md`、`INSTALL.md` 和 `PROMPTS.md` 到每个分发包
+6. 复制 `README.md`、`README.zh-CN.md`、`INSTALL.md` 和 `PROMPTS.md` 到每个分发包
 
 <a id="cn-usage"></a>
 ## 如何使用
