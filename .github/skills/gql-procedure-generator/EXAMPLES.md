@@ -159,6 +159,10 @@ VALUE topk TopKAgg<3, score INT DESC>
 - 不要生成 `OrAgg<BOOLEAN>`、`AndAgg<BOOLEAN>` 这种带类型参数的布尔聚合器声明；应写成 `VALUE flag OrAgg = false`、`VALUE flag AndAgg = true`。
 - 不要给 `AvgAgg`、`ListAgg`、`SetAgg`、`MapAgg`、`TopKAgg` 的声明默认补初始值，例如 `VALUE avg AvgAgg<DOUBLE> = 0`、`VALUE ids ListAgg<INT64> = []`、`VALUE topk TopKAgg<3, score INT DESC> = 1` 都是错误方向。
 - 不要给 `SetAgg` 生成超过 15 个字符的变量名，例如 `VALUE deduplicated_vertex_ids SetAgg<STRING>` 是高风险写法；应缩短成 `VALUE seen_ids SetAgg<STRING>`、`VALUE frontier SetAgg<STRING>` 这类短名。
+- 不要生成 `SumAgg<STRING>`、`AvgAgg<BOOLEAN>`、`MinAgg<RECORD{...}>` 这类非数值聚合器类型参数。
+- 不要生成 `SetAgg<BOOLEAN>`、`SetAgg<LIST<INT>>`、`SetAgg<RECORD{...}>` 或其它非键型标量 `SetAgg`。
+- 不要生成 `MapAgg<INT64,MapAgg<INT64,SumAgg<DOUBLE>>>`；`MapAgg` 的 value 只能是文档白名单里的嵌套聚合器，不能再嵌套 `MapAgg`。
+- 不要把 `TopKAgg` 当成标量聚合器，例如 `SET @topk += 1`、`TopKAgg<3, score LIST<INT> DESC>` 都是错误方向。
 
 ## Placeholder policy
 - 过程名未知时使用 `<procedure_name>`。

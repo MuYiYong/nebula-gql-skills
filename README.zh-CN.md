@@ -52,17 +52,17 @@
 <a id="cn-release"></a>
 ## 发布内容
 
-当前正式发布产物位于 `dist/`。
+正式发布产物由 GitHub Actions 构建，并附在 GitHub Releases 中。
 
 当前版本号由打包脚本按构建日期自动生成，格式为 `vYYYYMMDD`。
 
 主要产物如下：
 
-- `dist/nebula-skills-v<release_version>.zip`
-- `dist/gql-query-generator-v<release_version>.zip`
-- `dist/gql-procedure-generator-v<release_version>.zip`
+- `nebula-skills-v<release_version>.zip`
+- `gql-query-generator-v<release_version>.zip`
+- `gql-procedure-generator-v<release_version>.zip`
 
-推荐优先分发 `dist/nebula-skills-v<release_version>.zip`。它是一个包含两个核心 skill 和根级说明文档的总包。
+推荐优先分发 `nebula-skills-v<release_version>.zip`。它是一个包含两个核心 skill 和根级说明文档的总包。
 
 每个压缩包都会包含以下面向使用者的文件：
 
@@ -89,10 +89,10 @@
 
 ### 从 zip 安装
 
-1. 选择需要的压缩包：
-   - `dist/nebula-skills-v<release_version>.zip`
-   - `dist/gql-query-generator-v<release_version>.zip`
-   - `dist/gql-procedure-generator-v<release_version>.zip`
+1. 从 GitHub Releases 下载需要的压缩包：
+   - `nebula-skills-v<release_version>.zip`
+   - `gql-query-generator-v<release_version>.zip`
+   - `gql-procedure-generator-v<release_version>.zip`
 2. 如果要一次性安装两个 skill，优先使用 `nebula-skills-v<release_version>.zip`，并解压到目标工作区根目录。
 3. 如果只需要单个 skill，则使用单独的 skill zip，并解压到目标工作区的 `.github/skills/` 目录下。
 4. 解压总包后，目录结构应类似这样：
@@ -127,15 +127,17 @@
 
 6. 确认目录名与 `SKILL.md` 里的 `name` 一致，不要额外多套一层目录。
 
-### 从源码重新打包
+### 在 GitHub 上发布
 
-如果你在维护这个仓库本身，可以直接运行：
+日常维护时，只更新 `.github/skills/` 下的源 skill。
 
-```bash
-python3 scripts/package_core_skills.py
-```
+维护约定：
+- skill 源文件只改 `.github/skills/`
+- 不要手改 `dist/`，它是生成出来的发布产物
+- 不再以本地 `dist/` 目录作为发布方式
+- 如果要发布，使用 `.github/workflows/build-skills-zip.yml`
 
-脚本会自动：
+该工作流会在 CI 中运行 `python3 scripts/package_core_skills.py`，并自动：
 
 1. 排除 `planning-with-files`
 2. 复制两个核心 skill 到 `dist/`
@@ -191,6 +193,7 @@ python3 scripts/package_core_skills.py
 - 源 skill：`.github/skills/`
 - 原始 feature：`features/`
 - 打包脚本：`scripts/package_core_skills.py`
-- 分发目录：`dist/`
+- 发布工作流：`.github/workflows/build-skills-zip.yml`
+- 临时构建目录：`dist/`（已 gitignore，不提交）
 
 如果你是最终使用者，建议从每个分发包里的 `INSTALL.md` 开始。

@@ -25,16 +25,16 @@
 | 原始值变量 | supported | 支持保守声明与使用 |
 | 活动集变量 | supported | 支持 `VALUE <name> ACTIVE_SET` 和 `FINALLY` 更新 |
 | 聚合值变量总览 | supported | 用于全局聚合器和点绑定聚合器规则，使用时统一要求 `@`，仅在文档不支持隐式转换或目标类型必须固定时显式 `CAST(... AS ...)`，并按声明语法区分“必须初始化”与“声明时不要初始化” |
-| `ListAgg` | partial | 支持保守类型使用，不支持任意复杂嵌套展开 |
-| `SetAgg` | partial | 支持保守类型使用 |
-| `MapAgg` | partial | 支持保守键值类型，不扩展到复杂匿名结构 |
+| `ListAgg` | partial | 支持文档明确的标量、`LIST<data_type>`、`RECORD{...}` 载荷，不扩展到聚合器对象或未确认复杂结构 |
+| `SetAgg` | partial | 只支持键型标量元素：整型族、`DOUBLE`、`STRING` |
+| `MapAgg` | partial | 只支持键型标量 key，value 只允许显式白名单聚合器，禁止嵌套 `MapAgg` |
 | `SumAgg` | supported | 可直接用于数值累计 |
 | `MinAgg` | supported | 支持保守使用 |
 | `MaxAgg` | supported | 支持保守使用 |
 | `AvgAgg` | partial | 支持基础聚合，不扩展复杂派生模式 |
 | `AndAgg` | partial | 支持布尔汇总 |
 | `OrAgg` | partial | 支持布尔汇总 |
-| `TopKAgg` | deferred | 暂不作为默认输出聚合器 |
+| `TopKAgg` | partial | 支持记录型 top-k，排序字段类型收紧为数值、字符串、布尔、日期时间 |
 | 变量操作 | supported | 支持 `=`、`+=` 等保守子集 |
 | 控制流 | supported | 重点内置 `WHILE`、`BREAK`、`CONTINUE` 边界 |
 | 日志语句 | supported | 支持过程体中日志输出 |
@@ -56,4 +56,4 @@
 - `TopKAgg` 的稳定模板
 - 表变量驱动的后处理模板
 - 图变量和文件变量在过程包中的职责边界
-- 更细的聚合器类型兼容矩阵
+- 更细的 `ListAgg` / `TopKAgg` 复杂载荷模板

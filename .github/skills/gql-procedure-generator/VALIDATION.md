@@ -20,10 +20,15 @@
 - 聚合器声明时是否只给“语法要求初始值”的类型写了 `= <value_expression>`？
 - 如果用了 `SumAgg` / `MinAgg` / `MaxAgg` / `AndAgg` / `OrAgg`，是否确认声明时都带了初始值？
 - 如果用了 `AvgAgg` / `ListAgg` / `SetAgg` / `MapAgg` / `TopKAgg`，是否确认声明时没有补初始值？
+- 如果用了 `SumAgg` / `AvgAgg` / `MinAgg` / `MaxAgg`，是否确认类型参数只落在数值类型（整型族或 `DOUBLE`）上？
+- 如果用了 `ListAgg`，是否确认元素类型只落在稳定标量、`LIST<data_type>` 或 `RECORD{...}`，而不是聚合器对象或未确认复杂结构？
+- 如果用了 `SetAgg`，是否确认元素类型只落在整型族、`DOUBLE`、`STRING` 这类键型标量上？
+- 如果用了 `MapAgg`，是否确认 key 只落在整型族、`DOUBLE`、`STRING` 上，且 value 只属于 `SumAgg` / `AvgAgg` / `MaxAgg` / `MinAgg` / `AndAgg` / `OrAgg` / `ListAgg` / `SetAgg` / `TopKAgg`，没有再嵌套 `MapAgg`？
 - 如果用了 `SetAgg`，是否确认变量名本体不超过 15 个字符，且长度判断不把使用时的 `@` / `node.` 前缀算进去？
 - 如果存在类型差异，是否先判断过该场景是否属于文档支持的隐式转换，而不是机械地一律补 `CAST(... AS ...)`？
 - 只有在隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式写了 `CAST(... AS ...)`？
 - 如果用了 `AndAgg` / `OrAgg`，是否确认声明没有类型参数，例如没有写成 `OrAgg<BOOLEAN>`？
+- 如果用了 `TopKAgg`，是否确认排序字段类型只落在数值、字符串、布尔、日期时间上，且右值严格匹配 `RECORD` / `LIST<RECORD>` / 同类型 `TopKAgg` 的输入规则？
 - `CALL` 是否跟了结果语句？
 - `RETURNS` 与最终返回列是否一致？
 - 是否避免输出路径、页面名、外部出处或“去查文档”的表述？
@@ -34,7 +39,11 @@
 - 如果给 `AvgAgg`、`ListAgg`、`SetAgg`、`MapAgg`、`TopKAgg` 声明补了初始值，直接删掉声明期初始化；若需求是重置内容，改写为后续 `SET` / `clear()`。
 - 如果 `SetAgg` 变量名超过 15 个字符，直接缩短声明名，并同步重写所有 `@name`、`node.@name`、`NODE(id_expr).@name` 引用。
 - 如果漏写了 `SumAgg`、`MinAgg`、`MaxAgg`、`AndAgg`、`OrAgg` 的声明初始值，停下来补齐与声明类型匹配的初始化右值。
+- 如果数值聚合器被写成 `SumAgg<STRING>`、`AvgAgg<BOOLEAN>`、`MinAgg<RECORD{...}>` 一类非数值类型，直接改写成数值类型聚合器，或退回更合适的 `ListAgg` / `TABLE` / 标量流程。
 - 如果聚合值变量存在类型差异，先判断文档是否支持该隐式转换；只有不支持、会报错，或用户明确要求固定目标类型时，再补 `CAST(... AS ...)`。
 - 如果生成了 `OrAgg<BOOLEAN>`、`AndAgg<BOOLEAN>` 或其它带类型参数的布尔聚合器声明，直接改写成 `OrAgg` / `AndAgg` 无类型参数形式。
+- 如果 `SetAgg` 元素类型不是整型族、`DOUBLE`、`STRING` 这类键型标量，直接改写为 `ListAgg`、`TABLE` 或其它更保守的载体，不要硬保留非法 `SetAgg`。
+- 如果 `MapAgg` 的 key 不是键型标量，或 value 是 `MapAgg` / 普通标量 / 未列出的聚合器，直接改写成 `MapAgg<K, supported_agg>`、`TABLE` 或多个扁平聚合器；不要保留嵌套 `MapAgg`。
+- 如果 `TopKAgg` 被喂入标量、列表外的普通值，或排序字段类型不在数值/字符串/布尔/日期时间范围内，直接改写为合法 `RECORD` 输入或退回其它聚合方式。
 - 如果不确定聚合器元素类型是否合法，简化成标量结果列或更保守的聚合器。
 - 如果不确定某个过程体子句是否合法，删掉可疑子句，保留最小可用过程骨架。

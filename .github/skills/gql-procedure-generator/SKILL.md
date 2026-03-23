@@ -274,6 +274,16 @@ NODE VALUE seed_id INT
 - 聚合值变量定义时，不要默认补 `= <value_expression>`。只有声明语法明确要求初始值的聚合器，才在声明时写初始化右值。
 - 当前必须声明时初始化的稳定聚合器是：`SumAgg<T>`、`MinAgg<T>`、`MaxAgg<T>`、`AndAgg`、`OrAgg`。
 - 当前声明时不要初始化的稳定聚合器是：`AvgAgg<T>`、`ListAgg<T>`、`SetAgg<T>`、`MapAgg<K, V>`、`TopKAgg<K, SortFields>`。
+- 文档语法图中常用 `INT` 表示整型输入；若当前上下文已经明确使用 `INT64` 等整型别名，可沿用同类整型，但不要把这条放宽成列表、记录、向量、地理空间、`MAP` 或聚合器类型。
+- 聚合器类型参数必须按文档白名单收紧，不要“看起来像能装进去”就继续嵌套：
+  - 数值聚合器 `SumAgg<T>`、`AvgAgg<T>`、`MinAgg<T>`、`MaxAgg<T>` 的 `T` 只允许数值类型，即整型族或 `DOUBLE`；不要生成 `STRING`、`BOOLEAN`、`LIST`、`RECORD`、`VECTOR`、地理空间或其它聚合器作为其输入类型。
+  - 布尔聚合器 `AndAgg`、`OrAgg` 只接受 `BOOLEAN` 输入，且本身不带类型参数。
+  - `ListAgg<T>` 的 `T` 只允许文档明确的值载荷类型：稳定标量、`LIST<data_type>` 或 `RECORD{...}`；不要把另一个聚合器、`ACTIVE_SET`、表变量、图变量、文件变量或匿名未确认对象当作 `T`。
+  - `SetAgg<T>` 的 `T` 只允许去重键型标量：整型族、`DOUBLE`、`STRING`；不要生成 `BOOLEAN`、`LIST`、`RECORD`、`VECTOR`、地理空间或任意聚合器元素类型。
+  - `MapAgg<K, V>` 的 `K` 只允许键型标量：整型族、`DOUBLE`、`STRING`；`V` 只允许显式白名单里的嵌套聚合器：`SumAgg<T>`、`AvgAgg<T>`、`MaxAgg<T>`、`MinAgg<T>`、`AndAgg`、`OrAgg`、`ListAgg<T>`、`SetAgg<T>`、`TopKAgg<K, SortFields>`。
+  - `MapAgg` 的 value 白名单里没有 `MapAgg` 自身，因此不要生成递归 map 聚合链；`MapAgg<INT64,MapAgg<INT64,SumAgg<DOUBLE>>>`、`MapAgg<STRING,MapAgg<INT,SetAgg<STRING>>>` 这类声明都视为不支持。
+  - 当 `MapAgg` 嵌套 `ListAgg<T>`、`SetAgg<T>` 或 `TopKAgg<...>` 时，内层类型参数仍必须继续满足各自的限制；不要因为外层是 `MapAgg` 就放宽内层类型约束。
+- 如果用户想要多层 map、map of map、set of record、sum of string 之类文档未列出的类型，优先改写为更保守的 `TABLE`、多个标量聚合器或扁平化后的 `MapAgg<K, supported_agg>`。
 - 默认不要为了“看起来更安全”而滥加 `CAST`；若源值与目标类型本来一致，或文档已明确该场景支持隐式转换，就优先保持更直接的写法。
 - 只有在以下情况才显式写 `CAST(<expr> AS <target_type>)`：
   - 用户明确要求强制类型转换或固定目标类型。
@@ -302,24 +312,26 @@ NODE VALUE seed_id INT
 - `AndAgg` / `OrAgg` 既可用 `+=` 聚合布尔值，也可用 `=` 直接覆盖布尔值；若需求是“累计是否还活跃/是否命中”，优先 `+=`。
 - `ListAgg<T>` 的高价值特性是保留插入顺序；它适合“完整保序收集”，不适合表达去重语义。
 - `ListAgg<T>` 声明时无须指定初始值；不要生成 `VALUE ids ListAgg<INT64> = []` 之类声明期初始化。
+- `ListAgg<T>` 的稳定元素形状应收敛在文档明确的载荷类型上：标量、`LIST<data_type>`、`RECORD{...}`。如果用户想收集“聚合器对象”“map 对象”或其它未确认复合结构，优先改写成 `TABLE`、`TopKAgg`、多个标量列或扁平化 `RECORD`。
 - `ListAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `ListAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `ListAgg<T>`；若文档已支持相应隐式转换，就不要默认补 `CAST`；只有需要强制固定元素类型时，再把元素或列表显式 `CAST(...)` 到 `T` 或 `LIST<T>`。
 - `ListAgg<LIST<T>>` 是稳定形态，适合路径集合、随机游走轨迹、候选序列批次等嵌套列表状态；不要无端把这类结构降格成字符串拼接或匿名 RECORD 变体。
-- `SetAgg<T>` 的保守类型范围应收紧为文档稳定出现的基础键型，如 `INT`、`DOUBLE`、`STRING`；若元素类型超出这类稳定范围，不要默认选 `SetAgg`。
+- `SetAgg<T>` 的元素类型必须收紧为文档白名单里的键型标量：整型族、`DOUBLE`、`STRING`；`SetAgg<BOOLEAN>`、`SetAgg<LIST<INT>>`、`SetAgg<RECORD{...}>`、`SetAgg<MapAgg<...>>` 都不要生成。
 - `SetAgg<T>` 虽然返回 `LIST<T>`，但语义是去重集合；不要依赖其返回顺序表达业务含义。
 - `SetAgg<T>` 声明时无须指定初始值；不要生成 `VALUE seen SetAgg<STRING> = []` 之类声明期初始化。
 - `SetAgg` 变量名的声明标识符本体必须控制在 15 个字符以内；使用时附加的 `@` 前缀与 `node.` / `NODE(id_expr).` 访问前缀不计入长度。当前实现中，超过这个上限容易触发 bug，因此默认优先生成短名，如 `seen`、`seen_ids`、`frontier`。
 - `SetAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `SetAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `SetAgg<T>`；若文档已支持相应隐式转换，就不要默认补 `CAST`；只有需要强制固定元素类型时，再显式 `CAST(...)` 到 `T` 或 `LIST<T>`；其合并语义始终保持去重，不要把它当保序列表使用。
-- `MapAgg<K, V>` 的 key 类型应保守限制在 `INT`、`DOUBLE`、`STRING`；value 类型应是嵌套聚合器，而不是任意普通标量或匿名复杂对象。
+- `MapAgg<K, V>` 的 key 类型必须收紧为键型标量：整型族、`DOUBLE`、`STRING`；不要把 `BOOLEAN`、`LIST`、`RECORD`、`VECTOR`、地理空间或其它聚合器写成 key。
 - `MapAgg<K, V>` 声明时无须指定初始值；不要生成 `VALUE buckets MapAgg<INT, SumAgg<INT>> = []`、`= {}` 或其它声明期初始化。
 - `MapAgg<K, V>` 的稳定输入应是 `TUPLE(key, value)`、等价的 `RECORD{_0: key, _1: value}`，或由这些键值对组成的 `LIST[...]`；若 key 或 value 已可按文档规则隐式转换，就不要默认补 `CAST`；只有需要强制固定键值类型时，再对字段显式 `CAST(...)` 后构造输入；若用户没有明确稳定 key/value 形状，不要生成 `MapAgg`。
 - 对同声明类型的 `MapAgg<K, V>` 变量，可做赋值或聚合；不同声明类型之间不要互相赋值或聚合。
-- `MapAgg` 的 value 类型默认优先嵌套聚合器，如 `SumAgg<T>`、`MaxAgg<T>`；不要把它写成任意普通标量 map。
+- `MapAgg` 的 value 类型必须落在文档显式允许的嵌套聚合器白名单内：`SumAgg<T>`、`AvgAgg<T>`、`MaxAgg<T>`、`MinAgg<T>`、`AndAgg`、`OrAgg`、`ListAgg<T>`、`SetAgg<T>`、`TopKAgg<K, SortFields>`；不要把它写成普通标量 map，也不要再嵌套 `MapAgg`。
 - `FOR row IN @map_agg` 的稳定消费结果是 `RECORD{_0: key, _1: value}`；若用户要展开 `MapAgg` 内容，默认按 `row._0` / `row._1` 生成。
 
 ### 5. TopKAgg
 - `TopKAgg<K, SortFields>` 用于维护按指定排序字段保留的前 K 条记录。
 - `K` 必须是大于 0 的整数；若用户没有明确的前 K 需求，不要引入 `TopKAgg`。
 - `SortFields` 必须显式给出排序字段及其数据类型；支持的稳定排序类型是数值、字符串、布尔、日期时间。
+- `TopKAgg` 的输入语义始终是“记录 top-k”，不要把它当标量 top-k。`=` 只接受 `LIST<RECORD>` 或同类型 `TopKAgg`，`+=` 只接受 `RECORD` 或同类型 `TopKAgg`，输入记录字段必须与声明的排序字段逐一匹配。
 - 多个排序字段时按声明顺序依次比较；若前一排序字段相同，再比较后一字段。
 - `TopKAgg` 的排序方向应在每个排序字段上显式写出 `ASC` 或 `DESC`；若用户给了多字段前 K 需求，不要省略方向。
 - `NULLS FIRST` / `NULLS LAST` 可跟在排序字段后；缺省时，升序默认 `NULLS LAST`，降序默认 `NULLS FIRST`。
@@ -637,7 +649,11 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 禁止在使用全局聚合值变量时裸写变量名；必须写成 `@agg_name`。
 - 禁止把点绑定聚合值变量写成 `node.agg_name`、`NODE(id_expr).agg_name` 或普通属性访问；必须写成 `node.@agg_name` / `NODE(id_expr).@agg_name`。
 - 禁止把所有类型差异都机械地改写成 `CAST(... AS ...)`；只有文档不支持隐式转换、会报错，或用户明确要求固定目标类型时才显式转换。
+- 禁止给 `SumAgg` / `AvgAgg` / `MinAgg` / `MaxAgg` 生成非数值类型参数，如 `SumAgg<STRING>`、`AvgAgg<RECORD{...}>`。
 - 禁止生成 `AndAgg<BOOLEAN>`、`OrAgg<BOOLEAN>` 或任何给 `AndAgg` / `OrAgg` 添加类型参数的写法。
+- 禁止生成 `SetAgg<BOOLEAN>`、`SetAgg<LIST<...>>`、`SetAgg<RECORD{...}>`、`SetAgg<MapAgg<...>>` 等非键型 `SetAgg`。
+- 禁止生成 `MapAgg<K, MapAgg<...>>` 或任何 value 不在文档白名单内的 `MapAgg<K, V>`。
+- 禁止把 `TopKAgg` 当作标量聚合器使用，例如 `SET @topk += 1` 或 `TopKAgg<3, score LIST<INT> DESC>`。
 - 禁止在多字段 top-k 需求里省略排序方向或排序字段类型，迫使模型靠默认行为猜测。
 - 禁止在没有明确需求时主动引入图变量或文件变量，增加无关复杂度。
 - 禁止把表变量、图变量、文件变量当作普通标量变量处理。
@@ -668,11 +684,16 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 所有点绑定聚合值变量在使用位置是否都写成了 `node.@agg_name` 或 `NODE(id_expr).@agg_name`？
 - 如果存在类型差异，是否先判断过文档是否支持该隐式转换，而不是机械地一律补 `CAST(... AS ...)`？
 - 只有在隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式补上了 `CAST(... AS ...)`？
+- 如果用了 `SumAgg` / `AvgAgg` / `MinAgg` / `MaxAgg`，是否确认类型参数只落在数值类型上？
 - 如果用了 `AndAgg` / `OrAgg`，是否确认其声明没有附带类型参数，例如没有生成 `OrAgg<BOOLEAN>`？
+- 如果用了 `ListAgg`，是否确认元素类型只落在稳定标量、`LIST<data_type>` 或 `RECORD{...}` 上，而不是再塞入聚合器或未确认复杂对象？
+- 如果用了 `SetAgg`，是否确认元素类型只落在整型族、`DOUBLE`、`STRING` 这类键型标量上？
+- 如果用了 `MapAgg`，是否确认 key 只落在整型族、`DOUBLE`、`STRING` 上，且 value 只落在显式白名单聚合器上，没有再嵌套 `MapAgg`？
 - 是否把能下沉到节点局部、路径局部、表变量、文件变量或活动集的状态尽量留在局部，而不是过早提升到全局？
 - 如果存在路径前沿、候选批次或下一轮待扩展集合，是否优先采用 `TABLE` / 文件变量 / `RETURN ... NEXT ...`，而不是全局聚合器双缓冲？
 - 是否保留了 `PER NODE` / `PER PATH` 的分布式与流式处理优势，而不是为了统一汇总把大量中间状态提前收敛到全局变量？
 - 如果用了 `TopKAgg`，是否显式写清了每个排序字段的类型与方向，并确认 `min()` 被理解为“当前 top-k 中最差的一条”？
+- 如果用了 `TopKAgg`，右值是否严格落在 `RECORD` / `LIST<RECORD>` / 同类型 `TopKAgg` 上，而不是标量或其它容器？
 - 如果用了跨节点更新，`NODE(id_expr).@agg_name` 中的 `id_expr` 是否真的是稳定元素 ID？
 - `PER PATH` / `PER NODE` 内是否没有 `FOR`？
 - `ACTIVE_SET` 更新是否放在 `FINALLY`？
