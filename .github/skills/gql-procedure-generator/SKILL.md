@@ -55,6 +55,8 @@ CREATE OR REPLACE PROCEDURE ...
 - 带默认值的参数必须从右向左连续出现。
 - 参数默认值必须是常量，不要把变量表达式、子查询或运行时表达式塞进 `DEFAULT`。
 - `RETURNS` 中声明的输出字段数量必须与 `procedure_body` 实际返回字段数量一致。
+- `return_type` 必须落在文档定义的数据类型上；若使用 `LIST<T>`，`T` 只允许预定义数据类型或其它列表。不要生成 `RETURNS ret LIST<RECORD>`、`RETURNS (rows LIST<RECORD>)` 这类 procedure 返回类型。
+- `TopKAgg` 的内部结果虽然是 `LIST<RECORD>`，但这不代表 procedure 出参可以直接声明成 `LIST<RECORD>`；如果用户要输出 top-k 记录，改成常规多列返回或其它受支持的扁平结果形态。
 - `COMMENT` 后必须是字符串字面量。
 - 支持重载；若用户明确是在可能重载的上下文中定位过程，生成或删除时应靠名称加参数签名唯一化。
 - 若用户同时提到插件加载的同名 UDP 和当前 Schema 中的同名 UDP，要知道调用时插件定义的 UDP 优先。
@@ -140,6 +142,7 @@ SHOW CREATE PROCEDURE <procedure_name>
 - 过程体默认由变量声明、变量操作、控制流、匹配计算、日志、返回或结束语句组成。
 - 过程体里能解决的问题，优先在过程体内闭环，不拆成查询 skill 的普通 DQL 版本。
 - 过程输出要和 `RETURNS` 声明保持列数、列名、类型语义一致。
+- 如果中间状态是 `TopKAgg` 或其它记录集合，不要把它直接暴露成 `LIST<RECORD>` 返回列；优先改写成稳定的多列结果，或继续保留为过程内状态。
 - 过程体或任意 sub procedure 都应先连续放置该作用域内要用到的变量定义，再开始后续 `statement_block`；不要在执行了若干语句之后再插入新的变量定义。
 - 如果某个值只能在后续步骤计算出来，优先“前置声明变量 + 后续 `SET` 赋值”，不要把 `VALUE x = ...` 放到过程体后半段临时声明。
 - 过程体的保守骨架是：
@@ -341,6 +344,7 @@ NODE VALUE seed_id INT
   - `+=` 右值为 `RECORD` 或同类型 `TopKAgg`
 - `=` 不能直接接单条 `RECORD`；`+=` 不能直接接 `LIST<RECORD>`。输入记录中的字段必须与声明中的排序字段匹配；若字段值按文档可隐式转换，就不要默认补 `CAST`；只有需要强制固定字段类型时，才在 `RECORD` 内对字段显式 `CAST(...)`。
 - `TopKAgg` 声明时无须指定初始值；不要生成 `VALUE topk TopKAgg<...> = ...`。其返回类型是排序后截断到前 K 条的 `LIST<RECORD>`。
+- 即使 `TopKAgg` 的内部结果是 `LIST<RECORD>`，也不要把 procedure `RETURNS` 写成 `LIST<RECORD>`；若需要对外输出 top-k 结果，改成普通返回列 `(id INT64, score DOUBLE, ...)` 或其它已确认受支持的列类型。
 - `SET @topk = []` 是稳定的“用空记录列表替换当前内容”写法，语义上可用于清空；若需求只是清空已有聚合器，优先 `SET @topk.clear()`，若需求是显式用一个记录列表整体替换，再使用 `=`。
 - `@topk.min()` / `node.@topk.min()` 返回当前保留的前 K 结果中按其排序规则排在最后的一条 `RECORD`；它更接近“当前 top-k 中最差的一条”，不是普通最小值函数。
 - 如果用户明确要“保留前 K 个候选记录”而不是简单数值聚合，可优先考虑 `TopKAgg`。
@@ -694,6 +698,7 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 是否保留了 `PER NODE` / `PER PATH` 的分布式与流式处理优势，而不是为了统一汇总把大量中间状态提前收敛到全局变量？
 - 如果用了 `TopKAgg`，是否显式写清了每个排序字段的类型与方向，并确认 `min()` 被理解为“当前 top-k 中最差的一条”？
 - 如果用了 `TopKAgg`，右值是否严格落在 `RECORD` / `LIST<RECORD>` / 同类型 `TopKAgg` 上，而不是标量或其它容器？
+- 如果过程有 `RETURNS`，是否确认没有把任一返回列声明成 `LIST<RECORD>`，也没有把 `TopKAgg` 的内部结果直接外露为 procedure 返回类型？
 - 如果用了跨节点更新，`NODE(id_expr).@agg_name` 中的 `id_expr` 是否真的是稳定元素 ID？
 - `PER PATH` / `PER NODE` 内是否没有 `FOR`？
 - `ACTIVE_SET` 更新是否放在 `FINALLY`？

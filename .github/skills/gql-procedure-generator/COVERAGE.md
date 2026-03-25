@@ -14,7 +14,7 @@
 |---|---|---|
 | 服务端编程总览 | supported | 用于任务识别与路由 |
 | 过程总览 | supported | 用于区分命名过程与内联过程 |
-| `CREATE PROCEDURE` | supported | 支持参数、返回、注释、替换策略 |
+| `CREATE PROCEDURE` | supported | 支持参数、返回、注释、替换策略；返回类型显式禁止 `LIST<RECORD>` |
 | `ALTER PROCEDURE` | supported | 仅支持改名和改注释 |
 | `DROP PROCEDURE` | supported | 支持按名称或签名删除 |
 | 命名过程调用 | supported | 支持 `CALL` / `OPTIONAL CALL` / `YIELD` / `RETURN` |

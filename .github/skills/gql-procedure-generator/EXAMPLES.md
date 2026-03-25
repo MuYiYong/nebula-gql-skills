@@ -147,6 +147,20 @@ VALUE buckets MapAgg<INT, SumAgg<INT>>
 VALUE topk TopKAgg<3, score INT DESC>
 ```
 
+### 11. Top-k procedure output stays in ordinary return columns
+Input intent:
+- 返回 top-k 结果时，保持 procedure 出参为普通列，而不是 `LIST<RECORD>`
+
+Output skeleton:
+```gql
+CREATE PROCEDURE <procedure_name>(...)
+RETURNS (node_id INT64, score DOUBLE)
+AS {
+  ...
+  RETURN <node_id_expr> AS node_id, <score_expr> AS score
+}
+```
+
 ## Negative patterns
 - 不要在 `CREATE PROCEDURE` 体里包 `USE graph` 或 `USE #graph`。
 - 不要在用户显式指定本技能时退回普通 `MATCH ... RETURN ...`。
@@ -163,6 +177,7 @@ VALUE topk TopKAgg<3, score INT DESC>
 - 不要生成 `SetAgg<BOOLEAN>`、`SetAgg<LIST<INT>>`、`SetAgg<RECORD{...}>` 或其它非键型标量 `SetAgg`。
 - 不要生成 `MapAgg<INT64,MapAgg<INT64,SumAgg<DOUBLE>>>`；`MapAgg` 的 value 只能是文档白名单里的嵌套聚合器，不能再嵌套 `MapAgg`。
 - 不要把 `TopKAgg` 当成标量聚合器，例如 `SET @topk += 1`、`TopKAgg<3, score LIST<INT> DESC>` 都是错误方向。
+- 不要生成 `RETURNS ret LIST<RECORD>`、`RETURNS (rows LIST<RECORD>)` 或把 `TopKAgg` 的内部结果直接作为 procedure 返回类型暴露出去；如果要输出 top-k 记录，改成普通多列返回。
 
 ## Placeholder policy
 - 过程名未知时使用 `<procedure_name>`。
