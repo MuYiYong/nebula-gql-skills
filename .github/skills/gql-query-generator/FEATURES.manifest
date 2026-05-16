@@ -17,8 +17,15 @@ features/let/Let.feature
 features/match/*.feature
 features/order_by_and_page/*.feature
 features/parameter/Parameter.feature
+features/return/Finish.feature
 features/return/Return.feature
 features/sample/Sample.feature
 features/set/Set.feature
 features/subquery/*.feature
 features/topn/TopN.feature
+# Explicitly keep graph variable query coverage aligned with USE g and graph-ref consumption rules.
+features/variable/GraphVariable.feature
+# Explicitly keep graph-variable alias, NEXT handoff, and working-graph boundary coverage in packaged tests.
+features/variable/GraphVariableDefinition.feature
+# Explicitly keep TABLE literal + FOR-consumption coverage in the packaged query-skill tests.
+features/variable/BindingTableVariableDefinition.feature

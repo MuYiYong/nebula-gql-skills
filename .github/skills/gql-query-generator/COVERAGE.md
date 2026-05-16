@@ -14,25 +14,44 @@
 |---|---|---|
 | 数据查询总览 | supported | 用于整体任务路由与查询主干选择 |
 | `MATCH` | supported | 支持基础模式匹配主干 |
+| legacy nGQL 迁移启发式 | supported | 支持 `id(v)` 语义分流、GO/FETCH/LOOKUP/管道 → MATCH、`v.tag.prop` → `v.prop`、`$^/$$/$ -` → 变量属性引用、单变量过滤下沉等完整映射，参见 [migration.md] |
+| Cypher 迁移启发式 | supported | 支持 `WITH` → `RETURN...NEXT`、`UNWIND` → `FOR`、`[:T*1..n]` → `-[:T]->{1,n}`、`MERGE` → `INSERT OR UPDATE`、`shortestPath()` → `ANY SHORTEST PATH`、`collect()` → `collect_list()`、`relationships()` → `edges()` 等完整映射，参见 [migration.md] |
+| 高级路径组合语法 | deferred | `|`、`|+|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED` 仅识别，不作为默认生成能力 |
 | `WHERE` | supported | 支持常见布尔过滤 |
 | `RETURN` | supported | 支持别名、`*`、`DISTINCT`、聚合入口 |
-| `GROUP BY` | partial | 仅在聚合查询中保守生成 |
+| `GROUP BY` | partial | 仅在聚合查询中保守生成，含 `GROUP BY ()` 全局单组子集 |
 | `ORDER BY` | supported | 支持基础排序项 |
 | `OFFSET` | supported | 支持分页偏移 |
 | `LIMIT` | supported | 支持分页大小 |
+| 参数化查询 | partial | 支持 `PARAMETERS $x=...`、`$param` 引用与会话参数保守子集 |
+| Unicode 规范化 | partial | 仅识别 `NORMALIZE(str)` 的谨慎尝试子集；`NORMALIZE(str, form)` 不生成 |
 | 分页组合 | supported | 固定输出顺序 `ORDER BY -> OFFSET -> LIMIT` |
 | 命名过程调用 | supported | 支持 `CALL` / `OPTIONAL CALL` / `YIELD` / `RETURN` |
-| 内联过程调用 | supported | 支持 `CALL { ... }` 与 `OPTIONAL CALL { ... }` |
+| 内联过程调用 | supported | 支持 `CALL { ... }` 与 `OPTIONAL CALL { ... }`，且过程体仅保守支持 DQL 子集 |
 | `YIELD` | supported | 仅用于过程调用后取列 |
-| `FILTER` | partial | 可识别和改写，但不作为默认首选主干 |
-| 复合查询 | partial | 目前优先用 `CALL { ... }` 表达稳定子集 |
-| 线性查询 | partial | 识别为可改写查询形态，不默认扩展 |
+| `FILTER` | partial | 支持 `FILTER [WHERE]` 保守子集及二次筛选场景 |
+| 复合查询 | partial | 支持同层同连接词与列结构一致性的稳定子集 |
+| 线性查询 | partial | 支持顺序语句组织与 `RETURN/FINISH` 收口约束 |
 | primitive result | partial | 主要作为 `CALL` 后结果约束知识 |
-| `USE` | deferred | 默认不生成，避免切图依赖 |
-| `FOR` | deferred | 不作为普通查询包默认输出 |
-| `LET` | deferred | 暂未内置为查询包默认语法 |
-| `SAMPLE` | deferred | 未纳入默认稳定子集 |
-| 最近邻查询 | deferred | 需要单独模板和语义约束 |
+| `USE` | partial | 仅在图上下文明确且不可省略时生成 |
+| 图变量查询 | partial | 支持 `GRAPH g = GRAPH{...}` + `USE g` + 基础 `MATCH/WHERE/RETURN`，并要求显式 working graph 与唯一别名保守子集 |
+| `FOR` | partial | 支持列表/表展开与 `WITH ORDINALITY/OFFSET` 保守子集 |
+| 内联绑定表 | partial | 支持 `TABLE t {..} = ...` 与 `FOR` 遍历的稳定子集 |
+| `LET` | partial | 支持中间变量定义、跨 `NEXT` 可见性，以及 `VALUE/EXISTS` 对外层变量的保守捕获子集 |
+| `SAMPLE` | partial | 仅支持边模式中的保守采样子集 |
+| 属性存在检查 | partial | 支持 `PROPERTY_EXISTS(element, 'prop')` 的直接函数调用 |
+| 时间差函数 | partial | 支持 `DURATION_BETWEEN(t1, t2)` 的保守子集 |
+| 类型诊断函数 | partial | 支持 `typeof(expr)` 作为显式诊断/调试用途 |
+| 事务控制语句 | partial | 以识别/改写为主，默认不主动扩展复杂事务脚本 |
+| REST 查询入口 | partial | 识别请求语义并生成查询体，不生成协议层封装 |
+| 最近邻查询 | partial | 支持节点/边 KNN/ANN 查询骨架与函数-选项兼容性约束，不生成索引 DDL |
+| 错误码导向改写 | partial | 支持高频查询错误码的最小修复映射，含 graph/table reference、变量重名与排序可见列约束 |
+| 连接词结构修复 | partial | 支持 `42001` 的 `NEXT/UNION` 位置与连用错误最小修复 |
+| 顶层命令独占修复 | partial | 支持 `42N57` 的命令语句混用收敛为单条顶层命令 |
+| DDL 混用拆分修复 | partial | 支持 `42N48` 的 DDL 与非 DDL 混用拆分与收敛 |
+| 多错误码冲突消解 | partial | 支持按优先级顺序执行修复并在冲突时保留主干查询 |
+| 最小改写决策树 | partial | 支持按轮次执行“结构优先”的可执行化修复流程 |
+| 错误码组合速查 | partial | 支持常见错误码集合到最小动作序列的快速映射 |
 
 ## Completion criteria
 - `supported` 项必须在 `SKILL.md` 或 `EXAMPLES.md` 中有明确模板或决策规则。
@@ -44,7 +63,6 @@
 - 对外分发时，不要求接收方具备源码仓库或站点页面。
 
 ## Next expansion candidates
-- `FILTER`
-- 复合查询与线性查询的固定骨架
-- 最近邻查询专用模板
-- `LET` 与 `FOR` 的查询侧安全子集
+- 高级路径组合语法（`|`、`|+|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`）的可执行子集
+- `MATCH ... YIELD` 能力（等待内核支持后再升级）
+- Unicode 规范化能力（`NORMALIZE` 的稳定实现与验证）

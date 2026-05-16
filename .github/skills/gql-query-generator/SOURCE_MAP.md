@@ -1,35 +1,42 @@
 # Query Skill Knowledge Map
 
-本文件描述 `gql-query-generator` 的内嵌知识版图。它不是引用索引，而是技能包内部的主题分层。
+本文件描述 `gql-query-generator` 的知识版图与文件组织。
 
-## Core knowledge
-- 数据查询总览
-- `MATCH`
-- `WHERE`
-- `RETURN`
-- `GROUP BY`
-- `ORDER BY`
-- `OFFSET`
-- `LIMIT`
-- 分页组合规则
-- 命名过程调用
-- 内联过程调用
-- `YIELD`
+## File Structure
 
-## Secondary knowledge
-- `FILTER`
-- 复合查询
-- 线性查询
-- primitive result
+| 文件 | 职责 |
+|------|------|
+| `SKILL.md` | 主指令文件（<300 行），查询骨架、核心子句、流程、约束 |
+| `references/expressions.md` | 表达式、谓词、运算符详细规则 |
+| `references/patterns.md` | 图模式、路径、量词、过滤放置优先级 |
+| `references/functions.md` | 函数家族选择、lambda、legacy 迁移 |
+| `references/error-codes.md` | 错误码改写映射与决策树 |
+| `references/nearest-neighbor.md` | KNN/ANN 查询模板 |
+| `EXAMPLES.md` | 高频正例与边界例 |
+| `VALIDATION.md` | 生成前后检查清单 |
+| `COVERAGE.md` | 能力覆盖状态表 |
 
-## Deferred knowledge
-- `USE`
-- `FOR`
-- `LET`
-- `SAMPLE`
-- 最近邻查询
+## Core knowledge（SKILL.md 直接包含）
+- 查询骨架（MATCH/WHERE/RETURN/ORDER BY/OFFSET/LIMIT）
+- 过滤放置三级优先级
+- 聚合与 GROUP BY
+- CALL（命名 + 内联）与 YIELD
+- LET / FOR / FILTER / NEXT
+- 复合查询（UNION/EXCEPT/INTERSECT）
+- USE 与图变量
+- DML（INSERT/SET/DELETE）
+- 参数化查询
+- 语句块规则
+- 路由守卫（何时切到 procedure skill）
 
-## Packaging rule
-- 默认只把 Core knowledge 和 Secondary knowledge 的稳定子集作为默认生成能力。
-- Deferred knowledge 可以被识别，但未必作为默认输出。
-- 如果后续扩容技能包，应先更新本文件，再同步更新 `COVERAGE.md`、`EXAMPLES.md` 和 `VALIDATION.md`。
+## Reference knowledge（按需加载）
+- 完整表达式与谓词体系 → `references/expressions.md`
+- 完整图模式规则 → `references/patterns.md`
+- 函数家族与 legacy 迁移 → `references/functions.md`
+- 错误码修复 → `references/error-codes.md`
+- 最近邻查询 → `references/nearest-neighbor.md`
+
+## Stability notes
+- 参数化查询按 `PARAMETERS $x=...` 与 `$param` 引用的保守子集收敛。
+- legacy nGQL 迁移按"业务主键 → `{id: ...}`；图元素身份值 → `element_id(...)`"的保守子集收敛。
+- 不支持路径语法：`|+|`、`|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`。
