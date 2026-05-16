@@ -5,6 +5,7 @@
 ## 快速跳转
 
 - [仓库概览](#cn-overview)
+- [近期更新](#cn-updates)
 - [技能列表](#cn-skills)
 - [发布内容](#cn-release)
 - [快速开始](#cn-quick-start)
@@ -22,6 +23,25 @@
 - `gql-procedure-generator`
 
 `planning-with-files` 仅用于本仓库整理过程，不进入最终发布包。
+
+<a id="cn-updates"></a>
+## 近期更新
+
+更新时间：2026-05-16
+
+- 已刷新 `gql-query-generator` 的规则与校验配套文档，提升独立发布可用性。
+- 新增可复用的查询参考文档，位于 `.github/skills/gql-query-generator/references/`：
+  - `patterns.md`
+  - `error-codes.md`
+  - `expressions.md`
+  - `functions.md`
+  - `nearest-neighbor.md`
+  - `migration.md`
+- 新增 `ISO_39075_nebula_ng_query_gap_report.md`，用于说明 ISO GQL 与 Nebula 查询层差异。
+
+说明：
+- 上述仓库级参考文件主要用于维护与规则加固。
+- 发布 zip 仍以 [发布内容](#cn-release) 中列出的面向使用者文件为准。
 
 <a id="cn-skills"></a>
 ## 技能列表

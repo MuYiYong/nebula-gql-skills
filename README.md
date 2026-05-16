@@ -5,6 +5,7 @@
 ## Quick Links
 
 - [Repository Overview](#en-overview)
+- [Recent Updates](#en-updates)
 - [Skills](#en-skills)
 - [Release Contents](#en-release)
 - [Quick Start](#en-quick-start)
@@ -22,6 +23,25 @@ This repository distributes two core skills for Nebula GQL workflows:
 - `gql-procedure-generator`
 
 `planning-with-files` is only used for repository maintenance and is excluded from release packages.
+
+<a id="en-updates"></a>
+## Recent Updates
+
+Updated on 2026-05-16:
+
+- Refreshed `gql-query-generator` documentation and validation references for independent release quality.
+- Added reusable query reference docs under `.github/skills/gql-query-generator/references/`:
+  - `patterns.md`
+  - `error-codes.md`
+  - `expressions.md`
+  - `functions.md`
+  - `nearest-neighbor.md`
+  - `migration.md`
+- Added `ISO_39075_nebula_ng_query_gap_report.md` to summarize ISO GQL and Nebula query-layer gaps.
+
+Note:
+- These repository-level reference files are for maintenance and skill hardening.
+- Release zips keep user-facing files as listed in [Release Contents](#en-release).
 
 <a id="en-skills"></a>
 ## Skills
