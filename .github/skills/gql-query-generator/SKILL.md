@@ -249,7 +249,7 @@ FINISH
 - 多步顺序查询 → 线性查询 + `NEXT`。
 - 结果集合运算 → 复合查询。
 - Legacy `id(v)` → 先判断业务主键还是身份值。
-- 输入含 `WITH`（中间投影）/ `UNWIND` / `MERGE` / `shortestPath()` / `[:T*]` / `collect()` / `relationships()` / `exists(n.prop)` / `STARTS WITH`(运算符) / `^ `(求幂) → Cypher 迁移，加载 [migration.md](./references/migration.md)。
+- 输入含 `WITH`（中间投影）/ `UNWIND` / `MERGE` / `shortestPath()` / `[:T*]` / `collect()` / `exists(n.prop)` / `STARTS WITH`(运算符) / `^ `(求幂) → Cypher 迁移，加载 [migration.md](./references/migration.md)。
 - 输入含 `GO` / `FETCH` / `LOOKUP` / `$-` / `$^` / `$$` / `YIELD`（非过程调用）/ `v.tag.prop` / `==`(等值比较) / `[:T1|:T2]` / `rank(edge)` / `@rank` / `properties(v)` / `allShortestPaths` / `FIND PATH` / `GET SUBGRAPH` → nGQL 迁移，加载 [migration.md](./references/migration.md)。
 - 输入含 `CALL db.*` / `CALL apoc.*` / `CALL gds.*` / `CALL dbms.*` → Neo4j 特有过程，**不保留 CALL**，必须完全重写为 GQL 原生语法（见 migration.md §1.3）。
 - 请求滑向过程定义/算法 → 停止，切到 `gql-procedure-generator`。

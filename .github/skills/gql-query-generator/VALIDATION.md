@@ -2,6 +2,11 @@
 
 生成查询前后都执行下面的本地检查。
 
+## Cypher Hard-Stop Rewrite Gate
+- 最终返回前，最终 GQL 中不得残留这些 Cypher 片段：`[:TYPE*1..n]`、`WITH`、`UNWIND`。
+- 必须先改写后再返回：`[:TYPE*1..n]` -> `-[:TYPE]->{1,n}`，`WITH` -> `RETURN ... NEXT`，`UNWIND` -> `FOR`。
+- 如果同一条草稿里同时出现了上述多个残留，先做这轮最小迁移改写，再检查其它语义问题；不要带着这些 Cypher 片段直接输出或直接进入纠错下一轮。
+
 ## Pre-generation checks
 - 这是普通查询、过程调用，还是其实应该落到服务端编程 skill？
 - 是否需要聚合？如果需要，分组键是否明确？
@@ -13,7 +18,7 @@
 - 是否包含结果语句，例如 `RETURN`？
 - `CALL` 后是否跟了结果语句？
 - 若输入含有 Cypher 或 nGQL 语句，是否已加载 [migration.md](./references/migration.md) 并按映射改写？
-- 是否残留了 Cypher 语法（`WITH`、`UNWIND`、`[:T*]`、`shortestPath()`、`collect()`、`relationships()`、`exists(n.prop)`、`STARTS WITH`/`ENDS WITH`/`CONTAINS` 运算符、`^` 求幂）？
+- 是否残留了 Cypher 语法（`WITH`、`UNWIND`、`[:T*]`、`shortestPath()`、`collect()`、`exists(n.prop)`、`STARTS WITH`/`ENDS WITH`/`CONTAINS` 运算符、`^` 求幂）？
 - 是否残留了 Neo4j 特有过程调用（`db.*`、`apoc.*`、`gds.*`、`dbms.*`）？若有，必须完全重写为 GQL 原生语法。
 - 是否在同一 WHERE/FILTER 中对 `ftscore()` 使用了 `OR` 组合（如 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0`）？`ftscore()` 不支持 OR，多属性搜索必须拆成 UNION + `sum()` 聚合。
 - 是否在同一 MATCH 子句中对同一节点变量多次调用了 `ftscore()`？每个 MATCH 分支中只能调用一次 `ftscore()`，多属性需拆成多个 MATCH + UNION。
@@ -86,7 +91,6 @@
 - 如果残留了 Cypher `WITH`（中间投影），改写为 `RETURN...NEXT`。
 - 如果残留了 Cypher `UNWIND`，改写为 `FOR`。
 - 如果残留了 Cypher `collect()`，改写为 `collect_list()`。
-- 如果残留了 Cypher `relationships()`，改写为 `edges()`。
 - 如果残留了 Cypher 子查询中的 `WITH n` 变量导入，删除 `WITH` 行。
 - 如果残留了 nGQL `GO`/`FETCH`/`LOOKUP`，改写为 `MATCH` 模式。
 - 如果残留了 nGQL 管道 `|`，改写为 `RETURN...NEXT` 或 `CALL { ... }`。

@@ -215,7 +215,7 @@ ORDER BY score DESC
 | `size(list)` | `size(list)` | 相同 |
 | `length(path)` | `length(path)` | 相同 |
 | `nodes(path)` | `nodes(path)` | 相同 |
-| `relationships(path)` | `edges(path)` | 函数名不同 |
+| `relationships(path)` | `relationships(path)` / `edges(path)` | GQL 两者均可 |
 | `startNode(r)` | 无直接等价 — 用 pattern 绑定起终点 | |
 | `endNode(r)` | 无直接等价 — 用 pattern 绑定起终点 | |
 | `head(list)` | `head(list)` | 取首元素（GQL 同名函数） |
@@ -381,7 +381,6 @@ ORDER BY score DESC
 | nGQL 管道 `\|` 直接保留 | 改为 `RETURN ... NEXT` 或 `CALL { ... }` |
 | Cypher `CALL { WITH n ... }` 保留 `WITH` 导入 | GQL 子查询自动捕获外层变量，删除 `WITH` |
 | Cypher `collect(x)` 直接保留 | 改为 `collect_list(x)` |
-| Cypher `relationships(p)` 直接保留 | 改为 `edges(p)` |
 | YIELD 后无结果语句 | 补上 `RETURN` |
 | nGQL `$-.col` 引用 | 改为直接使用列别名 |
 | nGQL `==` 等值比较直接保留 | 改为 `=`（GQL 中 `=` 既是比较又是赋值） |
