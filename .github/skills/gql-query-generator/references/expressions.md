@@ -96,6 +96,7 @@ EXISTS { <pattern_or_body> } -- 存在性判断
 - `VALUE { ... }` 内部 `RETURN` 应含聚合或 `LIMIT 1`；结果为空时返回 `NULL`。
 - `EXISTS { ... }` 非空 → `true`，空 → `false`。
 - 子查询可捕获外层变量；不要在内部用 `LET` 重定义同名变量。
+- 在 `WHERE` / `FILTER` 中判断已绑定变量之间是否存在某个图模式，使用 `EXISTS { MATCH ... }`；排除某个图模式，使用 `NOT EXISTS { MATCH ... }`。不要生成 `NOT (a)-[:T]-(b)` 或 Cypher 风格 `EXISTS((a)-[:T]->(b))`。
 
 ## Label Expressions
 ```gql

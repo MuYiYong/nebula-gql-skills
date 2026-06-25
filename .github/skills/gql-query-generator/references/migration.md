@@ -242,6 +242,7 @@ ORDER BY score DESC
 |--------|-----|------|
 | `EXISTS { MATCH (n)-[]->(m) }` | `EXISTS { MATCH (n)-[]->(m) }` | 基本相同 |
 | `WHERE EXISTS((n)-[:T]->())` | `WHERE EXISTS { MATCH (n)-[:T]->() }` | GQL 需完整子查询 |
+| `WHERE NOT (a)-[:T]-(b)` | `WHERE NOT EXISTS { MATCH (a)-[:T]-(b) }` | 图模式排除用 `NOT EXISTS` 相关子查询 |
 | `CALL { WITH n MATCH ... RETURN ... }` | `CALL { MATCH ... RETURN ... }` | GQL 子查询自动捕获外层变量，不需 `WITH` 导入 |
 
 ### 1.7 控制流

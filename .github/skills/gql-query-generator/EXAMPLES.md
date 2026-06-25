@@ -161,6 +161,37 @@ WHERE src.<tenant_id> = dst.<tenant_id>
 RETURN e
 ```
 
+### 1H. Pattern existence filters use EXISTS subqueries
+Input intent:
+- 查询所有人中，是队友但不是好友的人
+
+Output skeleton:
+```gql
+MATCH (p1:player)-[s1:serve]->(t:team)<-[s2:serve]-(p2:player)
+WHERE p1.id <> p2.id
+  AND s1.start_year <= s2.end_year
+  AND s2.start_year <= s1.end_year
+  AND NOT EXISTS {
+    MATCH (p1)-[:follow]-(p2)
+  }
+RETURN DISTINCT p1.id AS player_id,
+       p1.name AS player_name,
+       p2.id AS teammate_id,
+       p2.name AS teammate_name
+ORDER BY player_id ASC, teammate_id ASC
+LIMIT 100
+```
+
+Anti-pattern（不要生成）:
+```gql
+MATCH (p1:player)-[s1:serve]->(t:team)<-[s2:serve]-(p2:player)
+WHERE p1.id <> p2.id
+  AND NOT (p1)-[:follow]-(p2)
+RETURN p1, p2
+```
+
+改写要点：`WHERE` 中的图模式包含/排除过滤用 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`，不要把裸 pattern 当成布尔条件。
+
 ### 2. Sorted page query
 Input intent:
 - 查最近创建的 20 条订单，跳过前 40 条
@@ -1318,6 +1349,7 @@ RETURN path
 - 不要保留 nGQL `ALL(e_ in e WHERE pred)` 对边列表的断言；拆为逐段 pattern-level WHERE。
 - 不要保留 nGQL `allShortestPaths(...)` / `shortestPath(...)` 函数包裹形式；改为 `ALL SHORTEST` / `ANY SHORTEST PATH`。
 - 不要把只涉及单个变量的过滤机械留在外层 `WHERE`；优先用 pattern 属性或 pattern `WHERE`。
+- 不要把裸图模式写成 `WHERE` 布尔条件，例如 `AND NOT (p1)-[:follow]-(p2)`；排除模式用 `NOT EXISTS { MATCH ... }`，包含模式用 `EXISTS { MATCH ... }`。
 - 不要生成 `MATCH ... YIELD ...`（当前内核版本不支持）。
 - 不要直接写 `RETURN t` 这类绑定表引用直返；先 `FOR r IN t` 再返回字段列。
 - 不要在 `TABLE ... = ...` 里放 `rand()`、未定义变量或其他非常量表达式。

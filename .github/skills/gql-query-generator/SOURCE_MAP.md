@@ -19,6 +19,7 @@
 ## Core knowledge（SKILL.md 直接包含）
 - 查询骨架（MATCH/WHERE/RETURN/ORDER BY/OFFSET/LIMIT）
 - 过滤放置三级优先级
+- 图模式存在/排除过滤（`EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`）
 - 聚合与 GROUP BY
 - CALL（命名 + 内联）与 YIELD
 - LET / FOR / FILTER / NEXT
@@ -39,4 +40,5 @@
 ## Stability notes
 - 参数化查询按 `PARAMETERS $x=...` 与 `$param` 引用的保守子集收敛。
 - legacy nGQL 迁移按"业务主键 → `{id: ...}`；图元素身份值 → `element_id(...)`"的保守子集收敛。
+- `WHERE` 中的图模式包含/排除条件按 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }` 收敛，不生成裸 pattern 谓词。
 - 不支持路径语法：`|+|`、`|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`。

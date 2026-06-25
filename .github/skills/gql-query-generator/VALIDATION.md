@@ -32,6 +32,7 @@
 - 单变量等值过滤（尤其是 `id` 主键）是否优先写成属性字面量（如 `MATCH (src{id: "..."})`），而不是冗长的 pattern `WHERE src.id = ...`？
 - 若外层 `WHERE` 中仍有单变量过滤，是否存在必须保留在外层的理由（作用域、可读性、语义保持）？
 - 外层 `WHERE` 是否主要承载跨变量关系或结果级约束（如 `a.id = b.id`、`ALL_DIFFERENT(...)`、多变量 `EXISTS`）？
+- `WHERE` / `FILTER` 中若表达图模式存在或排除，是否使用了 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`，而不是裸 pattern 条件（如 `NOT (a)-[:T]-(b)`）？
 - shortest path / quantified path 的起点、终点若只有单变量过滤，是否已优先写在端点 pattern 中？
 - 是否误用了 Cypher 风格关系量词（如 `[:TYPE*1..n]`）？当前应改写为量词后置的 GQL 形式（如 `-[:TYPE]->{1,n}`）。
 - 是否误生成了当前未实现的高级路径语法（`|`、`|+|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`）？
@@ -87,6 +88,9 @@
 - 如果单变量等值过滤仍写成 pattern `WHERE`（例如 `MATCH (src WHERE src.id = "x")`），优先改写为属性字面量（`MATCH (src{id: "x"})`）。
 - 如果外层 `WHERE` 同时混有“可下沉单变量条件 + 必须保留的跨变量条件”，优先把单变量部分下沉到 pattern，外层只保留跨变量部分。
 - 如果 shortest path / quantified path 的 src/dst 过滤仍写在外层 `WHERE`，优先下沉到起点或终点 pattern。
+- 如果生成了 `WHERE NOT (a)-[:T]-(b)`、`AND NOT (a)-[:T]-(b)` 或类似裸 pattern 排除条件，改写为 `NOT EXISTS { MATCH (a)-[:T]-(b) }`。
+- 如果生成了 `WHERE (a)-[:T]-(b)`、`AND (a)-[:T]-(b)` 或类似裸 pattern 包含条件，改写为 `EXISTS { MATCH (a)-[:T]-(b) }`。
+- 如果生成了 Cypher 风格 `EXISTS((a)-[:T]->(b))`，改写为 `EXISTS { MATCH (a)-[:T]->(b) }`；否定形式外层加 `NOT`。
 - 如果生成了 `[:TYPE*1..n]` 一类 Cypher 风格关系量词，改写为 `-[:TYPE]->{1,n}`；若是不定长，改写为 `-[:TYPE]->*` 或 `-[:TYPE]->+`。
 - 如果残留了 Cypher `WITH`（中间投影），改写为 `RETURN...NEXT`。
 - 如果残留了 Cypher `UNWIND`，改写为 `FOR`。

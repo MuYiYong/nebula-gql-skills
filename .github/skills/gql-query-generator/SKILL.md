@@ -92,6 +92,26 @@ RETURN src, dst
 ```
 
 - `AND` 连接多条件；只有用户说"或者"才用 `OR`。
+- 在 `WHERE` / `FILTER` 中表达"存在某个图模式"或"排除某个图模式"时，使用相关子查询：`EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`。不要生成裸 pattern 谓词，例如 `AND NOT (p1)-[:follow]-(p2)`。
+
+Preferred:
+```gql
+MATCH (p1:player)-[:serve]->(t:team)<-[:serve]-(p2:player)
+WHERE p1.id <> p2.id
+  AND NOT EXISTS {
+    MATCH (p1)-[:follow]-(p2)
+  }
+RETURN p1, p2
+```
+
+Anti-pattern（不要生成）:
+```gql
+MATCH (p1:player)-[:serve]->(t:team)<-[:serve]-(p2:player)
+WHERE p1.id <> p2.id
+  AND NOT (p1)-[:follow]-(p2)
+RETURN p1, p2
+```
+
 - 详细表达式规则见 [expressions.md](./references/expressions.md)。
 
 ### RETURN
@@ -244,6 +264,7 @@ FINISH
 - 单变量非等值 → pattern 内 `WHERE`，不要外层 WHERE。
 - 所有图模式（含 shortest path、quantified path）的单变量过滤都必须下沉到 pattern，不要留在外层 WHERE。
 - 跨变量约束 → 外层 `WHERE`。
+- 图模式存在性过滤 → `EXISTS { MATCH ... }`；图模式排除过滤 → `NOT EXISTS { MATCH ... }`；不要用 `NOT (a)-[:T]-(b)`。
 - 子查询再排序/聚合 → `CALL { ... }`。
 - 聚合后再筛选 → `RETURN ... NEXT ... FILTER`。
 - 多步顺序查询 → 线性查询 + `NEXT`。
@@ -292,6 +313,7 @@ FINISH
 - 不在 KNN 中拼 `APPROX` 或 ANN OPTIONS。
 - 不把 `FOR` 误用成图遍历。
 - 不把任何图模式中的单变量过滤留在外层 `WHERE`（必须下沉到对应 pattern）。
+- 不生成裸图模式谓词作为布尔条件，例如 `WHERE NOT (a)-[:T]-(b)` 或 `WHERE (a)-[:T]-(b)`；必须改成 `NOT EXISTS { MATCH ... }` 或 `EXISTS { MATCH ... }`。
 - 不跨 `NEXT` 引用未返回的列。
 - 不假设 `OFFSET` 接受负数。
 - 不生成不支持的路径语法（`|+|`、`|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`）。
@@ -302,6 +324,7 @@ FINISH
 - 至少包含主干和结果语句？
 - 占位符和假设写清楚了？
 - 过滤放置遵循三级优先级？
+- 图模式包含/排除过滤是否使用 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`？
 - 聚合分组逻辑自洽？
 - 排序分页顺序正确？
 - `CALL` 后跟了结果语句？
