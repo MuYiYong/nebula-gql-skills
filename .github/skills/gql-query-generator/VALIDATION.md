@@ -33,6 +33,7 @@
 - 若外层 `WHERE` 中仍有单变量过滤，是否存在必须保留在外层的理由（作用域、可读性、语义保持）？
 - 外层 `WHERE` 是否主要承载跨变量关系或结果级约束（如 `a.id = b.id`、`ALL_DIFFERENT(...)`、多变量 `EXISTS`）？
 - `WHERE` / `FILTER` 中若表达图模式存在或排除，是否使用了 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`，而不是裸 pattern 条件（如 `NOT (a)-[:T]-(b)`）？
+- 若输入自然语言含有“但不是/不是…的人/没有…关系/排除…模式/without/but not”，是否已把该排除语义映射成 `NOT EXISTS { MATCH ... }`，而不是仍输出裸 `NOT (pattern)`？
 - shortest path / quantified path 的起点、终点若只有单变量过滤，是否已优先写在端点 pattern 中？
 - 是否误用了 Cypher 风格关系量词（如 `[:TYPE*1..n]`）？当前应改写为量词后置的 GQL 形式（如 `-[:TYPE]->{1,n}`）。
 - 是否误生成了当前未实现的高级路径语法（`|`、`|+|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`）？
@@ -90,6 +91,7 @@
 - 如果 shortest path / quantified path 的 src/dst 过滤仍写在外层 `WHERE`，优先下沉到起点或终点 pattern。
 - 如果生成了 `WHERE NOT (a)-[:T]-(b)`、`AND NOT (a)-[:T]-(b)` 或类似裸 pattern 排除条件，改写为 `NOT EXISTS { MATCH (a)-[:T]-(b) }`。
 - 如果生成了 `WHERE (a)-[:T]-(b)`、`AND (a)-[:T]-(b)` 或类似裸 pattern 包含条件，改写为 `EXISTS { MATCH (a)-[:T]-(b) }`。
+- 如果自然语言本身在表达“主模式成立，但排除另一个关系/模式”，先保留主模式，再把被排除部分单独抽成 `NOT EXISTS { MATCH ... }`，不要把整个否定关系塞成 `NOT (pattern)`。
 - 如果生成了 Cypher 风格 `EXISTS((a)-[:T]->(b))`，改写为 `EXISTS { MATCH (a)-[:T]->(b) }`；否定形式外层加 `NOT`。
 - 如果生成了 `[:TYPE*1..n]` 一类 Cypher 风格关系量词，改写为 `-[:TYPE]->{1,n}`；若是不定长，改写为 `-[:TYPE]->*` 或 `-[:TYPE]->+`。
 - 如果残留了 Cypher `WITH`（中间投影），改写为 `RETURN...NEXT`。

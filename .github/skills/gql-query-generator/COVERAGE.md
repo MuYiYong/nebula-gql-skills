@@ -17,7 +17,7 @@
 | legacy nGQL 迁移启发式 | supported | 支持 `id(v)` 语义分流、GO/FETCH/LOOKUP/管道 → MATCH、`v.tag.prop` → `v.prop`、`$^/$$/$ -` → 变量属性引用、单变量过滤下沉等完整映射，参见 [migration.md] |
 | Cypher 迁移启发式 | supported | 支持 `WITH` → `RETURN...NEXT`、`UNWIND` → `FOR`、`[:T*1..n]` → `-[:T]->{1,n}`、`MERGE` → `INSERT OR UPDATE`、`shortestPath()` → `ANY SHORTEST PATH`、`collect()` → `collect_list()`、`relationships()` → `edges()` 等完整映射，参见 [migration.md] |
 | 高级路径组合语法 | deferred | `|`、`|+|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED` 仅识别，不作为默认生成能力 |
-| `WHERE` | supported | 支持常见布尔过滤；图模式存在/排除过滤使用 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }` |
+| `WHERE` | supported | 支持常见布尔过滤；图模式存在/排除过滤使用 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`，并覆盖“但不是/没有某关系/排除某模式”这类自然语言排除语义 |
 | `RETURN` | supported | 支持别名、`*`、`DISTINCT`、聚合入口 |
 | `GROUP BY` | partial | 仅在聚合查询中保守生成，含 `GROUP BY ()` 全局单组子集 |
 | `ORDER BY` | supported | 支持基础排序项 |

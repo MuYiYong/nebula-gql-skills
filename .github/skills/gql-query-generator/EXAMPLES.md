@@ -164,6 +164,7 @@ RETURN e
 ### 1H. Pattern existence filters use EXISTS subqueries
 Input intent:
 - 查询所有人中，是队友但不是好友的人
+- “但不是/不是好友” 表达的是排除某个图模式，不是裸 pattern 否定
 
 Output skeleton:
 ```gql
@@ -190,7 +191,7 @@ WHERE p1.id <> p2.id
 RETURN p1, p2
 ```
 
-改写要点：`WHERE` 中的图模式包含/排除过滤用 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`，不要把裸 pattern 当成布尔条件。
+改写要点：`WHERE` 中的图模式包含/排除过滤用 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`，不要把裸 pattern 当成布尔条件。凡是自然语言里出现“但不是/不是…的人/没有…关系/排除…模式/without/but not”，都先识别成“主模式 + `NOT EXISTS` 排除子模式”。
 
 ### 2. Sorted page query
 Input intent:
