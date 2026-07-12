@@ -74,15 +74,17 @@ Use it to translate natural language requirements into GQL procedures, UDP bodie
 
 Release artifacts are built by GitHub Actions and attached to GitHub Releases.
 
-The package version is generated automatically from the build date in the format `vYYYYMMDD`.
+The package version is generated automatically from the build date in the format `YY.MM.DD`.
+Package filenames do not include the `v` prefix.
+The GitHub release tag uses `v<package_version>_Build<run_number>`, and the release title uses `v<package_version> Build<run_number>`, for example `v26.07.12_Build1901` / `v26.07.12 Build1901`.
 
 Primary artifacts:
 
-- `nebula-skills-v<release_version>.zip`
-- `gql-query-generator-v<release_version>.zip`
-- `gql-procedure-generator-v<release_version>.zip`
+- `nebula-skills-<package_version>.zip`
+- `gql-query-generator-<package_version>.zip`
+- `gql-procedure-generator-<package_version>.zip`
 
-The recommended distribution artifact is `nebula-skills-v<release_version>.zip`. It is an all-in-one package containing both core skills and the top-level documentation.
+The recommended distribution artifact is `nebula-skills-<package_version>.zip`. It is an all-in-one package containing both core skills and the top-level documentation.
 
 Each archive contains these user-facing files:
 
@@ -110,10 +112,10 @@ If you only need redistribution, the zip archives are the final deliverables.
 ### Install From Zip
 
 1. Download one of the release archives from GitHub Releases:
-   - `nebula-skills-v<release_version>.zip`
-   - `gql-query-generator-v<release_version>.zip`
-   - `gql-procedure-generator-v<release_version>.zip`
-2. If you want both skills at once, prefer `nebula-skills-v<release_version>.zip` and extract it into the target workspace root.
+   - `nebula-skills-<package_version>.zip`
+   - `gql-query-generator-<package_version>.zip`
+   - `gql-procedure-generator-<package_version>.zip`
+2. If you want both skills at once, prefer `nebula-skills-<package_version>.zip` and extract it into the target workspace root.
 3. If you only need one skill, use the corresponding skill zip and extract it into `.github/skills/` inside the target workspace.
 4. After extracting the mega bundle, the layout should look like this:
 
@@ -156,6 +158,7 @@ Maintenance rule:
 - do not hand-edit `dist/`; it is generated release output
 - do not publish from a local `dist/` directory
 - for release packaging, use `.github/workflows/build-skills-zip.yml`
+- automatic packaging runs only when release-relevant files change
 
 The workflow runs `python3 scripts/package_core_skills.py` in CI and will automatically:
 
@@ -165,6 +168,7 @@ The workflow runs `python3 scripts/package_core_skills.py` in CI and will automa
 4. Generate `FEATURES_INDEX.md`
 5. Generate versioned zip archives
 6. Copy `README.md`, `README.zh-CN.md`, `INSTALL.md`, and `PROMPTS.md` into each package
+7. Publish a GitHub release tagged as `v<package_version>_Build<run_number>`
 
 <a id="en-usage"></a>
 ## Usage

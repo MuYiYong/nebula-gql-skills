@@ -17,11 +17,11 @@ def resolve_release_version() -> str:
     value = os.getenv("RELEASE_VERSION", "").strip()
     if value:
         return value
-    return datetime.now(timezone.utc).strftime("%Y%m%d")
+    return datetime.now(timezone.utc).strftime("%y.%m.%d")
 
 
 RELEASE_VERSION = resolve_release_version()
-MEGA_BUNDLE_NAME = f"nebula-skills-v{RELEASE_VERSION}"
+MEGA_BUNDLE_NAME = f"nebula-skills-{RELEASE_VERSION}"
 ROOT_PACKAGE_DOCS = (
     "README.md",
     "README.zh-CN.md",
@@ -134,8 +134,9 @@ def write_feature_index(feature_files: list[Path], target_dir: Path) -> None:
 
 
 def create_archive(package_dir: Path) -> Path:
-    archive_base = DIST_ROOT / f"{package_dir.name}-v{RELEASE_VERSION}"
-    archive_path = archive_base.with_suffix(".zip")
+    archive_stem = f"{package_dir.name}-{RELEASE_VERSION}"
+    archive_base = DIST_ROOT / archive_stem
+    archive_path = DIST_ROOT / f"{archive_stem}.zip"
     for existing_archive in DIST_ROOT.glob(f"{package_dir.name}*.zip"):
         existing_archive.unlink()
     shutil.make_archive(str(archive_base), "zip", root_dir=DIST_ROOT, base_dir=package_dir.name)
@@ -144,7 +145,7 @@ def create_archive(package_dir: Path) -> Path:
 
 def create_named_archive(directory: Path, archive_stem: str) -> Path:
     archive_base = DIST_ROOT / archive_stem
-    archive_path = archive_base.with_suffix(".zip")
+    archive_path = DIST_ROOT / f"{archive_stem}.zip"
     if archive_path.exists():
         archive_path.unlink()
     shutil.make_archive(str(archive_base), "zip", root_dir=DIST_ROOT, base_dir=directory.name)
@@ -198,7 +199,7 @@ def main() -> None:
     for name, count, archive_path in summaries:
         print(f"Packaged {name}: {count} feature files -> {archive_path.relative_to(ROOT)}")
     print(f"Packaged mega bundle -> {mega_bundle_archive.relative_to(ROOT)}")
-    print(f"Release version: v{RELEASE_VERSION}")
+    print(f"Package version: {RELEASE_VERSION}")
 
 
 if __name__ == "__main__":

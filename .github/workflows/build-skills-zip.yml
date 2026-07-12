@@ -4,14 +4,21 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "Release version without v prefix (e.g. 20260319)"
+        description: "Package version without v prefix (e.g. 26.07.12)"
         required: false
         type: string
   push:
     branches:
       - main
-  schedule:
-    - cron: "0 2 * * *"
+    paths:
+      - ".github/skills/**"
+      - ".github/workflows/build-skills-zip.yml"
+      - "scripts/package_core_skills.py"
+      - "features/**"
+      - "README.md"
+      - "README.zh-CN.md"
+      - "INSTALL.md"
+      - "PROMPTS.md"
 
 permissions:
   contents: write
@@ -28,15 +35,17 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Resolve release version
+      - name: Resolve package version
         shell: bash
         run: |
           if [[ -n "${{ inputs.release_version }}" ]]; then
             release_version="${{ inputs.release_version }}"
           else
-            release_version="$(date -u +%Y%m%d)"
+            release_version="$(date -u +%y.%m.%d)"
           fi
           echo "RELEASE_VERSION=${release_version}" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=v${release_version}_Build${{ github.run_number }}" >> "$GITHUB_ENV"
+          echo "RELEASE_NAME=v${release_version} Build${{ github.run_number }}" >> "$GITHUB_ENV"
 
       - name: Build zip packages
         env:
@@ -54,8 +63,8 @@ jobs:
       - name: Create or update GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.RELEASE_VERSION }}
-          name: Nebula Skills v${{ env.RELEASE_VERSION }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_NAME }}
           files: dist/*.zip
           generate_release_notes: true
           fail_on_unmatched_files: true

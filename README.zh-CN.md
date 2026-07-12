@@ -74,15 +74,17 @@
 
 正式发布产物由 GitHub Actions 构建，并附在 GitHub Releases 中。
 
-当前版本号由打包脚本按构建日期自动生成，格式为 `vYYYYMMDD`。
+当前包版本号由打包脚本按构建日期自动生成，格式为 `YY.MM.DD`。
+包文件名本身不带 `v` 前缀。
+GitHub Release 的 tag 使用 `v<package_version>_Build<run_number>`，标题使用 `v<package_version> Build<run_number>`，例如 `v26.07.12_Build1901` / `v26.07.12 Build1901`。
 
 主要产物如下：
 
-- `nebula-skills-v<release_version>.zip`
-- `gql-query-generator-v<release_version>.zip`
-- `gql-procedure-generator-v<release_version>.zip`
+- `nebula-skills-<package_version>.zip`
+- `gql-query-generator-<package_version>.zip`
+- `gql-procedure-generator-<package_version>.zip`
 
-推荐优先分发 `nebula-skills-v<release_version>.zip`。它是一个包含两个核心 skill 和根级说明文档的总包。
+推荐优先分发 `nebula-skills-<package_version>.zip`。它是一个包含两个核心 skill 和根级说明文档的总包。
 
 每个压缩包都会包含以下面向使用者的文件：
 
@@ -110,10 +112,10 @@
 ### 从 zip 安装
 
 1. 从 GitHub Releases 下载需要的压缩包：
-   - `nebula-skills-v<release_version>.zip`
-   - `gql-query-generator-v<release_version>.zip`
-   - `gql-procedure-generator-v<release_version>.zip`
-2. 如果要一次性安装两个 skill，优先使用 `nebula-skills-v<release_version>.zip`，并解压到目标工作区根目录。
+   - `nebula-skills-<package_version>.zip`
+   - `gql-query-generator-<package_version>.zip`
+   - `gql-procedure-generator-<package_version>.zip`
+2. 如果要一次性安装两个 skill，优先使用 `nebula-skills-<package_version>.zip`，并解压到目标工作区根目录。
 3. 如果只需要单个 skill，则使用单独的 skill zip，并解压到目标工作区的 `.github/skills/` 目录下。
 4. 解压总包后，目录结构应类似这样：
 
@@ -156,6 +158,7 @@
 - 不要手改 `dist/`，它是生成出来的发布产物
 - 不再以本地 `dist/` 目录作为发布方式
 - 如果要发布，使用 `.github/workflows/build-skills-zip.yml`
+- 自动出包只会在发布相关文件发生变更时触发
 
 该工作流会在 CI 中运行 `python3 scripts/package_core_skills.py`，并自动：
 
@@ -165,6 +168,7 @@
 4. 生成 `FEATURES_INDEX.md`
 5. 生成版本化 zip 包
 6. 复制 `README.md`、`README.zh-CN.md`、`INSTALL.md` 和 `PROMPTS.md` 到每个分发包
+7. 发布 tag 形如 `v<package_version>_Build<run_number>` 的 GitHub Release
 
 <a id="cn-usage"></a>
 ## 如何使用
