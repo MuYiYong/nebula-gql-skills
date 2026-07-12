@@ -76,7 +76,7 @@ Release artifacts are built by GitHub Actions and attached to GitHub Releases.
 
 The package version is generated automatically from the build date in the format `YY.MM.DD`.
 Package filenames do not include the `v` prefix.
-The GitHub release tag uses `v<package_version>_Build<run_number>`, and the release title uses `v<package_version> Build<run_number>`, for example `v26.07.12_Build1901` / `v26.07.12 Build1901`.
+The GitHub release tag uses `v<package_version>_Build<HHMM>`, and the release title uses `v<package_version> Build<HHMM>`, where `HHMM` is the Asia/Shanghai build time, for example `v26.07.12_Build1901` / `v26.07.12 Build1901`.
 
 Primary artifacts:
 
@@ -168,7 +168,7 @@ The workflow runs `python3 scripts/package_core_skills.py` in CI and will automa
 4. Generate `FEATURES_INDEX.md`
 5. Generate versioned zip archives
 6. Copy `README.md`, `README.zh-CN.md`, `INSTALL.md`, and `PROMPTS.md` into each package
-7. Publish a GitHub release tagged as `v<package_version>_Build<run_number>`
+7. Publish a GitHub release tagged as `v<package_version>_Build<HHMM>`
 
 <a id="en-usage"></a>
 ## Usage

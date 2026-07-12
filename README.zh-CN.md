@@ -76,7 +76,7 @@
 
 当前包版本号由打包脚本按构建日期自动生成，格式为 `YY.MM.DD`。
 包文件名本身不带 `v` 前缀。
-GitHub Release 的 tag 使用 `v<package_version>_Build<run_number>`，标题使用 `v<package_version> Build<run_number>`，例如 `v26.07.12_Build1901` / `v26.07.12 Build1901`。
+GitHub Release 的 tag 使用 `v<package_version>_Build<HHMM>`，标题使用 `v<package_version> Build<HHMM>`，其中 `HHMM` 是 Asia/Shanghai 时区的构建时间，例如 `v26.07.12_Build1901` / `v26.07.12 Build1901`。
 
 主要产物如下：
 
@@ -168,7 +168,7 @@ GitHub Release 的 tag 使用 `v<package_version>_Build<run_number>`，标题使
 4. 生成 `FEATURES_INDEX.md`
 5. 生成版本化 zip 包
 6. 复制 `README.md`、`README.zh-CN.md`、`INSTALL.md` 和 `PROMPTS.md` 到每个分发包
-7. 发布 tag 形如 `v<package_version>_Build<run_number>` 的 GitHub Release
+7. 发布 tag 形如 `v<package_version>_Build<HHMM>` 的 GitHub Release
 
 <a id="cn-usage"></a>
 ## 如何使用

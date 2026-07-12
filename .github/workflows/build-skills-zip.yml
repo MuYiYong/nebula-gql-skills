@@ -43,9 +43,11 @@ jobs:
           else
             release_version="$(date -u +%y.%m.%d)"
           fi
+          build_code="$(TZ=Asia/Shanghai date +%H%M)"
           echo "RELEASE_VERSION=${release_version}" >> "$GITHUB_ENV"
-          echo "RELEASE_TAG=v${release_version}_Build${{ github.run_number }}" >> "$GITHUB_ENV"
-          echo "RELEASE_NAME=v${release_version} Build${{ github.run_number }}" >> "$GITHUB_ENV"
+          echo "RELEASE_BUILD_CODE=${build_code}" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=v${release_version}_Build${build_code}" >> "$GITHUB_ENV"
+          echo "RELEASE_NAME=v${release_version} Build${build_code}" >> "$GITHUB_ENV"
 
       - name: Build zip packages
         env:
