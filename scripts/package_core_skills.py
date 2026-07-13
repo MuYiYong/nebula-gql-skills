@@ -1,155 +1,93 @@
+#!/usr/bin/env python3
+"""Package the maintained Nebula skills from src/ into standalone and mega zips."""
+
 from __future__ import annotations
 
+import os
 import shutil
 from dataclasses import dataclass
-from datetime import datetime, timezone
-import os
+from datetime import datetime
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent.parent
-SKILLS_ROOT = ROOT / ".github" / "skills"
+ROOT = Path(__file__).resolve().parents[1]
+SKILLS_ROOT = ROOT / "src"
 DIST_ROOT = ROOT / "dist"
-EXCLUDED_SKILLS = {"planning-with-files"}
-
-
-def resolve_release_version() -> str:
-    value = os.getenv("RELEASE_VERSION", "").strip()
-    if value:
-        return value
-    return datetime.now(timezone.utc).strftime("%y.%m.%d")
-
-
-RELEASE_VERSION = resolve_release_version()
+CORE_SKILLS = ("gql-query-generator", "gql-procedure-generator")
+ROOT_PACKAGE_DOCS = ("README.md", "README.zh-CN.md")
+RELEASE_VERSION = os.environ.get("RELEASE_VERSION") or datetime.now().strftime("%y.%m.%d")
 MEGA_BUNDLE_NAME = f"nebula-skills-{RELEASE_VERSION}"
-ROOT_PACKAGE_DOCS = (
-    "README.md",
-    "README.zh-CN.md",
-    "INSTALL.md",
-    "PROMPTS.md",
-)
-PACKAGE_TOP_LEVEL_KEEP = {
-    "EXAMPLES.md",
-    "FEATURES_INDEX.md",
-    "INSTALL.md",
-    "PROMPTS.md",
-    "README.md",
-    "README.zh-CN.md",
-    "SKILL.md",
-    "tests",
-}
 
 
 @dataclass(frozen=True)
 class PackageSpec:
+    name: str
     source_dir: Path
-    manifest_path: Path
-
-    @property
-    def name(self) -> str:
-        return self.source_dir.name
 
 
 def discover_specs() -> list[PackageSpec]:
     specs: list[PackageSpec] = []
-    for skill_dir in sorted(SKILLS_ROOT.iterdir()):
-        if not skill_dir.is_dir() or skill_dir.name in EXCLUDED_SKILLS:
-            continue
-        manifest_path = skill_dir / "FEATURES.manifest"
-        if manifest_path.exists():
-            specs.append(PackageSpec(source_dir=skill_dir, manifest_path=manifest_path))
+    for name in CORE_SKILLS:
+        source_dir = SKILLS_ROOT / name
+        if not (source_dir / "SKILL.md").is_file():
+            raise SystemExit(f"Missing skill source: {source_dir / 'SKILL.md'}")
+        specs.append(PackageSpec(name=name, source_dir=source_dir))
     return specs
 
 
-def read_manifest(manifest_path: Path) -> list[str]:
-    patterns: list[str] = []
-    for raw_line in manifest_path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
-            continue
-        patterns.append(line)
-    return patterns
+def copy_skill_source(spec: PackageSpec, target_dir: Path) -> None:
+    if target_dir.exists():
+        shutil.rmtree(target_dir)
+    shutil.copytree(
+        spec.source_dir,
+        target_dir,
+        ignore=shutil.ignore_patterns(".DS_Store", "__pycache__", "*.pyc"),
+    )
 
 
-def resolve_feature_files(patterns: list[str]) -> list[Path]:
-    files: set[Path] = set()
-    missing_patterns: list[str] = []
-    for pattern in patterns:
-        matches = [path for path in ROOT.glob(pattern) if path.is_file()]
-        if not matches:
-            missing_patterns.append(pattern)
-            continue
-        files.update(matches)
-    if missing_patterns:
-        missing = "\n".join(f"- {pattern}" for pattern in missing_patterns)
-        raise SystemExit(f"Manifest patterns matched no files:\n{missing}")
-    return sorted(files)
+def feature_files(skill_dir: Path) -> list[Path]:
+    return sorted((skill_dir / "tests" / "features").rglob("*.feature"))
 
 
-def copy_skill_source(source_dir: Path, target_dir: Path) -> None:
-    shutil.copytree(source_dir, target_dir, dirs_exist_ok=True)
-
-
-def copy_package_docs(target_dir: Path) -> None:
-    for doc_name in ROOT_PACKAGE_DOCS:
-        shutil.copy2(ROOT / doc_name, target_dir / doc_name)
-
-
-def cleanup_target_dir(target_dir: Path) -> None:
-    for child in target_dir.iterdir():
-        if child.name in PACKAGE_TOP_LEVEL_KEEP:
-            continue
-        if child.is_dir():
-            shutil.rmtree(child)
-        else:
-            child.unlink()
-
-
-def cleanup_duplicate_test_dirs(target_dir: Path) -> None:
-    for child in target_dir.iterdir():
-        if not child.is_dir():
-            continue
-        if child.name.startswith("tests "):
-            shutil.rmtree(child)
-
-
-def copy_feature_files(feature_files: list[Path], target_dir: Path) -> None:
-    features_target = target_dir / "tests" / "features"
-    for feature_file in feature_files:
-        relative = feature_file.relative_to(ROOT / "features")
-        destination = features_target / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(feature_file, destination)
-
-
-def write_feature_index(feature_files: list[Path], target_dir: Path) -> None:
+def write_feature_index(skill_dir: Path, files: list[Path]) -> None:
     lines = [
         "# Packaged Feature Index",
         "",
-        "The following test assets were bundled into this distribution package.",
+        "NebulaGraph 5.3.0 feature assets bundled with this skill:",
         "",
     ]
-    lines.extend(f"- features/{feature_file.relative_to(ROOT / 'features').as_posix()}" for feature_file in feature_files)
-    (target_dir / "FEATURES_INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    lines.extend(f"- {path.relative_to(skill_dir).as_posix()}" for path in files)
+    (skill_dir / "FEATURES_INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def create_archive(package_dir: Path) -> Path:
-    archive_stem = f"{package_dir.name}-{RELEASE_VERSION}"
-    archive_base = DIST_ROOT / archive_stem
-    archive_path = DIST_ROOT / f"{archive_stem}.zip"
-    for existing_archive in DIST_ROOT.glob(f"{package_dir.name}*.zip"):
-        existing_archive.unlink()
-    shutil.make_archive(str(archive_base), "zip", root_dir=DIST_ROOT, base_dir=package_dir.name)
-    return archive_path
+def remove_old_archives(prefix: str) -> None:
+    for archive in DIST_ROOT.glob(f"{prefix}-*.zip"):
+        archive.unlink()
 
 
-def create_named_archive(directory: Path, archive_stem: str) -> Path:
-    archive_base = DIST_ROOT / archive_stem
+def create_archive(directory: Path, archive_stem: str) -> Path:
     archive_path = DIST_ROOT / f"{archive_stem}.zip"
     if archive_path.exists():
         archive_path.unlink()
-    shutil.make_archive(str(archive_base), "zip", root_dir=DIST_ROOT, base_dir=directory.name)
+    shutil.make_archive(
+        str(DIST_ROOT / archive_stem),
+        "zip",
+        root_dir=DIST_ROOT,
+        base_dir=directory.name,
+    )
     return archive_path
+
+
+def package_skill(spec: PackageSpec) -> tuple[str, int, Path]:
+    target_dir = DIST_ROOT / spec.name
+    copy_skill_source(spec, target_dir)
+    files = feature_files(target_dir)
+    if not files:
+        raise SystemExit(f"No feature assets found for {spec.name}")
+    write_feature_index(target_dir, files)
+    remove_old_archives(spec.name)
+    archive = create_archive(target_dir, f"{spec.name}-{RELEASE_VERSION}")
+    return spec.name, len(files), archive
 
 
 def create_mega_bundle(specs: list[PackageSpec]) -> Path:
@@ -157,48 +95,30 @@ def create_mega_bundle(specs: list[PackageSpec]) -> Path:
     if bundle_dir.exists():
         shutil.rmtree(bundle_dir)
 
-    (bundle_dir / ".github" / "skills").mkdir(parents=True, exist_ok=True)
+    skills_dir = bundle_dir / ".github" / "skills"
+    skills_dir.mkdir(parents=True)
     for doc_name in ROOT_PACKAGE_DOCS:
-        shutil.copy2(ROOT / doc_name, bundle_dir / doc_name)
+        source = ROOT / doc_name
+        if source.is_file():
+            shutil.copy2(source, bundle_dir / doc_name)
 
     for spec in specs:
-        packaged_skill_dir = DIST_ROOT / spec.name
-        target_skill_dir = bundle_dir / ".github" / "skills" / spec.name
-        shutil.copytree(packaged_skill_dir, target_skill_dir, dirs_exist_ok=True)
+        shutil.copytree(DIST_ROOT / spec.name, skills_dir / spec.name)
 
-    return create_named_archive(bundle_dir, MEGA_BUNDLE_NAME)
-
-
-def package_skill(spec: PackageSpec) -> tuple[str, int, Path]:
-    target_dir = DIST_ROOT / spec.name
-    if target_dir.exists():
-        shutil.rmtree(target_dir)
-    copy_skill_source(spec.source_dir, target_dir)
-    copy_package_docs(target_dir)
-    feature_files = resolve_feature_files(read_manifest(spec.manifest_path))
-    copy_feature_files(feature_files, target_dir)
-    write_feature_index(feature_files, target_dir)
-    cleanup_target_dir(target_dir)
-    archive_path = create_archive(target_dir)
-    cleanup_target_dir(target_dir)
-    cleanup_duplicate_test_dirs(target_dir)
-    return spec.name, len(feature_files), archive_path
+    remove_old_archives("nebula-skills")
+    return create_archive(bundle_dir, MEGA_BUNDLE_NAME)
 
 
 def main() -> None:
     specs = discover_specs()
-    if not specs:
-        raise SystemExit("No core skill manifests found.")
-
     DIST_ROOT.mkdir(parents=True, exist_ok=True)
-    summaries = [package_skill(spec) for spec in specs]
-    mega_bundle_archive = create_mega_bundle(specs)
 
-    excluded = ", ".join(sorted(EXCLUDED_SKILLS))
-    print(f"Excluded skills from distribution: {excluded}")
-    for name, count, archive_path in summaries:
-        print(f"Packaged {name}: {count} feature files -> {archive_path.relative_to(ROOT)}")
-    print(f"Packaged mega bundle -> {mega_bundle_archive.relative_to(ROOT)}")
+    summaries = [package_skill(spec) for spec in specs]
+    mega_archive = create_mega_bundle(specs)
+
+    for name, count, archive in summaries:
+        print(f"Packaged {name}: {count} feature files -> {archive.relative_to(ROOT)}")
+    print(f"Packaged mega bundle -> {mega_archive.relative_to(ROOT)}")
     print(f"Package version: {RELEASE_VERSION}")
 
 

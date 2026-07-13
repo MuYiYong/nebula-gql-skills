@@ -1,0 +1,4 @@
+interface:
+  display_name: "GQL Procedure Generator"
+  short_description: "Generate NebulaGraph 5.3 procedures and algorithms"
+  default_prompt: "Use $gql-procedure-generator to turn this requirement into a NebulaGraph 5.3 procedure."

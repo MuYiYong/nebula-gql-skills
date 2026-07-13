@@ -1,223 +1,90 @@
-# Nebula Skills 中文说明
+# Nebula Skills
 
-[English](./README.md)
+[English](README.md)
 
-## 快速跳转
+本仓库维护两个 NebulaGraph GQL skill：
 
-- [仓库概览](#cn-overview)
-- [近期更新](#cn-updates)
-- [技能列表](#cn-skills)
-- [发布内容](#cn-release)
-- [快速开始](#cn-quick-start)
-- [如何使用](#cn-usage)
-- [如何选用](#cn-how-to-choose)
-- [测试资产如何进入分发包](#cn-test-assets)
-- [仓库结构](#cn-layout)
+- `gql-query-generator`：生成、改写和迁移 GQL 查询。
+- `gql-procedure-generator`：生成 Procedure、Analytics 算法，以及迁移 TigerGraph GSQL。
 
-<a id="cn-overview"></a>
-## 仓库概览
+## 兼容版本
 
-这是一个面向 Nebula GQL 场景的 skill 分发仓库，当前对外发布两个核心 skill：
+| 项目 | 版本 |
+| --- | --- |
+| 中文文档基线 | `5.3.0` |
+| Feature 测试基线 | `5.3.0` |
+| Skill 适配版本 | NebulaGraph `5.3.0` |
 
-- `gql-query-generator`
-- `gql-procedure-generator`
+本次刷新使用本地 `v5.3.0_zh_html` 文档语料和 `v5.3.0_features` 测试语料。打包后的每个 skill 都是自包含的，运行时不依赖这两个外部源目录。
 
-`planning-with-files` 仅用于本仓库整理过程，不进入最终发布包。
-
-<a id="cn-updates"></a>
-## 近期更新
-
-更新时间：2026-05-16
-
-- 已刷新 `gql-query-generator` 的规则与校验配套文档，提升独立发布可用性。
-- 新增可复用的查询参考文档，位于 `.github/skills/gql-query-generator/references/`：
-  - `patterns.md`
-  - `error-codes.md`
-  - `expressions.md`
-  - `functions.md`
-  - `nearest-neighbor.md`
-  - `migration.md`
-- 新增 `ISO_39075_nebula_ng_query_gap_report.md`，用于说明 ISO GQL 与 Nebula 查询层差异。
-
-说明：
-- 上述仓库级参考文件主要用于维护与规则加固。
-- 发布 zip 仍以 [发布内容](#cn-release) 中列出的面向使用者文件为准。
-
-<a id="cn-skills"></a>
-## 技能列表
-
-### `gql-query-generator`
-
-适合把自然语言需求转换成 GQL 查询，尤其适用于：
-
-- `MATCH`
-- `WHERE`
-- `RETURN`
-- 分页
-- 排序
-- 聚合
-- 子查询
-- 过程调用查询
-
-### `gql-procedure-generator`
-
-适合把自然语言需求转换成 GQL Procedure / UDP / 算法过程体，尤其适用于：
-
-- `CREATE PROCEDURE`
-- `CALL`
-- 控制流
-- `match_compute_statement`
-- 图算法
-
-<a id="cn-release"></a>
-## 发布内容
-
-正式发布产物由 GitHub Actions 构建，并附在 GitHub Releases 中。
-
-当前包版本号由打包脚本按构建日期自动生成，格式为 `YY.MM.DD`。
-包文件名本身不带 `v` 前缀。
-GitHub Release 的 tag 使用 `v<package_version>_Build<HHMM>`，标题使用 `v<package_version> Build<HHMM>`，其中 `HHMM` 是 Asia/Shanghai 时区的构建时间，例如 `v26.07.12_Build1901` / `v26.07.12 Build1901`。
-
-主要产物如下：
-
-- `nebula-skills-<package_version>.zip`
-- `gql-query-generator-<package_version>.zip`
-- `gql-procedure-generator-<package_version>.zip`
-
-推荐优先分发 `nebula-skills-<package_version>.zip`。它是一个包含两个核心 skill 和根级说明文档的总包。
-
-每个压缩包都会包含以下面向使用者的文件：
-
-- `SKILL.md`
-- `README.md`
-- `README.zh-CN.md`
-- `INSTALL.md`
-- `PROMPTS.md`
-- `EXAMPLES.md`
-- `FEATURES_INDEX.md`
-- `tests/features/`
-
-发布包不会包含这些偏内部维护或打包链路的文件：
-
-- `COVERAGE.md`
-- `SOURCE_MAP.md`
-- `VALIDATION.md`
-- `FEATURES.manifest`
-
-如果只是给其他工作区分发，直接提供 zip 包即可。
-
-<a id="cn-quick-start"></a>
-## 快速开始
-
-### 从 zip 安装
-
-1. 从 GitHub Releases 下载需要的压缩包：
-   - `nebula-skills-<package_version>.zip`
-   - `gql-query-generator-<package_version>.zip`
-   - `gql-procedure-generator-<package_version>.zip`
-2. 如果要一次性安装两个 skill，优先使用 `nebula-skills-<package_version>.zip`，并解压到目标工作区根目录。
-3. 如果只需要单个 skill，则使用单独的 skill zip，并解压到目标工作区的 `.github/skills/` 目录下。
-4. 解压总包后，目录结构应类似这样：
+## 仓库结构
 
 ```text
-<workspace>/
-  README.md
-  README.zh-CN.md
-  INSTALL.md
-  PROMPTS.md
-  .github/
-    skills/
-      gql-query-generator/
-      gql-procedure-generator/
+src/
+  gql-query-generator/
+    SKILL.md
+    agents/openai.yaml
+    references/
+    tests/features/
+  gql-procedure-generator/
+    SKILL.md
+    agents/openai.yaml
+    references/
+    tests/features/
+scripts/
+  package_core_skills.py
+README.md
+README.zh-CN.md
 ```
 
-5. 解压单个 skill 包后，目录结构应类似这样：
+skill 源文件只维护在 `src/` 下。原仓库级 `.github/skills/`、`site-zh/` 和 `features/` 不再作为源文件输入。
+
+## Skill 设计
+
+每个 `SKILL.md` 都是精简入口，只包含任务路由、工作流、硬约束和参考文件选择规则。详细语法、示例、校验清单、能力覆盖和来源追踪统一放在 `references/` 中，仅在相关场景按需加载。
+
+随 skill 保存的 `tests/features/` 子集用于证明当前实现边界：
+
+- Query skill：67 个 feature 文件，覆盖 K-hop、动态标签和 VC-index 路径场景等。
+- Procedure skill：88 个 feature 文件，覆盖 `PER PARTITION`、分布式表参数和 Analytics 聚合器/算法等。
+
+## 打包
+
+执行：
+
+```bash
+RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
+```
+
+不设置 `RELEASE_VERSION` 时，脚本使用 `YY.MM.DD` 格式的构建日期。
+
+脚本生成：
+
+- `dist/gql-query-generator-<version>.zip`
+- `dist/gql-procedure-generator-<version>.zip`
+- `dist/nebula-skills-<version>.zip`
+
+单 skill 压缩包包含一个完整 skill；合集压缩包将两个 skill 放在 `.github/skills/` 下，并携带仓库 README。`dist/` 是生成产物，不提交到 Git。
+
+## 安装
+
+同时安装两个 skill 时，将 `nebula-skills-<version>.zip` 解压到目标工作区根目录，得到：
 
 ```text
 .github/skills/
   gql-query-generator/
-    SKILL.md
-    README.md
-    README.zh-CN.md
-    INSTALL.md
   gql-procedure-generator/
-    SKILL.md
-    README.md
-    README.zh-CN.md
-    INSTALL.md
 ```
 
-6. 确认目录名与 `SKILL.md` 里的 `name` 一致，不要额外多套一层目录。
+只安装一个 skill 时，将对应单 skill 压缩包解压到目标工作区的 `.github/skills/` 目录。skill 文件夹名必须与 `SKILL.md` 中的 `name` 一致。
 
-### 在 GitHub 上发布
+## 维护
 
-日常维护时，只更新 `.github/skills/` 下的源 skill。
+适配后续 NebulaGraph 版本时：
 
-维护约定：
-- skill 源文件只改 `.github/skills/`
-- 不要手改 `dist/`，它是生成出来的发布产物
-- 不再以本地 `dist/` 目录作为发布方式
-- 如果要发布，使用 `.github/workflows/build-skills-zip.yml`
-- 自动出包只会在发布相关文件发生变更时触发
+1. 根据新文档更新精简入口和相关参考文件。
+2. 从同版本 feature 语料替换 `src/<skill>/tests/features/` 下的测试子集。
+3. 同步更新两个 README 和两个 `references/source-map.md` 中的三类版本号。
+4. 发布前执行结构校验和打包验证。
 
-该工作流会在 CI 中运行 `python3 scripts/package_core_skills.py`，并自动：
-
-1. 排除 `planning-with-files`
-2. 复制两个核心 skill 到 `dist/`
-3. 按各自的 `FEATURES.manifest` 打入测试文件
-4. 生成 `FEATURES_INDEX.md`
-5. 生成版本化 zip 包
-6. 复制 `README.md`、`README.zh-CN.md`、`INSTALL.md` 和 `PROMPTS.md` 到每个分发包
-7. 发布 tag 形如 `v<package_version>_Build<HHMM>` 的 GitHub Release
-
-<a id="cn-usage"></a>
-## 如何使用
-
-两个 skill 都声明为 `user-invocable: true`，适合在支持自定义 skill 的 Copilot Chat / Agent 环境中直接调用。
-
-### 使用 `gql-query-generator` 处理这些任务
-
-- 生成普通 GQL 查询
-- 改写筛选、排序、分页、聚合查询
-- 生成 `CALL ... YIELD ... RETURN` 查询
-- 补全 `LET`、`FILTER`、`NEXT`、子查询等查询结构
-
-可直接复制的提示词见 `PROMPTS.md`，输出骨架示例见 `EXAMPLES.md`。
-
-### 使用 `gql-procedure-generator` 处理这些任务
-
-- 生成 `CREATE PROCEDURE` / `ALTER PROCEDURE` / `DROP PROCEDURE`
-- 生成 `CALL` / `OPTIONAL CALL`
-- 编写 `WHILE`、`IF`、`RETURN ... NEXT ...` 等过程逻辑
-- 编写图算法、状态传播和 `match_compute_statement`
-
-可直接复制的提示词见 `PROMPTS.md`，输出骨架示例见 `EXAMPLES.md`。
-
-<a id="cn-how-to-choose"></a>
-## 如何选用
-
-- 如果目标是查询数据，使用 `gql-query-generator`
-- 如果目标是定义或生成过程，使用 `gql-procedure-generator`
-- 如果一个任务同时包含“先定义过程，再调用过程”，先用 `gql-procedure-generator`，再用 `gql-query-generator`
-
-<a id="cn-test-assets"></a>
-## 测试资产如何进入分发包
-
-每个 skill 目录都维护自己的 `FEATURES.manifest`。打包时会从仓库根目录 `features/` 中按 manifest 收集对应的 `.feature` 文件，并复制到分发包的 `tests/features/` 中。
-
-这意味着：
-
-- 源仓只维护一份测试资产
-- 分发包仍然是自包含的
-- 不需要手工复制 feature 文件
-
-<a id="cn-layout"></a>
-## 仓库结构
-
-- 源 skill：`.github/skills/`
-- 原始 feature：`features/`
-- 打包脚本：`scripts/package_core_skills.py`
-- 发布工作流：`.github/workflows/build-skills-zip.yml`
-- 临时构建目录：`dist/`（已 gitignore，不提交）
-
-如果你是最终使用者，建议从每个分发包里的 `INSTALL.md` 开始。
+不要重新提交生成后的文档站点、仓库级 feature 全量目录或手工修改的 `dist/` 产物。

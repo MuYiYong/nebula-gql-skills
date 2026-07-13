@@ -1,223 +1,90 @@
 # Nebula Skills
 
-[简体中文](./README.zh-CN.md)
+[简体中文](README.zh-CN.md)
 
-## Quick Links
+This repository maintains two skills for NebulaGraph GQL work:
 
-- [Repository Overview](#en-overview)
-- [Recent Updates](#en-updates)
-- [Skills](#en-skills)
-- [Release Contents](#en-release)
-- [Quick Start](#en-quick-start)
-- [Usage](#en-usage)
-- [How To Choose](#en-how-to-choose)
-- [How Test Assets Are Packaged](#en-test-assets)
-- [Repository Layout](#en-layout)
+- `gql-query-generator`: generate, rewrite, and migrate GQL queries.
+- `gql-procedure-generator`: generate procedures, Analytics algorithms, and TigerGraph GSQL migrations.
 
-<a id="en-overview"></a>
-## Repository Overview
+## Compatibility
 
-This repository distributes two core skills for Nebula GQL workflows:
+| Item | Version |
+| --- | --- |
+| Chinese documentation baseline | `5.3.0` |
+| Feature-test baseline | `5.3.0` |
+| Skill compatibility | NebulaGraph `5.3.0` |
 
-- `gql-query-generator`
-- `gql-procedure-generator`
+The current refresh used the local `v5.3.0_zh_html` documentation corpus and `v5.3.0_features` test corpus. Each skill is self-contained after packaging; neither external source directory is required at runtime.
 
-`planning-with-files` is only used for repository maintenance and is excluded from release packages.
-
-<a id="en-updates"></a>
-## Recent Updates
-
-Updated on 2026-05-16:
-
-- Refreshed `gql-query-generator` documentation and validation references for independent release quality.
-- Added reusable query reference docs under `.github/skills/gql-query-generator/references/`:
-  - `patterns.md`
-  - `error-codes.md`
-  - `expressions.md`
-  - `functions.md`
-  - `nearest-neighbor.md`
-  - `migration.md`
-- Added `ISO_39075_nebula_ng_query_gap_report.md` to summarize ISO GQL and Nebula query-layer gaps.
-
-Note:
-- These repository-level reference files are for maintenance and skill hardening.
-- Release zips keep user-facing files as listed in [Release Contents](#en-release).
-
-<a id="en-skills"></a>
-## Skills
-
-### `gql-query-generator`
-
-Use it to translate natural language requirements into GQL queries, especially for:
-
-- `MATCH`
-- `WHERE`
-- `RETURN`
-- paging
-- sorting
-- aggregation
-- subqueries
-- procedure-call queries
-
-### `gql-procedure-generator`
-
-Use it to translate natural language requirements into GQL procedures, UDP bodies, or algorithm bodies, especially for:
-
-- `CREATE PROCEDURE`
-- `CALL`
-- control flow
-- `match_compute_statement`
-- graph algorithms
-
-<a id="en-release"></a>
-## Release Contents
-
-Release artifacts are built by GitHub Actions and attached to GitHub Releases.
-
-The package version is generated automatically from the build date in the format `YY.MM.DD`.
-Package filenames do not include the `v` prefix.
-The GitHub release tag uses `v<package_version>_Build<HHMM>`, and the release title uses `v<package_version> Build<HHMM>`, where `HHMM` is the Asia/Shanghai build time, for example `v26.07.12_Build1901` / `v26.07.12 Build1901`.
-
-Primary artifacts:
-
-- `nebula-skills-<package_version>.zip`
-- `gql-query-generator-<package_version>.zip`
-- `gql-procedure-generator-<package_version>.zip`
-
-The recommended distribution artifact is `nebula-skills-<package_version>.zip`. It is an all-in-one package containing both core skills and the top-level documentation.
-
-Each archive contains these user-facing files:
-
-- `SKILL.md`
-- `README.md`
-- `README.zh-CN.md`
-- `INSTALL.md`
-- `PROMPTS.md`
-- `EXAMPLES.md`
-- `FEATURES_INDEX.md`
-- `tests/features/`
-
-Release packages do not include these internal maintenance files:
-
-- `COVERAGE.md`
-- `SOURCE_MAP.md`
-- `VALIDATION.md`
-- `FEATURES.manifest`
-
-If you only need redistribution, the zip archives are the final deliverables.
-
-<a id="en-quick-start"></a>
-## Quick Start
-
-### Install From Zip
-
-1. Download one of the release archives from GitHub Releases:
-   - `nebula-skills-<package_version>.zip`
-   - `gql-query-generator-<package_version>.zip`
-   - `gql-procedure-generator-<package_version>.zip`
-2. If you want both skills at once, prefer `nebula-skills-<package_version>.zip` and extract it into the target workspace root.
-3. If you only need one skill, use the corresponding skill zip and extract it into `.github/skills/` inside the target workspace.
-4. After extracting the mega bundle, the layout should look like this:
+## Repository Layout
 
 ```text
-<workspace>/
-  README.md
-  README.zh-CN.md
-  INSTALL.md
-  PROMPTS.md
-  .github/
-    skills/
-      gql-query-generator/
-      gql-procedure-generator/
+src/
+  gql-query-generator/
+    SKILL.md
+    agents/openai.yaml
+    references/
+    tests/features/
+  gql-procedure-generator/
+    SKILL.md
+    agents/openai.yaml
+    references/
+    tests/features/
+scripts/
+  package_core_skills.py
+README.md
+README.zh-CN.md
 ```
 
-5. After extracting a single-skill archive, the layout should look like this:
+Maintained skill sources live only under `src/`. The former repository-level `.github/skills/`, `site-zh/`, and `features/` trees are no longer source inputs.
+
+## Skill Design
+
+Each `SKILL.md` is a concise entrypoint containing task routing, workflow, hard guardrails, and reference-selection rules. Detailed syntax, examples, validation checks, capability coverage, and source provenance live under `references/` and are loaded only when relevant.
+
+The vendored `tests/features/` subsets serve as implementation evidence:
+
+- Query skill: 67 feature files, including K-hop expansion, dynamic labels, and VC-index path cases.
+- Procedure skill: 88 feature files, including `PER PARTITION`, distributed table arguments, and Analytics aggregators/algorithms.
+
+## Build Packages
+
+Run:
+
+```bash
+RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
+```
+
+If `RELEASE_VERSION` is omitted, the script uses the build date in `YY.MM.DD` format.
+
+The script creates:
+
+- `dist/gql-query-generator-<version>.zip`
+- `dist/gql-procedure-generator-<version>.zip`
+- `dist/nebula-skills-<version>.zip`
+
+Standalone archives contain one complete skill. The mega archive contains both skills under `.github/skills/` plus the repository README files. `dist/` is generated output and is not committed.
+
+## Install
+
+For both skills, extract `nebula-skills-<version>.zip` into the target workspace root. The result contains:
 
 ```text
 .github/skills/
   gql-query-generator/
-    SKILL.md
-    README.md
-    README.zh-CN.md
-    INSTALL.md
   gql-procedure-generator/
-    SKILL.md
-    README.md
-    README.zh-CN.md
-    INSTALL.md
 ```
 
-6. Make sure the folder name matches the `name` field in `SKILL.md`, without introducing an extra nested directory.
+For one skill, extract its standalone archive into the target workspace's `.github/skills/` directory. Keep the skill folder name identical to the `name` in `SKILL.md`.
 
-### Release From GitHub
+## Maintenance
 
-Normal repository maintenance should update only `.github/skills/`.
+When refreshing to a later NebulaGraph version:
 
-Maintenance rule:
-- edit source skills only under `.github/skills/`
-- do not hand-edit `dist/`; it is generated release output
-- do not publish from a local `dist/` directory
-- for release packaging, use `.github/workflows/build-skills-zip.yml`
-- automatic packaging runs only when release-relevant files change
+1. Update each skill's concise entrypoint and relevant references from the new documentation.
+2. Replace the vendored feature subsets under `src/<skill>/tests/features/` from the matching feature corpus.
+3. Update the three compatibility values in both README files and both `references/source-map.md` files.
+4. Run structural validation and package verification before publishing.
 
-The workflow runs `python3 scripts/package_core_skills.py` in CI and will automatically:
-
-1. Exclude `planning-with-files`
-2. Copy the two core skills into `dist/`
-3. Bundle feature subsets according to each `FEATURES.manifest`
-4. Generate `FEATURES_INDEX.md`
-5. Generate versioned zip archives
-6. Copy `README.md`, `README.zh-CN.md`, `INSTALL.md`, and `PROMPTS.md` into each package
-7. Publish a GitHub release tagged as `v<package_version>_Build<HHMM>`
-
-<a id="en-usage"></a>
-## Usage
-
-Both skills are declared as `user-invocable: true` and are intended for Copilot Chat / Agent environments that support custom skills.
-
-### Use `gql-query-generator` for these tasks
-
-- generating standard GQL queries
-- rewriting filtered, sorted, paged, or aggregated queries
-- producing `CALL ... YIELD ... RETURN` queries
-- filling in `LET`, `FILTER`, `NEXT`, and subquery structures
-
-Use `PROMPTS.md` for copy-paste prompts and `EXAMPLES.md` for output skeletons.
-
-### Use `gql-procedure-generator` for these tasks
-
-- generating `CREATE PROCEDURE` / `ALTER PROCEDURE` / `DROP PROCEDURE`
-- generating `CALL` / `OPTIONAL CALL`
-- writing `WHILE`, `IF`, and `RETURN ... NEXT ...` procedure logic
-- building graph algorithms, state propagation, and `match_compute_statement` workflows
-
-Use `PROMPTS.md` for copy-paste prompts and `EXAMPLES.md` for output skeletons.
-
-<a id="en-how-to-choose"></a>
-## How To Choose
-
-- If the goal is querying data, use `gql-query-generator`
-- If the goal is defining procedures or algorithms, use `gql-procedure-generator`
-- If a task includes both "define a procedure" and "call the procedure", use `gql-procedure-generator` first and `gql-query-generator` second
-
-<a id="en-test-assets"></a>
-## How Test Assets Are Packaged
-
-Each skill keeps its own `FEATURES.manifest`. During packaging, matching `.feature` files are collected from the repository-level `features/` directory and copied into `tests/features/` inside the package.
-
-That means:
-
-- the source repository keeps only one copy of test assets
-- release packages remain self-contained
-- no manual feature copying is needed
-
-<a id="en-layout"></a>
-## Repository Layout
-
-- source skills: `.github/skills/`
-- source features: `features/`
-- packaging script: `scripts/package_core_skills.py`
-- release workflow: `.github/workflows/build-skills-zip.yml`
-- temporary build output: `dist/` (gitignored, not committed)
-
-If you are an end user, start with `INSTALL.md` inside each package.
+Do not reintroduce generated documentation sites, a repository-level feature corpus, or hand-edited `dist/` artifacts.
