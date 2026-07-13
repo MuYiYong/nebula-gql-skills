@@ -7,6 +7,7 @@
 - 用户是要创建、修改、删除、调用，还是查看过程？
 - 是否涉及图算法、逐轮遍历、状态传播？如果是，是否已经切换到 `match_compute_statement` 骨架？
 - 是否明确目标是 Database 还是 Analytics？若涉及分布式表或 `PER PARTITION`，是否确认是 Analytics 5.3.0 环境？
+- 若要把本地 BindingTable 导入分布式临时图，是否确认目标不是严格 `v5.3.0`，而是包含 current-master 扩展的已验证版本？
 - 是否同时涉及 `IMPORT INTO GRAPH` 与 match compute？若是，是否已规划成 import/compute 两个 sibling 子过程？
 - 是否存在关键签名或 schema 缺口？如果存在，是否已改为清晰占位符？
 
@@ -22,6 +23,7 @@
 - `PER PARTITION` 内是否避免图 `MATCH`、任意过程调用、全局聚合器、活动集和表变量导出？
 - 分布式表是否避免 `size(t)`、`table_split(t)`、直接 `FOR ... IN t` 和 `SET t.clear()`？
 - 子过程若对 `t TABLE` 使用 `PER PARTITION`，调用方是否确实传入分布式表？
+- 本地 BindingTable 作为分布式临时图导入源时，是否保留了明确版本前提；严格 `v5.3.0` 是否避免该组合？
 - 是否避免在同一过程或祖先调用链中 `IMPORT INTO GRAPH` 后继续 match compute？
 - 是否把全局聚合器 chunking 当作透明运行时能力，没有生成手工分块循环或拆分聚合语义？
 - `ACTIVE_SET` 是否通过 `FINALLY` 更新？
@@ -51,6 +53,7 @@
 - 如果某个 `MATCH ... PER PATH` / `PER NODE` 里出现了两条及以上边段，立刻拆成有序的单跳 stage；如果状态交接仍不明确，降级为 staged skeleton / planning procedure，不要保留长链。
 - 如果输入是 TigerGraph GSQL 多跳 `SELECT`，而输出仍然是一种 mode 对应一个长链 `MATCH`，直接回退到“mode 优先级 + 单跳扩展 stage”结构。
 - 如果直接读取、遍历或清空分布式表，改写为 `PER PARTITION (part) OF t` 并只操作 `part`。
+- 如果严格 `v5.3.0` 过程把本地 BindingTable 导入分布式临时图，停止生成该组合并改用受支持来源；只有运行版本明确包含 current-master 扩展时才保留。
 - 如果 `PER PARTITION` 内出现不允许的外部状态、图匹配、过程调用或表导出，移出分区块；无法安全移动时删除该行为并保留最小分区处理骨架。
 - 如果导入和 match compute 位于同一过程或祖先调用链，拆成 sibling import/compute 子过程，并在父过程每次调用前显式 `USE g`。
 - 如果聚合值变量被裸用或被写成普通属性访问，统一重写成 `@agg_name`、`node.@agg_name` 或 `NODE(id_expr).@agg_name`。

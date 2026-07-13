@@ -18,15 +18,17 @@
 无法确认具体函数时，退回 `MATCH + WHERE + RETURN` 结构。
 
 ## Graph Element Functions
-- `element_id(<element>)` — 图元素身份值
+- `element_id(<node>)` — 节点内部身份值；不接受边
 - `left_node_id(<edge>)` / `right_node_id(<edge>)` — 边的端点 ID
+- `start_node_id(<edge>)` / `end_node_id(<edge>)` — 有向边的起点/终点内部 ID；无向边分别返回较小/较大内部 ID
+- `multiedge_id(<edge>)` — 边的 multiedge key / rank；需要唯一定位边时还要结合端点与类型
 - `labels(<element>)` — 元素标签列表
-- `type(<edge>)` — 边类型
+- `type(<element>)` — 节点或边的元素类型
 - `nodes(<path>)` / `edges(<path>)` — 路径中的点/边列表
 - `property_exists(<element>, '<prop>')` — 属性存在检查
 - `typeof(<expr>)` — 值类型名称字符串
 
-**注意**：当前没有内置 `id()` 函数；涉及身份值只用 `element_id()`。
+**注意**：当前没有内置 `id()` 函数。节点身份用 `element_id(node)`；边没有 `element_id(edge)`，按需求使用 `start_node_id(edge)`、`end_node_id(edge)`、`type(edge)` 与 `multiedge_id(edge)`。
 
 ## Temporal Functions
 - `duration_between(<t1>, <t2>)` — 时间差；可附加 `DAY TO SECOND` / `YEAR TO MONTH`。
@@ -75,5 +77,6 @@ reduce(<list>, <init>, (acc, x) -> <expr>)
 
 ## Legacy nGQL Migration
 - `id(v)` / `id(e)` 承担业务主键语义 → 改写为 `{id: ...}` 或 `WHERE v.id ...`
-- `id(v)` / `id(e)` 承担图元素身份值语义 → 改写为 `element_id(...)`
-- 不要机械翻译成 `element_id(...)`，先判断语义。
+- `id(v)` 承担节点身份值语义 → 改写为 `element_id(v)`
+- `id(e)` / `rank(e)` 承担边标识语义 → 先明确是否只需要 multiedge key；需要完整定位时组合端点、`type(e)` 与 `multiedge_id(e)`
+- 不要把 `id(e)` 机械翻译成不存在的 `element_id(e)`。

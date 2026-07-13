@@ -19,7 +19,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 ## Reference Routing
 
 - 过程 DDL、参数/返回、变量、控制流、`match_compute_statement`、聚合器与迁移规则：读取 [procedure-language.md](references/procedure-language.md) 的相关章节。
-- `PARTITION BY DEFAULT`、`PER PARTITION` 或 `TABLE` 过程参数：读取 [distributed-tables.md](references/distributed-tables.md)。
+- `PARTITION BY DEFAULT`、`PER PARTITION`、`TABLE` 过程参数或本地表导入分布式临时图：读取 [distributed-tables.md](references/distributed-tables.md)。
 - `IMPORT INTO GRAPH` 与后续 `match_compute_statement`：读取 [import-match-compute.md](references/import-match-compute.md)。
 - 用户指定 BFS、SSSP、PageRank、Louvain、Leiden 等算法：先检索 `tests/features/analytic/algo/` 中对应 5.3.0 feature，再按其过程结构生成或改写。
 - 大型全局聚合器或 `global_agg_chunk_size`：检索 `tests/features/analytic/aggregator/GlobalAggChunking.feature`；保持普通聚合器语法，不手工实现传输分块。
@@ -40,6 +40,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 - TigerGraph GSQL 多跳 `SELECT` 迁移时，分别保留 mode/优先级、逐跳扩展与副作用落地，不要把长链原样翻成一个 `MATCH ... PER PATH`。
 - 分布式表只能在 Analytics 能力明确且调用方以 `PARTITION BY DEFAULT` 声明时使用；读取、清空和遍历必须遵守 `PER PARTITION` 边界。
 - `TABLE` 参数可接收分布式表引用，但不要据此假设 `size(t)`、直接 `FOR ... IN t` 或任意过程调用可用。
+- 严格 5.3.0 不支持把本地 BindingTable 导入 `PARTITION BY DEFAULT` 的分布式临时图；只有目标明确为已验证的 current master/后续版本时才允许该来源组合。
 - 不要在同一过程或其祖先调用链中执行 `IMPORT INTO GRAPH` 后继续 match-compute；将导入与计算拆成两个 sibling 子过程并顺序调用。
 - 语法或能力未被文档和 feature 共同支持时，输出保守 skeleton 或说明缺失信息，不编造可执行实现。
 
@@ -52,4 +53,4 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 
 ## Evidence Policy
 
-将 v5.3.0 Analytics/Database 文档作为语法定义，将随包携带的 `.feature` 正反例作为实现边界。存在冲突或覆盖不足时，以当前 feature 能证明的保守写法为准。
+将 v5.3.0 Analytics/Database 文档作为已发布语法基线，将随包携带的 `.feature` 正反例作为实现证据。遇到 tag 后新增的成功场景时显式按运行版本门控；不能确认版本就保持严格 5.3.0 行为。

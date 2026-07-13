@@ -4,13 +4,16 @@
 
 - Scope
 - Definition and consumption
+- Version-gated local BindingTable import
 - Allowed and forbidden operations
 - Procedure arguments
 - Evidence
 
 ## Scope
 
-Use this capability only for NebulaGraph Analytics 5.3.0. Do not introduce `PARTITION BY DEFAULT` or `PER PARTITION` into an ordinary Database query or procedure unless the target environment is explicitly Analytics-compatible.
+Use this capability only for NebulaGraph Analytics; keep `v5.3.0` as the default compatibility baseline. Do not introduce `PARTITION BY DEFAULT` or `PER PARTITION` into an ordinary Database query or procedure unless the target environment is explicitly Analytics-compatible.
+
+Keep the release boundary explicit: strict `v5.3.0` rejects importing a non-distributed local BindingTable into a distributed temporary graph. Current `nebula-ng` master after `c2fabed62` supports that source combination. Do not infer the extension from `PARTITION BY DEFAULT` alone.
 
 ## Definition and Consumption
 
@@ -31,6 +34,29 @@ PER PARTITION (part) OF result_table {
 ```
 
 Do not initialize a distributed table with a literal or query result. Do not iterate the outer table directly.
+
+## Version-Gated Local BindingTable Import
+
+Use this shape only when the target runtime is explicitly verified to include the current-master extension. The source tables remain local; the target temporary graph is distributed.
+
+Treat the following as a caller-side statement block. For a named procedure, put the `TABLE` declarations and `IMPORT` in the procedure body without `USE`, then let the caller select the graph before `CALL`.
+
+```gql
+USE #<distributed_temporary_graph> {
+  TABLE nodes TYPED TABLE {id INT, name STRING} =
+    {id: <id>, name: <name>}
+
+  TABLE edges TYPED TABLE {src_id INT, dst_id INT, id INT} =
+    {src_id: <src_id>, dst_id: <dst_id>, id: <edge_id>}
+
+  IMPORT INTO GRAPH {
+    NODE (v@<node_type>{id: id, name: name}) FROM nodes,
+    EDGE (id:src_id)-[e@<edge_type>{id: id}]->(id:dst_id) FROM edges
+  } OPTIONS {PRIMARY_KEY_AS_NODE_ID: true}
+}
+```
+
+For a strict `v5.3.0` target, do not generate this local-source shape; it raises `NR125`. Use a supported distributed/file source or ask the user to confirm a newer runtime.
 
 ## Allowed and Forbidden Operations
 
@@ -80,4 +106,5 @@ Apply these boundaries:
 ## Evidence
 
 - Docs: `analytics-gql-reference/variable-definition/table-variable/`, `analytics-gql-reference/dql/per-partition/`, `analytics-gql-reference/procedures/create/`
-- Features: `analytic/PerPartition.feature`, `variable/DistributedTableProcedureArg.feature`
+- Features: `analytic/PerPartition.feature`, `variable/DistributedTableProcedureArg.feature`, `DataImportExport/BindingTableImport.feature`
+- Code boundary: `v5.3.0` rejects local-to-distributed BindingTable import; `c2fabed62` and master `40ff12b51` accept it.

@@ -312,7 +312,7 @@ ORDER BY score DESC
 | `Edge Type` | `Edge Label` 或 `Edge Type` | nGQL Edge Type 名可直接作为 GQL Edge Label 使用 |
 | `src(edge)` | 用起点变量（如 `v`） | GO 场景特有函数 |
 | `dst(edge)` | 用终点变量（如 `v2`） | GO 场景特有函数 |
-| `rank(edge)` | 无直接等价 | nGQL 特有 rank 概念 |
+| `rank(edge)` | `multiedge_id(edge)` | edge rank / multiedge key |
 | `properties(v)` | 无直接等价 — 逐属性返回 | |
 | `properties(edge)` | 无直接等价 — 用边变量属性 | |
 | `keys(properties(v))` | 无直接等价 | |
@@ -347,7 +347,7 @@ ORDER BY score DESC
 
 | nGQL 概念 | 说明 |
 |-----------|------|
-| Edge Rank (`@rank`) | nGQL 允许同一对点之间存在多条同类型边，用 rank 区分。GQL 中每条边有唯一 element_id，不需要 rank |
+| Edge Rank (`@rank`) | 改写为 `multiedge_id(e)`；完整边定位还需结合起点、终点与 `type(e)` |
 | `CREATE SPACE` (Graph Space) | nGQL 的图空间概念，包含分区数、副本数等存储配置。GQL 中用 `CREATE GRAPH` 或直接 `USE` |
 | `VID` (Vertex ID) | nGQL 中 VID 是用户指定的，等价于 GQL 中的业务主键属性（如 `id`）。不要与 `element_id()` 混淆 |
 | `INNER JOIN` | nGQL 特有的表连接语法。GQL 中用 MATCH 多 pattern 或子查询替代 |
@@ -396,7 +396,7 @@ ORDER BY score DESC
 | nGQL `allShortestPaths` 直接保留 | 改为 `ALL SHORTEST`（去掉函数包装） |
 | nGQL `properties(v)` / `keys(...)` 直接保留 | 改为逐属性返回，无直接等价函数 |
 | nGQL `src(edge)` / `dst(edge)` 直接保留 | 改为 pattern 中绑定的起终点变量 |
-| nGQL edge `@rank` 语法保留 | GQL 无 rank 概念，按 element_id 区分边 |
+| nGQL edge `@rank` 语法保留 | 改为 `multiedge_id(e)`；不要生成 `element_id(e)` |
 | Cypher `^` 求幂直接保留 | 改为 `power(x, y)` |
 | Cypher `STARTS WITH` 作为运算符保留 | 改为 `like(x, 'prefix%')` 或 `contains(x, 'sub')`；GQL 无 `starts_with` 函数 |
 | 忽略 nGQL MATCH 中的 `v.player.name` | 必须去掉 tag 前缀改为 `v.name` |

@@ -510,6 +510,7 @@ IMPORT INTO GRAPH { ... } [OPTIONS { ... }]
 ```
 
 - `IMPORT` 的目标必须是临时图，不要把它生成到普通图写入流程里。
+- 将本地 BindingTable 导入 `PARTITION BY DEFAULT` 的分布式临时图是 tag 后能力：严格 `v5.3.0` 会报 `NR125`；只有目标明确包含 `c2fabed62` 或后续等价实现时才生成，否则改用受支持的分布式/文件来源或保留版本假设。
 - 若从文件导入，稳定来源是 `FROM <file_variable>` 或内联 `DATAFILE { ... }`；若从图库导入，稳定来源是 `FROM NEBULA { PATH: "nebula://...", FORMAT: "NEBULA" }`。
 - 从图库导入完整图时，目标临时图的图类型定义必须与源图保持一致。
 - 单条 `IMPORT` 语句中不要同时混用 `file_source` 和 `graph_source`。

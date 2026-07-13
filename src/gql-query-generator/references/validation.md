@@ -32,8 +32,9 @@
 - 是否在同一 MATCH 子句中对同一节点变量多次调用了 `ftscore()`？每个 MATCH 分支中只能调用一次 `ftscore()`，多属性需拆成多个 MATCH + UNION。
 - 是否残留了 nGQL 语法（`GO`、`FETCH`、`LOOKUP`、`|`、`$-.col`、`$^`、`$$`、`v.tag.prop`、`==`等值比较、`[:T1|:T2]`多边类型并集、`rank(edge)`/`@rank`、`properties()`/`keys()`、`src(edge)`/`dst(edge)`、`allShortestPaths`/`shortestPath` 函数包裹、`exists(v.tag.prop)`）？
 - 是否使用了 `type(r) IN ['T1', 'T2']` 或 `WHERE type(r) IN [...]` 来过滤多边类型？应优先改写为标签表达式 `-[:T1|T2]->`，仅在边类型列表来自参数或动态计算时才用 `type()`。
-- 若输入含有 legacy nGQL 的 `id(v)` / `id(e)`，是否已先判断它代表业务属性 `id` 还是图元素身份值？
-- 若涉及图元素身份值，是否使用了 `element_id(...)` 而不是未实现的 `id()` / `id(v)`？
+- 若输入含有 legacy nGQL 的 `id(v)` / `id(e)`，是否已先判断它代表业务属性 `id`、节点内部 ID，还是边标识？
+- 若涉及节点内部 ID，是否使用了 `element_id(node)` 而不是未实现的 `id()` / `id(v)`？
+- 若涉及边标识，是否避免了无效的 `element_id(edge)`，并按需求使用端点、`type(edge)` 与 `multiedge_id(edge)`？
 - 若是业务实体主键过滤，是否优先改写成 `{id: ...}` 或 pattern `WHERE v.id ...`，而不是 `element_id(...)`？
 - 是否错误生成了 `MATCH ... YIELD`（该语法当前不支持）？
 - 只涉及单个变量的过滤条件，是否已优先下沉到 pattern 属性或 pattern `WHERE`？
@@ -47,7 +48,9 @@
 - K-hop 范围是否位于边模式和方向之后，例如 `-[:TYPE]->{2,4}(dst)`，且上下界符合用户意图？
 - 若 K-hop 可能通过多条路径到达同一终点，是否只在用户需要终点去重时使用 `DISTINCT`？
 - 动态节点/边标签是否来自字符串 `VALUE` 或绑定变量，而不是聚合器、文件、表或非字符串值？
+- 动态节点/边元素类型是否来自字符串 `VALUE`、`FOR`/`NEXT` 绑定变量，并正确使用 `@t`、`@[t,u]`、`@!t` 或 `IS ELEMENT TYPED`？
 - 同一个节点/边模式中是否避免了标签表达式 `:` 与元素类型表达式 `@` 并存？
+- `start_node_id()`、`end_node_id()` 与 `multiedge_id()` 的参数是否都是 EDGE，且没有把返回的内部值冒充业务主键？
 - 是否只保留用户给出的索引 hint，没有在缺少 index metadata 时臆造索引名？
 - 是否误生成了当前未实现的高级路径语法（`|`、`|+|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`）？
 - 若使用了 `NORMALIZE`，是否只用了单参数形态，且确实来自用户明确的 Unicode 规范化需求？
@@ -96,8 +99,8 @@
 
 ## Fail-safe rewrite rules
 - 如果命中了禁用清单，优先做最小改写：仅移除违规片段，保留已覆盖且合法的高级语法。
-- 如果生成了 `id()`，直接删除该不存在的内置函数写法；若语义是图元素身份值，改写为 `element_id(...)`。
-- 如果生成了 legacy 风格的 `id(v)` / `id(e)`，先判断语义：业务实体选择默认改写成 `v.id` / `e.id` 的属性过滤；只有明确是图元素身份值时才改写为 `element_id(...)`。
+- 如果生成了 `id()`，直接删除该不存在的内置函数写法；若语义是节点内部 ID，改写为 `element_id(node)`。
+- 如果生成了 legacy 风格的 `id(v)` / `id(e)`，先判断语义：业务实体选择默认改写成 `v.id` / `e.id` 的属性过滤；节点内部 ID 才改为 `element_id(v)`，边标识则使用端点、类型与 `multiedge_id(e)` 的必要组合。
 - 如果外层 `WHERE` 里的条件只约束单个变量，优先下沉到该变量所在的 pattern：简单等值改成 `{prop: value}`，其它单变量条件改成 pattern `WHERE`。
 - 如果单变量等值过滤仍写成 pattern `WHERE`（例如 `MATCH (src WHERE src.id = "x")`），优先改写为属性字面量（`MATCH (src{id: "x"})`）。
 - 如果外层 `WHERE` 同时混有“可下沉单变量条件 + 必须保留的跨变量条件”，优先把单变量部分下沉到 pattern，外层只保留跨变量部分。
@@ -120,7 +123,7 @@
 - 如果残留了 nGQL `==` 等值比较，改为 `=`（GQL 中 `=` 既是赋值也是比较）。
 - 如果残留了 nGQL `[:T1|:T2]` 多边类型并集，改为 GQL 标签表达式 `-[:T1|T2]->`（去掉多余的 `:`）。
 - 如果生成了 `type(r) IN ['T1', 'T2']` 或 `-[r WHERE type(r) IN [...]]->` 来过滤多边类型，改为标签表达式 `-[:T1|T2]->`。标签表达式比 `type()` 函数更高效且语义更清晰，仅在边类型列表来自运行时参数或动态计算时才保留 `type()`。
-- 如果残留了 nGQL `rank(edge)` 或 `@rank`，删除该过滤——GQL 无 rank 概念，每条边由唯一 `element_id` 区分。
+- 如果残留了 nGQL `rank(edge)` 或 `@rank`，改为 `multiedge_id(edge)`；需要完整边定位时同时保留端点与 `type(edge)`，不要改成不存在的 `element_id(edge)`。
 - 如果残留了 nGQL `properties(v)` / `properties(edge)` / `keys(properties(v))`，改为逐属性显式返回。
 - 如果残留了 nGQL `src(edge)` / `dst(edge)`，改为 pattern 中绑定的起终点变量。
 - 如果残留了 nGQL/Cypher `exists(v.tag.prop)` 或 `exists(n.prop)`，改为 `PROPERTY_EXISTS(v, "prop")`。

@@ -18,6 +18,7 @@ Compatibility baseline: NebulaGraph `5.3.0` documentation and feature corpus.
 | `MATCH` | supported | 支持基础模式匹配主干 |
 | K-hop expansion | supported | 支持固定链与边后量词 `{lower,upper}`；按请求决定是否对终点去重 |
 | 动态标签表达式 | partial | 支持字符串 `VALUE`/绑定变量作为节点或边标签；禁止无效变量类型及同模式 `:`/`@` 混用 |
+| 动态元素类型表达式 | partial | 支持字符串 `VALUE`、`FOR`/`NEXT` 绑定变量用于 `@t`、`@[t,u]`、`@!t` 和 `IS ELEMENT TYPED`；禁止表、聚合器、文件及非字符串值 |
 | 路径 VC index hint | partial | 仅保留用户或 schema 明确提供的 hint，不臆造索引名 |
 | legacy nGQL 迁移启发式 | supported | 支持 `id(v)` 语义分流、GO/FETCH/LOOKUP/管道 → MATCH、`v.tag.prop` → `v.prop`、`$^/$$/$ -` → 变量属性引用、单变量过滤下沉等完整映射，参见 [migration.md] |
 | Cypher 迁移启发式 | supported | 支持 `WITH` → `RETURN...NEXT`、`UNWIND` → `FOR`、`[:T*1..n]` → `-[:T]->{1,n}`、`MERGE` → `INSERT OR UPDATE`、`shortestPath()` → `ANY SHORTEST PATH`、`collect()` → `collect_list()`、`relationships()` → `edges()` 等完整映射，参见 [migration.md] |
@@ -45,6 +46,7 @@ Compatibility baseline: NebulaGraph `5.3.0` documentation and feature corpus.
 | `LET` | partial | 支持中间变量定义、跨 `NEXT` 可见性，以及 `VALUE/EXISTS` 对外层变量的保守捕获子集 |
 | `SAMPLE` | partial | 仅支持边模式中的保守采样子集 |
 | 属性存在检查 | supported | 使用 `PROPERTY_EXISTS(element, "prop")`，支持节点和边 |
+| 节点/边内部标识 | supported | 节点用 `element_id(node)`；边用端点 ID、`type(edge)` 与 `multiedge_id(edge)` 按需求组合，禁止 `element_id(edge)` |
 | 时间差函数 | partial | 支持 `DURATION_BETWEEN(t1, t2)` 的保守子集 |
 | 类型诊断函数 | partial | 支持 `typeof(expr)` 作为显式诊断/调试用途 |
 | 事务控制语句 | partial | 以识别/改写为主，默认不主动扩展复杂事务脚本 |

@@ -759,6 +759,39 @@ USE <graph_name> {
 Key rule:
 - `label_name` 必须产生字符串标签名；不要使用聚合器、文件、表或非字符串值，也不要生成 `(v:label_name@Person)` 这种标签与元素类型混用。
 
+### 21A. Dynamic exact element type (5.3.0)
+Input intent:
+- 在运行时选择精确节点类型和边类型
+
+Output:
+```gql
+USE <graph_name> {
+  VALUE node_type = "Person"
+  VALUE edge_type = "KNOWS"
+  MATCH (src@node_type{id: <id>})-[e@edge_type]->(dst)
+  RETURN type(src), type(e), type(dst)
+}
+```
+
+Key rule:
+- `@` 表达精确元素类型，不等同于 `:` 标签；动态类型必须来自字符串值或绑定变量，也可以用于 `@[type_a,TypeB]` 与 `@!excluded_type`。
+
+### 21B. Edge direction and multiedge identity (5.3.0)
+Input intent:
+- 返回边的内部端点、类型和 multiedge key
+
+Output:
+```gql
+MATCH (src)-[e]->(dst)
+RETURN start_node_id(e) AS start_id,
+       end_node_id(e) AS end_id,
+       type(e) AS edge_type,
+       multiedge_id(e) AS edge_key
+```
+
+Key rule:
+- `element_id()` 只接受节点。需要定位边时组合端点、类型和 `multiedge_id(e)`；不要生成 `element_id(e)`。
+
 ### 22. K-hop endpoint query (5.3.0)
 Input intent:
 - 查询某人 2 到 4 跳 `KNOWS` 可达的去重终点
@@ -1115,7 +1148,7 @@ MATCH (a{id: "1"})-[e:e1]->(b)
 RETURN element_id(a) AS src, element_id(b) AS dst, e.p1
 ```
 
-改写要点：nGQL `rank(edge)` 无 GQL 等价——GQL 中每条边有唯一 `element_id`，无需 rank 区分。若原查询依赖 rank 过滤，需用其他属性替代或重新设计 schema。
+改写要点：nGQL `rank(edge)` / `@rank` 改为 `multiedge_id(e)`。若需要完整定位边，还要结合起点、终点和 `type(e)`。
 
 ### N14. nGQL allShortestPaths
 Input (nGQL):
@@ -1367,7 +1400,7 @@ RETURN path
 ## Negative patterns
 - 不要把普通检索需求改写成 `CREATE PROCEDURE`。
 - 不要生成不存在的 `id()` 内置函数。
-- 不要把 legacy `id(v)`、`id(e)` 机械改成 `element_id(...)`；业务主键查询优先改写成属性 `id` 过滤。
+- 不要把 legacy `id(v)`、`id(e)` 机械改成 `element_id(...)`；业务主键查询优先改写成属性 `id` 过滤，且 `element_id()` 只接受节点。
 - 不要保留 Neo4j `db.*`/`apoc.*`/`gds.*`/`dbms.*` 命名空间的过程调用；必须完全重写为 GQL 原生语法（如 `ftscore()`、MATCH 变长路径等）。
 - 不要对 Neo4j 特有过程做机械的 `CALL...YIELD...RETURN...NEXT` 桥接；若过程本身不存在于 GQL，整个 CALL 语句需重写。
 - 不要保留 Cypher 的 `WITH`（中间投影）、`UNWIND`、`[:T*1..3]` 等语法；必须改写为对应 GQL 形式。
@@ -1377,7 +1410,7 @@ RETURN path
 - 不要把 Cypher `relationships()` 原样保留；改为 `edges()`。
 - 不要把 nGQL `==` 等值比较直接保留；GQL 中等值比较用 `=`。
 - 不要保留 nGQL `[:T1|:T2]` 多边类型并集语法；GQL 支持标签析取 `[:T1|T2]`（去掉多余的 `:`）。
-- 不要保留 nGQL `rank(edge)` 或 `@rank`；GQL 无 rank 概念。
+- 不要保留 nGQL `rank(edge)` 或 `@rank` 原写法；需要 edge rank 时改为 `multiedge_id(edge)`。
 - 不要保留 nGQL `properties(v)` / `properties(edge)` / `keys(properties(v))`；GQL 无直接等价。
 - 不要保留 nGQL `src(edge)` / `dst(edge)`；用 pattern 中的起终点变量替代。
 - 不要保留 nGQL/Cypher `exists(v.tag.prop)` 或 `exists(v.prop)`；改为 `PROPERTY_EXISTS(v, "prop")`。

@@ -44,6 +44,7 @@ Compatibility baseline: NebulaGraph `5.3.0` Database and Analytics documentation
 | 分布式表变量 | supported | Analytics 中使用 `PARTITION BY DEFAULT`，通过 `PER PARTITION` 访问 |
 | `PER PARTITION` | partial | 支持分区别名迭代、清空、返回、日志和文件导出；禁止图匹配、任意调用及外层分布式状态访问 |
 | 分布式 `TABLE` 过程参数 | partial | 支持按引用传递和嵌套子过程写入；不扩展到 `size()` 或直接整表遍历 |
+| 本地 BindingTable 导入分布式临时图 | partial | 严格 `v5.3.0` 禁止；仅在目标明确包含 `c2fabed62` 或后续等价实现时生成 |
 | Import 后 match compute | partial | 禁止同过程/祖先链组合；支持拆成 sibling import/compute 子过程 |
 | 全局聚合器 chunking | supported | 传输分块对过程语法透明；可识别 `global_agg_chunk_size` 会话配置，不生成手工分块 |
 | 图变量 | deferred | 暂不纳入默认模板 |

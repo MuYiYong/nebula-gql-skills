@@ -295,7 +295,7 @@ FINISH
 - 不保留 nGQL 的 `==` 等值比较——必须改为 `=`。
 - 不保留 nGQL 的 `[:T1|:T2]` 多边类型并集——必须改为 GQL 标签表达式 `[:T1|T2]`（去掉多余 `:`）。
 - 不生成 `type(r) IN ['T1', 'T2']` 来过滤已知的多边类型——必须改为标签表达式 `-[:T1|T2]->`；仅在边类型列表来自运行时参数或动态计算时才用 `type()`。
-- 不保留 nGQL 的 `rank(edge)` / `@rank`——GQL 无 rank 概念。
+- 不保留 nGQL 的 `rank(edge)` / `@rank` 原写法；需要 edge rank 时改为 `multiedge_id(edge)`。
 - 不保留 nGQL 的 `properties(v)` / `keys(...)` / `src(edge)` / `dst(edge)`——必须改为逐属性返回或 pattern 绑定。
 - 不保留 nGQL 的 `allShortestPaths(...)` / `shortestPath(...)` 函数包裹——必须改为 `ALL SHORTEST` / `ANY SHORTEST PATH`。
 - 不保留 nGQL/Cypher 的 `exists(v.prop)`——必须改为 `PROPERTY_EXISTS(v, "prop")`。
