@@ -20,6 +20,9 @@
 ## 仓库结构
 
 ```text
+.github/
+  workflows/
+    build-skills-zip.yml
 src/
   gql-query-generator/
     SKILL.md
@@ -37,7 +40,7 @@ README.md
 README.zh-CN.md
 ```
 
-skill 源文件只维护在 `src/` 下。原仓库级 `.github/skills/`、`site-zh/` 和 `features/` 不再作为源文件输入。
+skill 源文件只维护在 `src/` 下。`.github/workflows/` 仅用于发布自动化。原仓库级 `.github/skills/`、`site-zh/` 和 `features/` 不再作为源文件输入。
 
 ## Skill 设计
 
@@ -66,6 +69,8 @@ RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
 
 单 skill 压缩包包含一个完整 skill；合集压缩包将两个 skill 放在 `.github/skills/` 下，并携带仓库 README。`dist/` 是生成产物，不提交到 Git。
 
+同时，GitHub Actions 会在 `main` 上针对 `src/`、`scripts/` 和顶层 README 的相关变更自动执行同一套打包流程，并发布 tag 为 `v<version>_Build<HHMM>`、标题为 `v<version> Build<HHMM>` 的 release。
+
 ## 安装
 
 同时安装两个 skill 时，将 `nebula-skills-<version>.zip` 解压到目标工作区根目录，得到：
@@ -87,4 +92,4 @@ RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
 3. 同步更新两个 README 和两个 `references/source-map.md` 中的三类版本号。
 4. 发布前执行结构校验和打包验证。
 
-不要重新提交生成后的文档站点、仓库级 feature 全量目录或手工修改的 `dist/` 产物。
+不要重新提交生成后的文档站点、仓库级 feature 全量目录、仓库级 `.github/skills/` 源目录或手工修改的 `dist/` 产物。

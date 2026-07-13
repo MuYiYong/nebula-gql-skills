@@ -20,6 +20,9 @@ The current refresh used the local `v5.3.0_zh_html` documentation corpus and `v5
 ## Repository Layout
 
 ```text
+.github/
+  workflows/
+    build-skills-zip.yml
 src/
   gql-query-generator/
     SKILL.md
@@ -37,7 +40,7 @@ README.md
 README.zh-CN.md
 ```
 
-Maintained skill sources live only under `src/`. The former repository-level `.github/skills/`, `site-zh/`, and `features/` trees are no longer source inputs.
+Maintained skill sources live only under `src/`. `.github/workflows/` is retained solely for release automation. The former repository-level `.github/skills/`, `site-zh/`, and `features/` trees are no longer source inputs.
 
 ## Skill Design
 
@@ -66,6 +69,8 @@ The script creates:
 
 Standalone archives contain one complete skill. The mega archive contains both skills under `.github/skills/` plus the repository README files. `dist/` is generated output and is not committed.
 
+GitHub Actions also runs the same packaging flow automatically on `main` when release-relevant files change under `src/`, `scripts/`, or the top-level README files. The workflow publishes a release tagged as `v<version>_Build<HHMM>` and titled `v<version> Build<HHMM>`.
+
 ## Install
 
 For both skills, extract `nebula-skills-<version>.zip` into the target workspace root. The result contains:
@@ -87,4 +92,4 @@ When refreshing to a later NebulaGraph version:
 3. Update the three compatibility values in both README files and both `references/source-map.md` files.
 4. Run structural validation and package verification before publishing.
 
-Do not reintroduce generated documentation sites, a repository-level feature corpus, or hand-edited `dist/` artifacts.
+Do not reintroduce generated documentation sites, a repository-level feature corpus, a repository-level `.github/skills/` source tree, or hand-edited `dist/` artifacts.
