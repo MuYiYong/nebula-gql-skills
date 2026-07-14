@@ -2,12 +2,12 @@
 
 Compatibility baseline: NebulaGraph `5.3.0` Database and Analytics documentation and feature corpus.
 
-本文件说明 `gql-procedure-generator` 对技能包内嵌服务端编程能力的覆盖状态。
+本文件说明 `gql-procedure-generator` 高频模板与专项约束的覆盖状态，不是公开能力白名单。完整函数和成员方法以 [documented-functions.md](documented-functions.md) 为准，完整过程/Analytics 语法范围以 [documented-syntax.md](documented-syntax.md) 为准；目录内能力即使未列入下表也可以按文档生成。
 
 状态说明：
 - `supported`: 已内置为默认生成能力
 - `partial`: 只支持保守子集，或带硬约束生成
-- `deferred`: 文档存在，但暂不内置为默认生成能力
+- `documented-restricted`: 文档记录了该主题，但文档自身限制或明确实现边界要求条件化处理
 - `out-of-scope`: 不属于本技能包职责
 
 ## Coverage table
@@ -47,17 +47,17 @@ Compatibility baseline: NebulaGraph `5.3.0` Database and Analytics documentation
 | 本地 BindingTable 导入分布式临时图 | partial | 严格 `v5.3.0` 禁止；仅在目标明确包含 `c2fabed62` 或后续等价实现时生成 |
 | Import 后 match compute | partial | 禁止同过程/祖先链组合；支持拆成 sibling import/compute 子过程 |
 | 全局聚合器 chunking | supported | 传输分块对过程语法透明；可识别 `global_agg_chunk_size` 会话配置，不生成手工分块 |
-| 图变量 | deferred | 暂不纳入默认模板 |
-| 文件变量 | deferred | 暂不纳入默认模板 |
+| 图变量 | partial | 可按完整语法目录生成文档支持的声明、查询和清空形态；涉及图生命周期时同时应用过程专项约束 |
+| 文件变量 | partial | 可按完整语法目录生成文档支持的文件声明和导入导出形态；必须保留路径、格式和运行环境前置条件 |
 | `FOR` | partial | 仅允许匹配计算外部展开列表或表 |
 
 ## Completion criteria
 - `supported` 项必须在 `SKILL.md` 或 [examples.md](examples.md) 中有明确模板或硬约束。
 - `partial` 项必须写清限制条件，避免生成超出边界的代码。
-- `deferred` 项默认不生成，后续要扩容时先补示例和验证规则。
+- `documented-restricted` 项按文档自身的环境、前置条件和限制生成，不能因缺少专题模板而直接判为不支持。
 
 ## Distribution rule
-- 本表仅表达技能包内已压缩的能力，不依赖外部文档。
+- 本表只表达高频模板和专项约束；生成的完整目录保存了本技能职责内的全部文档能力。
 - 对外分发时，不要求接收方具备源码仓库或站点页面。
 
 ## Next expansion candidates

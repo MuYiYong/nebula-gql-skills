@@ -35,7 +35,9 @@ src/
     references/
     tests/features/
 scripts/
+  audit_skill_capabilities.py
   package_core_skills.py
+  refresh_documented_capabilities.py
 README.md
 README.zh-CN.md
 ```
@@ -44,7 +46,7 @@ skill 源文件只维护在 `src/` 下。`.github/workflows/` 仅用于发布自
 
 ## Skill 设计
 
-每个 `SKILL.md` 都是精简入口，只包含任务路由、工作流、硬约束和参考文件选择规则。详细语法、示例、校验清单、能力覆盖和来源追踪统一放在 `references/` 中，仅在相关场景按需加载。
+每个 `SKILL.md` 都是精简入口，只包含任务路由、工作流、硬约束和参考文件选择规则。`references/` 下自动生成的函数与语法目录负责完整承接文档公开能力，手写参考负责高频选型和约束；目录内能力不需要 feature 二次授权。
 
 随 skill 保存的 `tests/features/` 子集用于证明当前实现边界：
 
@@ -67,7 +69,7 @@ RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
 - `dist/gql-procedure-generator-<version>.zip`
 - `dist/nebula-skills-<version>.zip`
 
-单 skill 压缩包包含一个完整 skill；合集压缩包将两个 skill 放在 `.github/skills/` 下，并携带仓库 README。`dist/` 是生成产物，不提交到 Git。
+单 skill 压缩包包含一个完整 skill；合集压缩包将两个 skill 放在 `.github/skills/` 下，并携带仓库 README。打包命令只有在重新读取每个 zip 并通过逐文件内容、必需 skill 资源、feature 索引、本地 Markdown 引用、安全归档路径和本机工作区路径检查后才会成功；CI 执行同一套失败即停止的检查。`dist/` 是生成产物，不提交到 Git。
 
 同时，GitHub Actions 会在 `main` 上针对 `src/`、`scripts/` 和顶层 README 的相关变更自动执行同一套打包流程，并发布 tag 为 `v<version>_Build<HHMM>`、标题为 `v<version> Build<HHMM>` 的 release。
 
@@ -87,9 +89,12 @@ RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
 
 适配后续 NebulaGraph 版本时：
 
-1. 根据新文档更新精简入口和相关参考文件。
-2. 从同版本 feature 语料替换 `src/<skill>/tests/features/` 下的测试子集。
-3. 同步更新两个 README 和两个 `references/source-map.md` 中的三类版本号。
-4. 发布前执行结构校验和打包验证。
+1. 重新生成完整文档能力目录：`python3 scripts/refresh_documented_capabilities.py --docs-root <path-to-versioned-html>`。
+2. 只在文档语义发生变化时更新精简入口和手写约束参考。
+3. 从同版本 feature 语料替换 `src/<skill>/tests/features/` 下的测试子集。
+4. 同步更新两个 README 和两个 `references/source-map.md` 中的三类版本号。
+5. 发布前执行 `python3 scripts/refresh_documented_capabilities.py --docs-root <path-to-versioned-html> --check`、`python3 scripts/audit_skill_capabilities.py`、结构校验和打包验证。
+
+生成的 `documented-functions.md` 和 `documented-syntax.md` 是随 skill 提交的资源文件，不要手工编辑。
 
 不要重新提交生成后的文档站点、仓库级 feature 全量目录、仓库级 `.github/skills/` 源目录或手工修改的 `dist/` 产物。

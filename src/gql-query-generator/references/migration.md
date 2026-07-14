@@ -12,6 +12,12 @@
 
 ---
 
+## Migration Function Gate
+
+迁移前先盘点所有函数、运算符和列表推导式，并逐项分类为“同名同签名可保留”“需要映射”或“不支持”。这个步骤也适用于已经含有 `TRAIL`、`LET`、`FILTER` 等 GQL 构造的混合方言输入；不能仅凭语句主体像 GQL 就跳过迁移审计。
+
+同名函数只有在完整 [documented-functions.md](documented-functions.md) 中存在同名、同签名且环境匹配的条目时才能保留；[functions.md](functions.md) 只提供高频选型与组合约束，不是第二白名单。随包 feature 和代码只能验证实现边界，不能单独授权未文档化函数。没有文档证据时，映射为公开构造或明确说明不支持。
+
 ## 1. Cypher → GQL 映射
 
 ### 1.1 图模式与路径
@@ -38,6 +44,8 @@
 **ACYCLIC 与 all_different() 的关系**：
 - `ACYCLIC` 是路径模式前缀，声明式地约束整条路径中所有点两两不同
 - `all_different(v1, v2, ...)` 是 WHERE 子句中的谓词函数，手动检查指定变量两两不同
+- `all_different(nodes(path))` 或 `all_different(pathNodes)` 无效：单个 LIST 不能代替至少两个显式图元素参数
+- 当源查询用去重前后长度差来**筛选含重复节点的路径**时，保留 `WALK`/`TRAIL` 与该过滤条件；不要改成语义相反、会排除重复节点的 `ACYCLIC`
 - 当 ACYCLIC 路径中的所有点变量都在 `all_different()` 中列出时，两者是**冗余**的，只需保留 `ACYCLIC` 即可
 - 仅在需要跨多条路径或检查非路径中的变量时，才额外使用 `all_different()`
 
@@ -209,7 +217,7 @@ ORDER BY score DESC
 | `type(r)` | `type(r)` | 相同 |
 | `properties(n)` | 无直接等价 — 逐属性返回 | |
 | `keys(n)` | 无直接等价 — 逐属性返回 | |
-| `exists(n.prop)` | `PROPERTY_EXISTS(n, "prop")` | 属性存在检查 |
+| `exists(n.prop)` | `n.prop IS NOT NULL` | 文档公开的 NULL 谓词；若必须区分属性缺失与 NULL，明确说明没有可靠等价构造 |
 | `n.prop IS NOT NULL` | `n.prop IS NOT NULL` | 相同 |
 | `coalesce(a, b)` | `COALESCE(a, b)` | 相同 |
 | `toString(x)` | `CAST(x AS STRING)` | 类型转换 |
@@ -228,6 +236,7 @@ ORDER BY score DESC
 | `head(list)` | `head(list)` | 取首元素（GQL 同名函数） |
 | `last(list)` | `back(list)` | 取尾元素（GQL 用 `back()`） |
 | `tail(list)` | `tail(list)` | 去首元素后的剩余列表（GQL 同名函数） |
+| `toSet(list)` | `list_distinct(list)` | 文档公开的列表去重函数；不要使用未文档化别名或 `all_different(list)` |
 | `reverse(list)` | 无直接等价 — 用 lambda 或业务逻辑 | |
 | `x STARTS WITH 'a'` | `like(x, 'a%')` | GQL 无 `starts_with` 函数，用 `like()` 替代 |
 | `x ENDS WITH 'a'` | `like(x, '%a')` | GQL 无 `ends_with` 函数，用 `like()` 替代 |
@@ -403,7 +412,7 @@ ORDER BY score DESC
 | `ACYCLIC` 路径中再写 `all_different()` 列出所有点 | 仅保留 `ACYCLIC`，删除冗余的 `all_different()` |
 | 使用 GQL 文档中不存在的函数（如 `pow()`、`starts_with()`） | 仅使用文档中存在的函数（如 `power()`、`like()`、`contains()`） |
 | 改写 Cypher Label / nGQL Tag 时改名 | 直接复用原名作为 GQL Label |
-| nGQL `exists(v.tag.prop)` 或 Cypher `exists(n.prop)` 直接保留 | 改为 `PROPERTY_EXISTS(v, "prop")` |
+| nGQL `exists(v.tag.prop)` 或 Cypher `exists(n.prop)` 直接保留 | 常见属性检查改为 `v.prop IS NOT NULL`；若必须区分属性缺失与 NULL，说明不支持，不调用未文档化的 `property_exists()` |
 | Neo4j `CALL db.index.fulltext.queryNodes(...)` 直接保留 | GQL 不支持 `db.*` 过程；改为 `ftscore()` 函数 + MATCH |
 | 多属性 `ftscore()` 用 `OR` 组合 | `ftscore()` 不支持 `OR`；必须拆成 UNION + `sum()` 聚合 |
 | Neo4j `CALL apoc.*` 直接保留 | GQL 不支持 `apoc.*` 过程；必须完全重写为 GQL 原生语法 |

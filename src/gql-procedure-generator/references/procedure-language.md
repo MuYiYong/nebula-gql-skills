@@ -30,6 +30,7 @@ Use this file as the detailed NebulaGraph 5.3.0 procedure and Analytics syntax r
 
 ## Operating Mode
 - 这是一个自包含 skill：默认直接依据本文件中的语法模板、硬约束和算法骨架生成过程代码。
+- 本文件是高频过程结构和约束参考，不是完整能力白名单。函数与成员方法先精确检索 [documented-functions.md](documented-functions.md)，其它语法按关键字精确检索 [documented-syntax.md](documented-syntax.md)；目录内能力不因本文件或 feature 没有专门示例而拒绝。
 - 按需使用同目录下的 [source-map.md](source-map.md)、[coverage.md](coverage.md)、[examples.md](examples.md) 和 [validation.md](validation.md)，不要默认全部加载。
 - 默认不要输出出处、链接、路径或“去查某页”的建议。
 - 如果某个写法不在本技能包中被明确允许，优先回退成更保守的过程体，而不是猜测。

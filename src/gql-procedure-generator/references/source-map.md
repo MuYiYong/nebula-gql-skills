@@ -11,6 +11,8 @@ Refresh corpora: `v5.3.0_zh_html` and `v5.3.0_features`. The packaged skill is s
 
 ## Documentation Mapping
 
+The generated [documented-functions.md](documented-functions.md) is the complete callable allowlist for Database and Analytics functions plus documented receiver methods. It contains 146 Database names, 143 Analytics names, 143 shared names, three non-call forms, and 12 receiver-specific method signatures. The generated [documented-syntax.md](documented-syntax.md) indexes all 118 documentation pages in the procedure skill's declared scope. Regenerate both files instead of maintaining a hand-picked allowlist.
+
 | Skill area | v5.3.0 documentation |
 | --- | --- |
 | Procedure DDL and signatures | `analytics-gql-reference/procedures/`, `database-gql-reference/procedures/` |
@@ -44,6 +46,6 @@ The vendored subset under `tests/features/` is the implementation-evidence layer
 
 ## Precedence
 
-Use docs to establish syntax and intended semantics. Use feature scenarios to establish the currently validated implementation boundary. When Database and Analytics capabilities differ, require the target environment explicitly and avoid carrying Analytics-only syntax into Database procedures.
+Use docs as the complete allowlist for public syntax, functions, and member methods. A cataloged capability does not require a feature or specialized example as a second authorization. Feature scenarios and code only establish confirmed implementation boundaries and cannot promote an undocumented internal capability into default output. When Database and Analytics capabilities differ, require the target environment explicitly and avoid carrying Analytics-only syntax into Database procedures.
 
 The vendored `BindingTableImport.feature` reflects the audited master behavior for local-to-distributed import and differs from the `v5.3.0` tag. Treat that scenario as a version-gated extension, not as default 5.3.0 compatibility.

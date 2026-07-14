@@ -10,6 +10,9 @@
 - 若要把本地 BindingTable 导入分布式临时图，是否确认目标不是严格 `v5.3.0`，而是包含 current-master 扩展的已验证版本？
 - 是否同时涉及 `IMPORT INTO GRAPH` 与 match compute？若是，是否已规划成 import/compute 两个 sibling 子过程？
 - 是否存在关键签名或 schema 缺口？如果存在，是否已改为清晰占位符？
+- 是否逐项盘点了准备生成的函数、成员方法和语法形态，并能在 v5.3.0 用户文档中确认对应名称、签名或语法？feature 和代码不能单独授权默认生成。
+- 函数或成员方法是否已在 [documented-functions.md](documented-functions.md) 中按完整名称精确命中，并核对环境、接收者、签名、类型和前置条件？
+- 不常见语法是否已在 [documented-syntax.md](documented-syntax.md) 或函数目录的非调用形式分区中按关键字命中并核对文档限制？若已命中，不得仅因 feature 或专题示例缺失而拒绝。
 
 ## Post-generation checks
 - 如果是 `CREATE PROCEDURE`，体内是否直接是 `procedure_body`，没有 `USE ...` 外壳？
@@ -46,6 +49,7 @@
 - 如果过程声明了 `RETURNS`，是否确认没有把任何返回列写成 `LIST<RECORD>`，也没有把 `TopKAgg` 的内部结果直接作为 procedure 返回类型暴露出去？
 - `CALL` 是否跟了结果语句？
 - `RETURNS` 与最终返回列是否一致？
+- 是否逐项复核了所有函数、成员方法和语法形态的完整目录证据，既没有因为 feature/代码存在就保留目录外能力，也没有因为 feature/专题示例缺失就删除目录内能力？
 - 是否避免输出路径、页面名、外部出处或“去查文档”的表述？
 
 ## Fail-safe rewrite rules
@@ -68,4 +72,5 @@
 - 如果 `TopKAgg` 被喂入标量、列表外的普通值，或排序字段类型不在数值/字符串/布尔/日期时间范围内，直接改写为合法 `RECORD` 输入或退回其它聚合方式。
 - 如果生成了 `RETURNS ret LIST<RECORD>`、`RETURNS (rows LIST<RECORD>)` 或其它把 `TopKAgg` 内部结果直接外露为 procedure 返回类型的写法，直接改写成普通多列返回、受支持的列表元素类型，或更保守的表格化结果。
 - 如果不确定聚合器元素类型是否合法，简化成标量结果列或更保守的聚合器。
+- 如果函数、成员方法或语法形态无法在完整目录中确认，不得用 feature/代码中的内部名称绕过；改为目录内公开构造，或明确说明不支持并保留最小 skeleton。若已经命中目录，则按文档环境和限制生成，不要求 feature 二次授权。
 - 如果不确定某个过程体子句是否合法，删掉可疑子句，保留最小可用过程骨架。

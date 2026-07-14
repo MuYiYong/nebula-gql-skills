@@ -32,8 +32,8 @@ Use this file as the detailed NebulaGraph 5.3.0 query syntax reference. Search b
 ## Operating Mode
 - 自包含 skill：直接依据本文件规则生成查询。
 - 详细参考材料在同目录下，按需加载。
-- 规则同时参考 `nebula-ng` 实现与 ISO/IEC 39075:2024；冲突时以代码实现为准。
-- 当 feature 测试行为与文档冲突时，以 feature 为准。
+- 规则同时参考 v5.3.0 用户文档、`nebula-ng` 实现与 ISO/IEC 39075:2024；默认生成函数必须以用户文档为准。
+- feature 和代码用于验证实现边界，不能单独授权未文档化函数；与文档冲突时停止默认生成并说明差异。
 
 ## References（按需加载）
 - [expressions.md](expressions.md) — 表达式、谓词、运算符
@@ -275,7 +275,7 @@ FINISH
 - 多步顺序查询 → 线性查询 + `NEXT`。
 - 结果集合运算 → 复合查询。
 - Legacy `id(v)` → 先判断业务主键还是身份值。
-- 输入含 `WITH`（中间投影）/ `UNWIND` / `MERGE` / `shortestPath()` / `[:T*]` / `collect()` / `exists(n.prop)` / `STARTS WITH`(运算符) / `^ `(求幂) → Cypher 迁移，加载 [migration.md](migration.md)。
+- 输入含 `WITH`（中间投影）/ `UNWIND` / `MERGE` / `shortestPath()` / `[:T*]` / `collect()` / `exists(n.prop)` / `toSet()` / 列表推导式 / `STARTS WITH`(运算符) / `^ `(求幂) → Cypher 迁移，加载 [migration.md](migration.md)。
 - 输入含 `GO` / `FETCH` / `LOOKUP` / `$-` / `$^` / `$$` / `YIELD`（非过程调用）/ `v.tag.prop` / `==`(等值比较) / `[:T1|:T2]` / `rank(edge)` / `@rank` / `properties(v)` / `allShortestPaths` / `FIND PATH` / `GET SUBGRAPH` → nGQL 迁移，加载 [migration.md](migration.md)。
 - 输入含 `CALL db.*` / `CALL apoc.*` / `CALL gds.*` / `CALL dbms.*` → Neo4j 特有过程，**不保留 CALL**，必须完全重写为 GQL 原生语法（见 migration.md §1.3）。
 - 请求滑向过程定义/算法 → 停止，切到 `gql-procedure-generator`。
@@ -288,6 +288,8 @@ FINISH
 - 不生成 Cypher 风格量词 `[:T*1..n]`。
 - 不保留 Cypher 的 `WITH`（中间投影）——必须改为 `RETURN...NEXT`。
 - 不保留 Cypher 的 `UNWIND`——必须改为 `FOR`。
+- 不保留 Cypher 的 `toSet(list)`——必须改为文档公开的 `list_distinct(list)`；不生成未文档化的 `array_distinct()`。
+- 不保留 Cypher 的 `[x IN list | expr]` 或 `[x IN list WHERE pred | expr]`——必须改为 `transform()`，必要时组合 `filter()`。
 - 不保留 nGQL 的 `GO`/`FETCH`/`LOOKUP`——必须改为 `MATCH`。
 - 不保留 nGQL 的管道 `|`——必须改为 `RETURN...NEXT` 或 `CALL { ... }`。
 - 不保留 nGQL 的 `$-.col`/`$^.tag.prop`/`$$.tag.prop`——必须改为变量属性引用。
@@ -298,12 +300,13 @@ FINISH
 - 不保留 nGQL 的 `rank(edge)` / `@rank` 原写法；需要 edge rank 时改为 `multiedge_id(edge)`。
 - 不保留 nGQL 的 `properties(v)` / `keys(...)` / `src(edge)` / `dst(edge)`——必须改为逐属性返回或 pattern 绑定。
 - 不保留 nGQL 的 `allShortestPaths(...)` / `shortestPath(...)` 函数包裹——必须改为 `ALL SHORTEST` / `ANY SHORTEST PATH`。
-- 不保留 nGQL/Cypher 的 `exists(v.prop)`——必须改为 `PROPERTY_EXISTS(v, "prop")`。
+- 不保留 nGQL/Cypher 的 `exists(v.prop)`——常见属性检查改为文档公开的 `v.prop IS NOT NULL`；若必须区分属性缺失与 NULL，明确说明没有可靠等价构造，不生成未文档化的 `property_exists()`。
 - 不保留 Cypher 的 `^` 求幂——必须改为 `power(x, y)`（不是 `pow`）。
 - 不保留 Cypher/nGQL 的 `STARTS WITH` / `ENDS WITH` 运算符——必须改为 `like(str, 'prefix%')` / `like(str, '%suffix')`（GQL 无 `starts_with`/`ends_with` 函数）。
 - 不保留 Cypher/nGQL 的 `CONTAINS` 运算符——必须改为 `contains(str, substr)`（小写函数形式）。
 - 不在 `ACYCLIC` 路径中再用 `all_different()` 列出同一条路径的所有点——ACYCLIC 已保证点不重复，无需冗余。
-- 所有生成的函数，除非是用户自定义函数，否则必须在 GQL 文档中存在才能使用。
+- 不生成 `all_different(list)`——该函数要求至少两个显式图元素参数，不接受单个 LIST，也不能替代列表去重。
+- 所有默认生成的函数都必须在 v5.3.0 用户文档中存在同名且同签名的证据；feature/代码只能验证实现边界，不能把未文档化函数加入白名单。只有用户明确提供的已安装 UDF 可以例外。
 - 不保留 Cypher 的 `CALL { WITH n ... }`——GQL 子查询自动捕获外层变量，删除 `WITH`。
 - 不机械把 `id(v)` 翻译成 `element_id(v)`——必须先判断语义。
 - 不输出只有 `CALL` 没有结果语句的查询。

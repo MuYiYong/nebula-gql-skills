@@ -13,12 +13,14 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 2. 提取过程名、参数、返回列、运行环境（Database 或 Analytics）、图类型、状态变量、控制流、副作用和终止条件。
 3. 在过程作用域开头声明全部变量。把运行中才得到的值先声明，再在后续语句中赋值。
 4. 普通过程逻辑使用 statement block；图遍历或算法逻辑使用 `match_compute_statement`。多跳算法拆成 `WHILE` 驱动的多轮 0/1 跳计算。
-5. 按下方路由加载相关参考；涉及分布式表时必须读取 [distributed-tables.md](references/distributed-tables.md)，涉及 `IMPORT INTO GRAPH` 后的匹配计算时必须读取 [import-match-compute.md](references/import-match-compute.md)。
+5. 按下方路由加载相关参考；函数和成员方法先在完整函数目录中精确检索，其它语法先在完整语法目录中精确检索。涉及分布式表时必须读取 [distributed-tables.md](references/distributed-tables.md)，涉及 `IMPORT INTO GRAPH` 后的匹配计算时必须读取 [import-match-compute.md](references/import-match-compute.md)。
 6. 生成后执行 [validation.md](references/validation.md)；无法证明可执行时降级为 staged skeleton，并清楚保留用户的阶段、优先级和副作用意图。
 
 ## Reference Routing
 
 - 过程 DDL、参数/返回、变量、控制流、`match_compute_statement`、聚合器与迁移规则：读取 [procedure-language.md](references/procedure-language.md) 的相关章节。
+- 保留或生成任意函数、聚合器成员方法，或使用函数页记录的非调用形态：先在 [documented-functions.md](references/documented-functions.md) 中精确搜索名称、接收者、签名、运算符或关键字形式零参函数。
+- 不常见的过程语句、子句、变量类型、谓词、表达式或数据类型：先在 [documented-syntax.md](references/documented-syntax.md) 中精确搜索关键字，再读取对应专题参考。
 - `PARTITION BY DEFAULT`、`PER PARTITION`、`TABLE` 过程参数或本地表导入分布式临时图：读取 [distributed-tables.md](references/distributed-tables.md)。
 - `IMPORT INTO GRAPH` 与后续 `match_compute_statement`：读取 [import-match-compute.md](references/import-match-compute.md)。
 - 用户指定 BFS、SSSP、PageRank、Louvain、Leiden 等算法：先检索 `tests/features/analytic/algo/` 中对应 5.3.0 feature，再按其过程结构生成或改写。
@@ -27,7 +29,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 - 最终静态检查：始终读取 [validation.md](references/validation.md)。
 - 追溯文档、feature 与能力覆盖：需要维护或核实来源时读取 [source-map.md](references/source-map.md) 和 [coverage.md](references/coverage.md)。
 
-不要一次性加载完整的长参考。先用 `CREATE PROCEDURE`、`MATCH COMPUTE`、`ACTIVE_SET`、`PER PARTITION`、聚合器名称或源语言关键字定位章节。
+不要一次性加载完整的长参考，也不要通读两个完整目录。先用函数名、成员方法、`CREATE PROCEDURE`、`MATCH COMPUTE`、`ACTIVE_SET`、`PER PARTITION`、聚合器名称或源语言关键字定位章节。
 
 ## Hard Guardrails
 
@@ -42,7 +44,8 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 - `TABLE` 参数可接收分布式表引用，但不要据此假设 `size(t)`、直接 `FOR ... IN t` 或任意过程调用可用。
 - 严格 5.3.0 不支持把本地 BindingTable 导入 `PARTITION BY DEFAULT` 的分布式临时图；只有目标明确为已验证的 current master/后续版本时才允许该来源组合。
 - 不要在同一过程或其祖先调用链中执行 `IMPORT INTO GRAPH` 后继续 match-compute；将导入与计算拆成两个 sibling 子过程并顺序调用。
-- 语法或能力未被文档和 feature 共同支持时，输出保守 skeleton 或说明缺失信息，不编造可执行实现。
+- 逐项检查输出中的函数、成员方法和语法形态。只有 v5.3.0 用户文档明确记录同名、同签名或对应语法时才默认生成；feature 和代码只验证实现边界，不能单独授权未文档化能力。无法确认时输出保守 skeleton 或说明缺失信息。
+- 完整函数与语法目录中存在的能力，只要目标环境、接收者、签名、输入类型、前置条件和文档限制匹配，就允许生成；不得因为专题参考、feature 或算法示例未单独收录而判为不支持。
 
 ## Output Contract
 
@@ -53,4 +56,4 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 
 ## Evidence Policy
 
-将 v5.3.0 Analytics/Database 文档作为已发布语法基线，将随包携带的 `.feature` 正反例作为实现证据。遇到 tag 后新增的成功场景时显式按运行版本门控；不能确认版本就保持严格 5.3.0 行为。
+将 v5.3.0 Analytics/Database 用户文档作为完整公开能力白名单，将随包携带的 `.feature` 正反例和代码作为实现边界证据。目录内能力不需要 feature 或专题示例二次授权；目录外内部能力不得由 feature/代码单独授权。遇到 tag 后新增的成功场景时显式按运行版本门控；不能确认版本就保持严格 5.3.0 行为。

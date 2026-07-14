@@ -415,7 +415,7 @@ Input intent:
 Output skeleton:
 ```gql
 MATCH (v:<Tag>)
-WHERE PROPERTY_EXISTS(v, "email")
+WHERE v.email IS NOT NULL
 RETURN v
 ```
 
@@ -910,6 +910,29 @@ RETURN transform(filter(u.tags, x -> like(x, 'vip%')), x -> upper(x)) AS vip_tag
 
 改写要点：列表推导 → `transform(filter(...))`。
 
+### M6A. Cypher toSet and list projection
+Input (Cypher/GQL hybrid):
+```cypher
+MATCH path = TRAIL (n1:Corporation)-[:股权出资]->{1,10}(n2:Corporation {eid: $eid})
+LET pathNodes = nodes(path), pathLength = length(path)
+FILTER WHERE length(pathNodes) <> length(toSet(pathNodes))
+RETURN [node IN pathNodes | node.name] AS companyPath, pathLength
+ORDER BY pathLength ASC
+LIMIT 5
+```
+
+Output (GQL):
+```gql
+MATCH path = TRAIL (n1:Corporation)-[:股权出资]->{1,10}(n2:Corporation {eid: $eid})
+LET pathNodes = nodes(path), pathLength = length(path)
+FILTER WHERE length(pathNodes) <> length(list_distinct(pathNodes))
+RETURN transform(pathNodes, node -> node.name) AS companyPath, pathLength
+ORDER BY pathLength ASC
+LIMIT 5
+```
+
+改写要点：`toSet(pathNodes)` → 文档公开的 `list_distinct(pathNodes)`；`[node IN pathNodes | node.name]` → `transform(pathNodes, node -> node.name)`。不要保留 `toSet()`、使用未文档化的 `array_distinct()` 或保留 Cypher 列表推导式，也不要改成签名无效的 `all_different(pathNodes)`。这里要筛选含重复节点的 `TRAIL`，不能改成会排除重复节点的 `ACYCLIC`。
+
 ### M7. Cypher CALL subquery WITH import
 Input (Cypher):
 ```cypher
@@ -1190,11 +1213,11 @@ MATCH (v:player) WHERE exists(v.player.age) RETURN v.player.name, v.player.age
 Output (GQL):
 ```gql
 MATCH (v:player)
-WHERE PROPERTY_EXISTS(v, "age")
+WHERE v.age IS NOT NULL
 RETURN v.name, v.age
 ```
 
-改写要点：`exists(v.tag.prop)` → `PROPERTY_EXISTS(v, "prop")`；`v.tag.prop` → `v.prop`。
+改写要点：常见属性检查 `exists(v.tag.prop)` → 文档公开的 `v.prop IS NOT NULL`；同时去掉 nGQL tag 前缀。若需求必须区分属性缺失与 NULL，明确说明没有文档化等价构造。
 
 ### N17. nGQL multi-hop edge filtering
 Input (nGQL):
@@ -1304,11 +1327,11 @@ RETURN n.name, n.email
 Output (GQL):
 ```gql
 MATCH (n:Person)
-WHERE PROPERTY_EXISTS(n, "email")
+WHERE n.email IS NOT NULL
 RETURN n.name, n.email
 ```
 
-改写要点：Cypher `exists(n.prop)` → GQL `PROPERTY_EXISTS(n, "prop")`。
+改写要点：常见 Cypher 属性检查 `exists(n.prop)` → GQL `n.prop IS NOT NULL`。若需求必须区分属性缺失与 NULL，不调用未文档化内部函数，而是明确说明能力缺口。
 
 ### M13. Cypher STARTS WITH / CONTAINS
 Input (Cypher):
@@ -1413,9 +1436,12 @@ RETURN path
 - 不要保留 nGQL `rank(edge)` 或 `@rank` 原写法；需要 edge rank 时改为 `multiedge_id(edge)`。
 - 不要保留 nGQL `properties(v)` / `properties(edge)` / `keys(properties(v))`；GQL 无直接等价。
 - 不要保留 nGQL `src(edge)` / `dst(edge)`；用 pattern 中的起终点变量替代。
-- 不要保留 nGQL/Cypher `exists(v.tag.prop)` 或 `exists(v.prop)`；改为 `PROPERTY_EXISTS(v, "prop")`。
+- 不要保留 nGQL/Cypher `exists(v.tag.prop)` 或 `exists(v.prop)`；常见属性检查改为 `v.prop IS NOT NULL`。若必须区分属性缺失与 NULL，明确说明没有文档化等价构造。
 - 不要保留 nGQL/Cypher `STARTS WITH` / `ENDS WITH` / `CONTAINS` 运算符形式；改为 `like(str, 'prefix%')` / `like(str, '%suffix')` / `contains(str, substr)`（GQL 无 `starts_with`/`ends_with` 函数）。
 - 不要保留 Cypher `^` 求幂运算符；改为 `power(x, y)`。
+- 不要保留 Cypher `toSet(list)`；改为文档公开的 `list_distinct(list)`，不要生成未文档化的 `array_distinct()`。
+- 不要保留 Cypher `[x IN list | expr]` 或 `[x IN list WHERE pred | expr]`；改为 `transform()`，必要时组合 `filter()`。
+- 不要生成 `all_different(list)`；该函数要求至少两个显式图元素参数，不接受单个 LIST。
 - 不要同时使用 `ACYCLIC` 和 `all_different()` 列出同一条路径的所有点；`ACYCLIC` 已足够，不需冗余。
 - 不要保留 nGQL 多跳边列表下标 `e[0].prop`；拆为多段 pattern 逐段过滤。
 - 不要保留 nGQL `ALL(e_ in e WHERE pred)` 对边列表的断言；拆为逐段 pattern-level WHERE。

@@ -1,5 +1,7 @@
 # Functions Reference
 
+本文件是常用函数的选型与组合约束，不是完整函数白名单。保留或生成任意函数前，先在 [documented-functions.md](documented-functions.md) 中按完整函数名精确搜索并核对签名、Database/Analytics 范围、输入类型和前置条件。目录内函数即使未在本文件或 feature 中出现，也可按文档生成；目录外名称除用户明确提供的已安装 UDF 外不得生成。
+
 ## Function Family Selection
 当用户没给明确函数名时，按需求落到函数家族：
 
@@ -25,10 +27,9 @@
 - `labels(<element>)` — 元素标签列表
 - `type(<element>)` — 节点或边的元素类型
 - `nodes(<path>)` / `edges(<path>)` — 路径中的点/边列表
-- `property_exists(<element>, '<prop>')` — 属性存在检查
 - `typeof(<expr>)` — 值类型名称字符串
 
-**注意**：当前没有内置 `id()` 函数。节点身份用 `element_id(node)`；边没有 `element_id(edge)`，按需求使用 `start_node_id(edge)`、`end_node_id(edge)`、`type(edge)` 与 `multiedge_id(edge)`。
+**注意**：当前没有内置 `id()` 函数。节点身份用 `element_id(node)`；边没有 `element_id(edge)`，按需求使用 `start_node_id(edge)`、`end_node_id(edge)`、`type(edge)` 与 `multiedge_id(edge)`。代码中的 `property_exists()` 未被 v5.3.0 用户文档公开，不得默认生成；普通非 NULL 检查使用 `<element>.<prop> IS NOT NULL`。
 
 ## Temporal Functions
 - `duration_between(<t1>, <t2>)` — 时间差；可附加 `DAY TO SECOND` / `YEAR TO MONTH`。
@@ -37,6 +38,13 @@
 ## String Functions
 - `NORMALIZE(<str>)` — Unicode 规范化（仅单参数形态）；`NORMALIZE(str, form)` 不支持。
 - 只在用户明确要求时谨慎尝试。
+
+## List Functions
+- `list_distinct(<list>)` — 文档公开的列表去重函数。不要依赖返回元素顺序；适合成员或长度比较等与顺序无关的语义。
+- `transform(<list>, x -> <expr>)` — 对列表逐项映射，替代 Cypher `[x IN list | expr]`。
+- `filter(<list>, x -> <predicate>)` — 按条件保留元素，可与 `transform()` 组合替代带 `WHERE` 的 Cypher 列表推导式。
+
+**迁移限制**：当前文档没有 `toSet()`。列表去重使用 `list_distinct()`；不要生成未文档化的 `array_distinct()` 别名。`all_different(<elem1>, <elem2>, ...)` 要求至少两个显式图元素参数，不接受单个 LIST，也不是 `toSet()` 的替代函数。
 
 ## Lambda Expressions
 ```gql

@@ -11,8 +11,8 @@
 - Error-code quick rewrites
 
 ## Cypher Hard-Stop Rewrite Gate
-- 最终返回前，最终 GQL 中不得残留这些 Cypher 片段：`[:TYPE*1..n]`、`WITH`、`UNWIND`。
-- 必须先改写后再返回：`[:TYPE*1..n]` -> `-[:TYPE]->{1,n}`，`WITH` -> `RETURN ... NEXT`，`UNWIND` -> `FOR`。
+- 最终返回前，最终 GQL 中不得残留这些 Cypher 片段：`[:TYPE*1..n]`、`WITH`、`UNWIND`、`toSet(...)`、`[x IN list | expr]` 或 `[x IN list WHERE pred | expr]`。
+- 必须先改写后再返回：`[:TYPE*1..n]` -> `-[:TYPE]->{1,n}`，`WITH` -> `RETURN ... NEXT`，`UNWIND` -> `FOR`，`toSet(list)` -> `list_distinct(list)`，列表推导式 -> `transform()`/`filter()`。
 - 如果同一条草稿里同时出现了上述多个残留，先做这轮最小迁移改写，再检查其它语义问题；不要带着这些 Cypher 片段直接输出或直接进入纠错下一轮。
 
 ## Pre-generation checks
@@ -21,12 +21,16 @@
 - 是否需要排序和分页？如果需要，字段和方向是否明确？
 - 是否需要参数化（`PARAMETERS`、`$param`、会话参数赋值）？
 - 是否存在关键 schema 缺口？如果存在，是否改成了明确占位符？
+- 每个拟保留或生成的函数是否已在 [documented-functions.md](documented-functions.md) 中按完整名称命中，并核对签名、环境、类型和前置条件？
+- 每个不常见语法是否已在 [documented-syntax.md](documented-syntax.md) 或函数目录的非调用形式分区中按关键字命中，并核对文档限制？若已命中，不得仅因 feature 或常用示例缺失而拒绝。
 
 ## Post-generation checks
 - 是否包含结果语句，例如 `RETURN`？
 - `CALL` 后是否跟了结果语句？
+- 是否逐项检查了每个函数调用，并在完整函数目录中找到同名、同签名且环境匹配的条目？随包 feature 和代码不能单独授权目录外名称；目录内名称也不能因缺少 feature 而被误删。只有用户明确提供的已安装 UDF 可以例外。
 - 若输入含有 Cypher 或 nGQL 语句，是否已加载 [migration.md](migration.md) 并按映射改写？
-- 是否残留了 Cypher 语法（`WITH`、`UNWIND`、`[:T*]`、`shortestPath()`、`collect()`、`exists(n.prop)`、`STARTS WITH`/`ENDS WITH`/`CONTAINS` 运算符、`^` 求幂）？
+- 是否残留了 Cypher 语法（`WITH`、`UNWIND`、`[:T*]`、`shortestPath()`、`collect()`、`exists(n.prop)`、`toSet()`、列表推导式、`STARTS WITH`/`ENDS WITH`/`CONTAINS` 运算符、`^` 求幂），或未文档化的内部函数 `property_exists()`？
+- 是否错误地把单个 LIST 传给 `all_different()`？它要求至少两个显式图元素参数，不能用于列表去重。
 - 是否残留了 Neo4j 特有过程调用（`db.*`、`apoc.*`、`gds.*`、`dbms.*`）？若有，必须完全重写为 GQL 原生语法。
 - 是否在同一 WHERE/FILTER 中对 `ftscore()` 使用了 `OR` 组合（如 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0`）？`ftscore()` 不支持 OR，多属性搜索必须拆成 UNION + `sum()` 聚合。
 - 是否在同一 MATCH 子句中对同一节点变量多次调用了 `ftscore()`？每个 MATCH 分支中只能调用一次 `ftscore()`，多属性需拆成多个 MATCH + UNION。
@@ -58,7 +62,7 @@
 - 若使用了 `TABLE ... {..} = ...`，后续是否通过 `FOR` 或记录字段访问消费了该表，而不是把它误当作图模式？
 - 若使用了 `TABLE ... {..} = ...`，是否避免直接把表引用本身作为最后一个 `RETURN` 项？
 - 若使用了 `TABLE ... {..} = ...`，字面量值是否都是常量表达式，而不是 `rand()` 或未定义变量？
-- 若使用了 `PROPERTY_EXISTS(element, "prop")`，第一个参数是否为节点或边，第二个参数是否为属性名字符串？
+- 若由 `exists(element.prop)` 迁移为 `element.prop IS NOT NULL`，是否确认需求只是常见的非 NULL 属性检查？若必须区分缺失与 NULL，是否已明确说明当前没有文档化等价构造？
 - 若使用了 `DURATION_BETWEEN(...)`，两侧参数是否是同类时间值，而不是普通字符串或数字？
 - 若使用了 `typeof(...)`，它是否服务于显式类型诊断，而不是替代正常的业务过滤逻辑？
 - 线性查询是否以 `RETURN` 或 `FINISH` 合法收口？
@@ -110,6 +114,10 @@
 - 如果自然语言本身在表达“主模式成立，但排除另一个关系/模式”，先保留主模式，再把被排除部分单独抽成 `NOT EXISTS { MATCH ... }`，不要把整个否定关系塞成 `NOT (pattern)`。
 - 如果生成了 Cypher 风格 `EXISTS((a)-[:T]->(b))`，改写为 `EXISTS { MATCH (a)-[:T]->(b) }`；否定形式外层加 `NOT`。
 - 如果生成了 `[:TYPE*1..n]` 一类 Cypher 风格关系量词，改写为 `-[:TYPE]->{1,n}`；若是不定长，改写为 `-[:TYPE]->*` 或 `-[:TYPE]->+`。
+- 如果残留了 Cypher `toSet(list)`，改写为文档公开的 `list_distinct(list)`，不要使用未文档化的 `array_distinct()` 别名。
+- 如果残留了 Cypher `[x IN list | expr]` 或 `[x IN list WHERE pred | expr]`，改写为 `transform(list, x -> expr)` 或 `transform(filter(list, x -> pred), x -> expr)`。
+- 如果生成了 `all_different(list)`，不要将其当作列表去重。若语义是检查列表是否含重复项，改写为 `length(list) <> length(list_distinct(list))`；其它语义不要猜测。
+- 如果该重复项检查用于筛选“含重复节点”的路径，保留 `WALK`/`TRAIL` 与长度比较；不要改成会排除这些结果的 `ACYCLIC`。
 - 如果动态标签引用了聚合器、文件、表或非字符串值，回退为明确标签占位符，或要求调用方提供字符串标签名。
 - 如果同一模式里同时出现 `:label` 和 `@type`，保留用户真正需要的一种约束，不要输出二者并存的无效模式。
 - 如果残留了 Cypher `WITH`（中间投影），改写为 `RETURN...NEXT`。
@@ -126,7 +134,7 @@
 - 如果残留了 nGQL `rank(edge)` 或 `@rank`，改为 `multiedge_id(edge)`；需要完整边定位时同时保留端点与 `type(edge)`，不要改成不存在的 `element_id(edge)`。
 - 如果残留了 nGQL `properties(v)` / `properties(edge)` / `keys(properties(v))`，改为逐属性显式返回。
 - 如果残留了 nGQL `src(edge)` / `dst(edge)`，改为 pattern 中绑定的起终点变量。
-- 如果残留了 nGQL/Cypher `exists(v.tag.prop)` 或 `exists(n.prop)`，改为 `PROPERTY_EXISTS(v, "prop")`。
+- 如果残留了 nGQL/Cypher `exists(v.tag.prop)` 或 `exists(n.prop)`，常见属性检查改为 `v.prop IS NOT NULL`；若必须区分属性缺失与 NULL，明确说明没有文档化等价构造，不要调用内部 `property_exists()`。
 - 如果残留了 nGQL/Cypher `STARTS WITH` / `ENDS WITH` / `CONTAINS` 运算符形式，改为 `like(str, 'prefix%')` / `like(str, '%suffix')` / `contains(str, substr)`（GQL 无 `starts_with`/`ends_with` 函数）。
 - 如果残留了 Cypher `^` 求幂运算符，改为 `power(x, y)` 函数。
 - 如果残留了 Neo4j 特有过程（`CALL db.*`/`apoc.*`/`gds.*`/`dbms.*`），必须完全重写为 GQL 原生语法：`db.index.fulltext.queryNodes` → `ftscore()` + MATCH；`apoc.path.*` → MATCH 变长路径/UNION ALL 分层展开。不做机械桥接。
@@ -134,7 +142,7 @@
 - 如果在同一 MATCH 中对同一节点多次调用 `ftscore()`（例如 `LET s1 = ftscore(n.a, q) LET s2 = ftscore(n.b, q)`），必须拆成多个 MATCH + UNION，每个 MATCH 只调用一次 `ftscore()`。
 - 如果对 Neo4j 过程做了 `CALL ... YIELD x RETURN x NEXT MATCH (x)...` 的桥接但过程本身不存在于 GQL，则删除整个 CALL 段，用 GQL 原生语句重写等价逻辑。
 - 如果同时使用了 `ACYCLIC` 和 `all_different()` 列出同一条路径的所有点，删除冗余的 `all_different()` 调用，仅保留 `ACYCLIC`。
-- 如果使用了不存在于 GQL 文档中的函数（如 `pow()`/`starts_with()`/`ends_with()`），必须替换为 GQL 文档中存在的等价函数。
+- 如果函数无法在完整函数目录中确认同名且同签名（如 `pow()`/`starts_with()`/`ends_with()`/`array_distinct()`/`property_exists()`），不得默认生成；替换为目录内等价函数或谓词，或明确说明不支持。若函数已命中目录，不得仅因专题参考或 feature 未收录而替换。feature/代码仅用于验证边界。
 - 如果残留了 nGQL `allShortestPaths(...)` / `shortestPath(...)` 函数包裹，改为 `ALL SHORTEST` / `ANY SHORTEST PATH`（去掉函数包裹）。
 - 如果残留了 nGQL 多跳边列表下标 `e[0].prop` 或 `ALL(e_ in e WHERE pred)`，拆为多段 pattern 逐段过滤。
 - 如果残留了 nGQL `WHERE id(v) == 'x'`，将 VID 过滤下沉到 pattern `{id: 'x'}` 并将 `==` 改为 `=`。
@@ -148,7 +156,7 @@
 - 如果 `VALUE { ... }` / `EXISTS { ... }` 内部 `LET` 了与外层同名的变量，优先删除内部重定义并直接捕获外层变量；若必须产出同名列，改成 `RETURN ... AS <alias>`。
 - 如果把图变量传给 `CALL` 后又继续执行依赖图上下文的查询，优先显式补 `USE <graph_name>` 或 `USE g`，不要依赖过程参数隐式切图。
 - 如果通过 `NEXT` 透传图变量给下游过程，优先把 `RETURN g` 改成 `RETURN g AS gx` 后再 `CALL ...(gx)`。
-- 如果无法确认某段语法是否在已覆盖白名单内，回退到更保守的 `MATCH/WHERE/RETURN` 或 `CALL ... RETURN`。
+- 如果无法在完整语法目录中确认某段语法，回退到更保守的 `MATCH/WHERE/RETURN` 或 `CALL ... RETURN`；若已命中目录，则按文档约束生成，不因高频覆盖表缺项而降级。
 - 如果不确定能否直接组合复杂查询，改写成 `CALL { ... } RETURN ...` 的保守版本。
 - 如果用户请求其实是过程体、遍历或算法，停止生成普通查询，改路由到 `gql-procedure-generator`。
 - 如果出现 `WHILE`、`NODE VALUE`、`ACTIVE_SET` 或 `match_compute_statement`，一律停止 query 生成并路由到 `gql-procedure-generator`。

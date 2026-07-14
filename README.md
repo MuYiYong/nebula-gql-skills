@@ -35,7 +35,9 @@ src/
     references/
     tests/features/
 scripts/
+  audit_skill_capabilities.py
   package_core_skills.py
+  refresh_documented_capabilities.py
 README.md
 README.zh-CN.md
 ```
@@ -44,7 +46,7 @@ Maintained skill sources live only under `src/`. `.github/workflows/` is retaine
 
 ## Skill Design
 
-Each `SKILL.md` is a concise entrypoint containing task routing, workflow, hard guardrails, and reference-selection rules. Detailed syntax, examples, validation checks, capability coverage, and source provenance live under `references/` and are loaded only when relevant.
+Each `SKILL.md` is a concise entrypoint containing task routing, workflow, hard guardrails, and reference-selection rules. Generated function and syntax catalogs under `references/` provide complete documentation-backed capability discovery; hand-written references provide high-frequency selection and constraints. Cataloged capabilities do not require feature files as a second authorization.
 
 The vendored `tests/features/` subsets serve as implementation evidence:
 
@@ -67,7 +69,7 @@ The script creates:
 - `dist/gql-procedure-generator-<version>.zip`
 - `dist/nebula-skills-<version>.zip`
 
-Standalone archives contain one complete skill. The mega archive contains both skills under `.github/skills/` plus the repository README files. `dist/` is generated output and is not committed.
+Standalone archives contain one complete skill. The mega archive contains both skills under `.github/skills/` plus the repository README files. Before returning success, the packaging command reads each zip back and verifies its exact file content, required skill resources, feature index, local Markdown links, safe archive paths, and absence of machine-local workspace paths. The same fail-closed check runs in CI. `dist/` is generated output and is not committed.
 
 GitHub Actions also runs the same packaging flow automatically on `main` when release-relevant files change under `src/`, `scripts/`, or the top-level README files. The workflow publishes a release tagged as `v<version>_Build<HHMM>` and titled `v<version> Build<HHMM>`.
 
@@ -87,9 +89,12 @@ For one skill, extract its standalone archive into the target workspace's `.gith
 
 When refreshing to a later NebulaGraph version:
 
-1. Update each skill's concise entrypoint and relevant references from the new documentation.
-2. Replace the vendored feature subsets under `src/<skill>/tests/features/` from the matching feature corpus.
-3. Update the three compatibility values in both README files and both `references/source-map.md` files.
-4. Run structural validation and package verification before publishing.
+1. Regenerate the complete documentation-backed catalogs: `python3 scripts/refresh_documented_capabilities.py --docs-root <path-to-versioned-html>`.
+2. Update each skill's concise entrypoint and hand-written constraint references only where the documentation semantics changed.
+3. Replace the vendored feature subsets under `src/<skill>/tests/features/` from the matching feature corpus.
+4. Update the three compatibility values in both README files and both `references/source-map.md` files.
+5. Run `python3 scripts/refresh_documented_capabilities.py --docs-root <path-to-versioned-html> --check`, `python3 scripts/audit_skill_capabilities.py`, structural validation, and package verification before publishing.
+
+The generated `documented-functions.md` and `documented-syntax.md` files are checked-in skill resources. Do not edit them manually.
 
 Do not reintroduce generated documentation sites, a repository-level feature corpus, a repository-level `.github/skills/` source tree, or hand-edited `dist/` artifacts.
