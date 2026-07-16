@@ -38,6 +38,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 - Cypher `toSet(list)` 改写为文档公开的 `list_distinct(list)`；Cypher 列表推导式改写为 `transform()`/`filter()`。不要生成未文档化的 `array_distinct()`，也不要把单个 LIST 传给 `all_different()`。
 - Cypher/nGQL `exists(element.prop)` 的常见属性检查改写为文档公开的 `element.prop IS NOT NULL`。若需求必须区分“属性缺失”和“属性值为 NULL”，明确说明 v5.3.0 用户文档没有可靠等价构造；不要调用代码中存在但未文档化的 `property_exists()`。
 - 将有高选择性过滤条件的锚点放在模式左侧。单变量属性过滤优先下沉到该变量的 pattern filler；跨变量条件放在外层 `WHERE`。
+- 迁移路径集合断言时，先判断能否由 pattern 直接表达：量化边段上的逐边 `ALL` 且谓词只引用当前边和常量/参数时，下推为 edge pattern `WHERE`；节点零重复约束改用 `ACYCLIC`。`ANY`/`NONE`/`SINGLE`、跨元素条件和“筛选含重复节点”的条件不得套用该优化。
 - 使用边后量词表达可变长度路径，例如 `(a)-[:KNOWS]->{1,3}(d)`；不要生成 `[:KNOWS*1..3]`。
 - 只在标签名来自字符串 `VALUE` 或绑定变量时生成动态标签表达式。不要把聚合器、文件、表或非字符串值当作标签。
 - 用户要求精确元素类型、类型集合或类型否定时使用 `@Type`、`@[Type1,Type2]` 或 `@!Type`；动态类型项也必须来自字符串值或绑定变量。

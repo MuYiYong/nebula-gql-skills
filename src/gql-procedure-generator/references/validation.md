@@ -20,6 +20,8 @@
 - 多跳算法是否已经改写成 `WHILE` + 单轮 `match_compute_statement`？
 - 如果输入来自 TigerGraph GSQL / 链式 `SELECT` 模式，是否没有把原始多跳链直接照搬成单个 `MATCH ... PER PATH` / `PER NODE`？
 - 每个 `match_compute_statement` 的图模式是否都至多只有一条边段？
+- 当前边/点局部谓词是否已写入对应 pattern `WHERE`？活动集、跨元素和结果级条件是否仍保留在 graph pattern `WHERE` 或过程块中？
+- 是否没有为谓词下推引入 match-compute 不支持的多跳、非默认 path mode 或 `ACYCLIC`？
 - 如果无法安全拆成单跳轮次，是否已经改成 staged skeleton / planning procedure，而不是输出不可执行的长链过程体？
 - 分布式表是否使用 `TABLE ... PARTITION BY DEFAULT` 声明且没有初值？
 - `PER PARTITION` 是否只操作分区别名，没有直接访问外层分布式表？
@@ -56,6 +58,8 @@
 - 如果某个算法只能想到普通 `MATCH` 写法，停止输出并改写成 `WHILE` + 单轮 `match_compute_statement`。
 - 如果某个 `MATCH ... PER PATH` / `PER NODE` 里出现了两条及以上边段，立刻拆成有序的单跳 stage；如果状态交接仍不明确，降级为 staged skeleton / planning procedure，不要保留长链。
 - 如果输入是 TigerGraph GSQL 多跳 `SELECT`，而输出仍然是一种 mode 对应一个长链 `MATCH`，直接回退到“mode 优先级 + 单跳扩展 stage”结构。
+- 如果当前边条件仍在 `PER PATH` 或后置集合过滤中表达，且只引用该边和常量/参数，改写为 `[e:T WHERE edge_local_predicate]`；若引用活动集、端点、其它元素或聚合结果，保留原作用域，不强行下推。
+- 如果为局部谓词下推生成了多跳或 `ACYCLIC` match-compute，恢复默认 path mode 的单跳模式，并通过 `WHILE` + 多个 stage 表达多跳。
 - 如果直接读取、遍历或清空分布式表，改写为 `PER PARTITION (part) OF t` 并只操作 `part`。
 - 如果严格 `v5.3.0` 过程把本地 BindingTable 导入分布式临时图，停止生成该组合并改用受支持来源；只有运行版本明确包含 current-master 扩展时才保留。
 - 如果 `PER PARTITION` 内出现不允许的外部状态、图匹配、过程调用或表导出，移出分区块；无法安全移动时删除该行为并保留最小分区处理骨架。

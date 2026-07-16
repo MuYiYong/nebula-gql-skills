@@ -45,6 +45,7 @@
 - `ACYCLIC` 是路径模式前缀，声明式地约束整条路径中所有点两两不同
 - `all_different(v1, v2, ...)` 是 WHERE 子句中的谓词函数，手动检查指定变量两两不同
 - `all_different(nodes(path))` 或 `all_different(pathNodes)` 无效：单个 LIST 不能代替至少两个显式图元素参数
+- `size(apoc.coll.duplicates(nodes(path))) = 0` 或去重前后长度相等表示路径节点不重复，直接改为 `ACYCLIC`，不要物化 `nodes(path)` 再去重比较
 - 当源查询用去重前后长度差来**筛选含重复节点的路径**时，保留 `WALK`/`TRAIL` 与该过滤条件；不要改成语义相反、会排除重复节点的 `ACYCLIC`
 - 当 ACYCLIC 路径中的所有点变量都在 `all_different()` 中列出时，两者是**冗余**的，只需保留 `ACYCLIC` 即可
 - 仅在需要跨多条路径或检查非路径中的变量时，才额外使用 `all_different()`
@@ -248,7 +249,8 @@ ORDER BY score DESC
 | `[x IN list \| expr]` | `transform(list, x -> expr)` | 列表映射 |
 | `reduce(acc=init, x IN list \| expr)` | `reduce(list, init, (acc, x) -> expr)` | 累积折叠 |
 | `any(x IN list WHERE pred)` | `filter(list, x -> pred)` + 判断非空 | 用 lambda 过滤后检查 |
-| `all(x IN list WHERE pred)` | 用 `filter()` + `length()` 检查 | |
+| `all(r IN relationships(p) WHERE pred(r))` | 量化边段内 `-[r:T WHERE pred(r)]->{m,n}` | 仅当谓词 edge-local 且该段一一覆盖 `relationships(p)`；否则保留结果级检查 |
+| `all(x IN list WHERE pred)` | 用 `filter()` + `length()` 检查 | 非路径边局部特例 |
 | `none(x IN list WHERE pred)` | 用 `filter()` + `length() = 0` 检查 | |
 | `single(x IN list WHERE pred)` | `length(filter(list, x -> pred)) = 1` | |
 

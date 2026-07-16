@@ -36,6 +36,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 - `CREATE PROCEDURE ... AS { ... }` 的过程体内不要包 `USE graph`；调用方负责选择图。
 - 算法/遍历场景使用 `match_compute_statement`，不要退化成普通查询式 `MATCH ... RETURN`。
 - 每个 `match_compute_statement` 只生成 0 跳或 1 跳图模式。两条及以上边段必须拆成多轮单跳 stage。
+- `match_compute_statement` 中只引用当前边或点和常量/参数的局部条件直接写入对应 pattern `WHERE`；活动集、跨元素和结果级条件保留在 graph pattern `WHERE` 或过程块中。不要为谓词下推引入多跳或 `ACYCLIC`。
 - 将 `PER NODE`、`PER PATH` 和 `FINALLY` 直接放在 `MATCH <graph_pattern>` 后，不添加外层圆括号。
 - 不要在执行语句开始后新增变量定义。
 - `ACTIVE_SET` 默认只在 `FINALLY` 中更新；逐点状态优先使用 `NODE VALUE`，不要无理由提升为全局聚合器。

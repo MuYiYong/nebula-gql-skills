@@ -79,6 +79,27 @@ FORBIDDEN_HIDDEN_DOC_SNIPPETS = {
 FORBIDDEN_POLICY_SNIPPETS = {
     "和 [functions.md](functions.md) 中存在精确签名证据",
 }
+PATH_PUSHDOWN_HEADING = "### M6B. Cypher path predicates to pattern constraints"
+PATH_PUSHDOWN_REQUIRED = {
+    "MATCH p = ACYCLIC",
+    "-[r:股权出资 WHERE r.percent > 0]->{1,6}",
+    "(company:Corporation {uid: $uid})",
+}
+PATH_PUSHDOWN_FORBIDDEN = {
+    "size(filter(edges(p), rel -> rel.percent > 0))",
+    "size(nodes(p)) = size(list_distinct(nodes(p)))",
+}
+DUPLICATE_PATH_HEADING = "### M6A. Cypher toSet and list projection"
+DUPLICATE_PATH_REQUIRED = {
+    "MATCH path = TRAIL",
+    "FILTER WHERE length(pathNodes) <> length(list_distinct(pathNodes))",
+}
+DUPLICATE_PATH_FORBIDDEN = {"MATCH path = ACYCLIC"}
+PROCEDURE_PUSHDOWN_REQUIRED = {
+    "边局部谓词下推",
+    "[e:<edge_type> WHERE <edge_local_predicate>]",
+    "不要为谓词下推引入多跳或 `ACYCLIC`",
+}
 
 
 @dataclass(frozen=True)
@@ -200,6 +221,48 @@ def validate_policy(skill_root: Path) -> None:
         raise SystemExit("\n".join(failures))
 
 
+def validate_path_pushdown_regression() -> None:
+    query_examples = (
+        ROOT / "src/gql-query-generator/references/examples.md"
+    ).read_text(encoding="utf-8")
+    _, marker, remainder = query_examples.partition(PATH_PUSHDOWN_HEADING)
+    section = remainder.split("\n### ", 1)[0] if marker else ""
+    failures = []
+    if not marker:
+        failures.append("query examples: missing path predicate pushdown regression")
+    for snippet in sorted(PATH_PUSHDOWN_REQUIRED):
+        if snippet not in section:
+            failures.append(f"query path pushdown regression: missing {snippet}")
+    for snippet in sorted(PATH_PUSHDOWN_FORBIDDEN):
+        if snippet in section:
+            failures.append(f"query path pushdown regression: redundant {snippet}")
+
+    _, marker, remainder = query_examples.partition(DUPLICATE_PATH_HEADING)
+    section = remainder.split("\n### ", 1)[0] if marker else ""
+    if not marker:
+        failures.append("query examples: missing duplicate-path regression")
+    for snippet in sorted(DUPLICATE_PATH_REQUIRED):
+        if snippet not in section:
+            failures.append(f"query duplicate-path regression: missing {snippet}")
+    for snippet in sorted(DUPLICATE_PATH_FORBIDDEN):
+        if snippet in section:
+            failures.append(f"query duplicate-path regression: invalid {snippet}")
+
+    procedure_rules = "\n".join(
+        (ROOT / relative).read_text(encoding="utf-8")
+        for relative in (
+            "src/gql-procedure-generator/SKILL.md",
+            "src/gql-procedure-generator/references/procedure-language.md",
+            "src/gql-procedure-generator/references/validation.md",
+        )
+    )
+    for snippet in sorted(PROCEDURE_PUSHDOWN_REQUIRED):
+        if snippet not in procedure_rules:
+            failures.append(f"procedure path pushdown policy: missing {snippet}")
+    if failures:
+        raise SystemExit("\n".join(failures))
+
+
 def is_procedure_name(code: str, start: int) -> bool:
     line_prefix = code[code.rfind("\n", 0, start) + 1 : start]
     return bool(PROCEDURE_PREFIX.search(line_prefix))
@@ -275,6 +338,7 @@ def audit_skill(skill_name: str) -> tuple[int, int, int]:
 
 
 def main() -> None:
+    validate_path_pushdown_regression()
     total_blocks = 0
     total_unlisted = 0
     total_links = 0

@@ -84,6 +84,25 @@ FINALLY {
 }
 ```
 
+### 6A. Match-compute edge-local predicate pushdown
+Input intent:
+- 只沿满足局部属性条件的边扩展活动集
+
+Output skeleton:
+```gql
+VALUE frontier ACTIVE_SET
+MATCH (a)-[e:<edge_type> WHERE e.percent > 0]->(b)
+WHERE a IN frontier
+PER PATH {
+  LOG_INFO('visit eligible edge')
+}
+FINALLY {
+  SET frontier = b
+}
+```
+
+边属性条件在扩展时直接过滤；活动集条件仍放在 graph pattern `WHERE`。不要先扩展全部边后在 `PER PATH` 中模拟过滤，也不要把单轮 match-compute 扩成多跳 `ACYCLIC`。
+
 ### 7. Multi-round algorithm skeleton
 Input intent:
 - 做多轮按层推进的遍历

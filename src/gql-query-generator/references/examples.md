@@ -933,6 +933,45 @@ LIMIT 5
 
 改写要点：`toSet(pathNodes)` → 文档公开的 `list_distinct(pathNodes)`；`[node IN pathNodes | node.name]` → `transform(pathNodes, node -> node.name)`。不要保留 `toSet()`、使用未文档化的 `array_distinct()` 或保留 Cypher 列表推导式，也不要改成签名无效的 `all_different(pathNodes)`。这里要筛选含重复节点的 `TRAIL`，不能改成会排除重复节点的 `ACYCLIC`。
 
+### M6B. Cypher path predicates to pattern constraints
+Input (Cypher):
+```cypher
+MATCH p = (person:Person)-[:股权出资*..6]->(company:Corporation)
+WHERE company.uid = $uid
+  AND ALL(rel IN relationships(p) WHERE rel.percent > 0)
+  AND size(apoc.coll.duplicates(nodes(p))) = 0
+WITH
+    person,
+    REDUCE(
+        acc = 1.0,
+        rel IN relationships(p) |
+        acc * rel.percent / 100
+    ) AS total_percent
+WITH person, SUM(total_percent) AS total_percent
+WHERE total_percent > 0.25
+RETURN person, total_percent
+ORDER BY total_percent DESC
+```
+
+Output (GQL optimized):
+```gql
+MATCH p = ACYCLIC
+  (person:Person)
+  -[r:股权出资 WHERE r.percent > 0]->{1,6}
+  (company:Corporation {uid: $uid})
+RETURN person,
+       reduce(edges(p), 1.0, (acc, rel) -> acc * rel.percent / 100) AS total_percent
+NEXT
+RETURN person, sum(total_percent) AS total_percent
+GROUP BY person
+NEXT
+FILTER WHERE total_percent > 0.25
+RETURN person, total_percent
+ORDER BY total_percent DESC
+```
+
+改写要点：终点等值条件下沉到属性字面量；逐边 `ALL` 条件下沉到量化 edge pattern；节点零重复条件提升为 `ACYCLIC`。不要再生成 `filter(edges(p))` 全量计数或 `list_distinct(nodes(p))` 后置检查。若原条件是筛选存在重复节点，则不能使用 `ACYCLIC`。
+
 ### M7. Cypher CALL subquery WITH import
 Input (Cypher):
 ```cypher

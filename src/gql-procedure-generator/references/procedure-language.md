@@ -656,6 +656,13 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 如果某个复杂集合类型没有把握，简化成标量结果列或更保守的聚合器类型。
 - 如果过程只是查询组合且不需要命名复用，可用内联过程，但内联过程体不要含 DDL/DML。
 
+### 边局部谓词下推
+
+- `match_compute_statement` 的当前边局部条件优先写为 `[e:<edge_type> WHERE <edge_local_predicate>]`，避免先扩展全部边再在 `PER PATH` 或外层做等价筛选。
+- edge-local 谓词只引用当前边 `e` 与常量/参数；引用端点、其它元素、活动集、聚合值或跨 stage 状态时，保留 graph pattern `WHERE` 或过程块中的原有语义。
+- 节点局部条件同理写入 `(n:<node_type> WHERE <node_local_predicate>)`；活动集消费仍使用 graph pattern `WHERE n IN active_set`，不要伪装成 node-local 条件。
+- Match-compute 仍只允许默认 path mode 的 0/1 跳模式。不要为谓词下推引入多跳或 `ACYCLIC`；多跳算法继续拆成 `WHILE` 驱动的单跳 stage。
+
 ## Hard Constraints
 - 用户显式指定本 skill 时，禁止输出普通 `match_statement` 或普通 `MATCH` 版本作为最终答案。
 - 禁止在 `CREATE PROCEDURE` / `ALTER PROCEDURE` 的过程定义内部包 `USE graph`、`USE #graph` 或 `USE ... { ... }`。

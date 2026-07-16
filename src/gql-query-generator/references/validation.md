@@ -42,6 +42,8 @@
 - 若是业务实体主键过滤，是否优先改写成 `{id: ...}` 或 pattern `WHERE v.id ...`，而不是 `element_id(...)`？
 - 是否错误生成了 `MATCH ... YIELD`（该语法当前不支持）？
 - 只涉及单个变量的过滤条件，是否已优先下沉到 pattern 属性或 pattern `WHERE`？
+- Cypher 的 `ALL(r IN relationships(p) WHERE pred(r))` 若对应单一量化边段且 `pred` 为 edge-local，是否已下推到该 edge pattern，而不是生成 `filter(edges(p))` 计数？
+- 路径节点零重复条件是否已优先改为 `ACYCLIC`？若条件是在筛选含重复节点的路径，是否反向保留了允许重复的 path mode 与后置条件？
 - 单变量等值过滤（尤其是 `id` 主键）是否优先写成属性字面量（如 `MATCH (src{id: "..."})`），而不是冗长的 pattern `WHERE src.id = ...`？
 - 若外层 `WHERE` 中仍有单变量过滤，是否存在必须保留在外层的理由（作用域、可读性、语义保持）？
 - 外层 `WHERE` 是否主要承载跨变量关系或结果级约束（如 `a.id = b.id`、`ALL_DIFFERENT(...)`、多变量 `EXISTS`）？
@@ -109,6 +111,8 @@
 - 如果单变量等值过滤仍写成 pattern `WHERE`（例如 `MATCH (src WHERE src.id = "x")`），优先改写为属性字面量（`MATCH (src{id: "x"})`）。
 - 如果外层 `WHERE` 同时混有“可下沉单变量条件 + 必须保留的跨变量条件”，优先把单变量部分下沉到 pattern，外层只保留跨变量部分。
 - 如果 shortest path / quantified path 的 src/dst 过滤仍写在外层 `WHERE`，优先下沉到起点或终点 pattern。
+- 如果生成了 `length(filter(edges(p), r -> pred(r))) = length(edges(p))`，且 `p` 由单一量化边段组成、`pred` 只引用当前边和常量/参数，改为 `-[r:T WHERE pred(r)]->{m,n}` 并删除后置检查；跨元素、位置、聚合、`ANY`、`NONE`、`SINGLE` 语义不得套用。
+- 如果生成了 `length(nodes(p)) = length(list_distinct(nodes(p)))` 或等价的 APOC 零重复检查，改为 `ACYCLIC` 并删除后置检查；不等式或“存在重复”条件必须保留原语义。
 - 如果生成了 `WHERE NOT (a)-[:T]-(b)`、`AND NOT (a)-[:T]-(b)` 或类似裸 pattern 排除条件，改写为 `NOT EXISTS { MATCH (a)-[:T]-(b) }`。
 - 如果生成了 `WHERE (a)-[:T]-(b)`、`AND (a)-[:T]-(b)` 或类似裸 pattern 包含条件，改写为 `EXISTS { MATCH (a)-[:T]-(b) }`。
 - 如果自然语言本身在表达“主模式成立，但排除另一个关系/模式”，先保留主模式，再把被排除部分单独抽成 `NOT EXISTS { MATCH ... }`，不要把整个否定关系塞成 `NOT (pattern)`。
