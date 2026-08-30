@@ -100,22 +100,34 @@ def remove_old_archives(prefix: str) -> None:
         archive.unlink()
 
 
-def create_archive(directory: Path, archive_stem: str) -> Path:
+def create_archive(
+    directory: Path, archive_stem: str, *, include_root: bool = True
+) -> Path:
     archive_path = DIST_ROOT / f"{archive_stem}.zip"
     if archive_path.exists():
         archive_path.unlink()
-    shutil.make_archive(
-        str(DIST_ROOT / archive_stem),
-        "zip",
-        root_dir=DIST_ROOT,
-        base_dir=directory.name,
-    )
+    if include_root:
+        shutil.make_archive(
+            str(DIST_ROOT / archive_stem),
+            "zip",
+            root_dir=DIST_ROOT,
+            base_dir=directory.name,
+        )
+    else:
+        with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as package:
+            for path in sorted(directory.rglob("*")):
+                if path.is_file():
+                    package.write(path, path.relative_to(directory).as_posix())
     return archive_path
 
 
-def directory_payload(directory: Path) -> dict[str, bytes]:
+def directory_payload(directory: Path, *, include_root: bool = True) -> dict[str, bytes]:
     return {
-        f"{directory.name}/{path.relative_to(directory).as_posix()}": path.read_bytes()
+        (
+            f"{directory.name}/{path.relative_to(directory).as_posix()}"
+            if include_root
+            else path.relative_to(directory).as_posix()
+        ): path.read_bytes()
         for path in sorted(directory.rglob("*"))
         if path.is_file()
     }
@@ -239,8 +251,16 @@ def validate_skill_payload(
     return len(features), validate_markdown_links(archive, payload, skill_root)
 
 
-def verify_archive(archive: Path, directory: Path, skill_roots: list[str]) -> None:
-    expected = directory_payload(directory)
+def verify_archive(
+    archive: Path,
+    directory: Path,
+    skill_roots: list[str],
+    *,
+    include_root: bool = True,
+    expected_root_entries: set[str] | None = None,
+    forbidden_parts: set[str] | None = None,
+) -> None:
+    expected = directory_payload(directory, include_root=include_root)
     actual = archive_payload(archive)
     missing = set(expected) - set(actual)
     extra = set(actual) - set(expected)
@@ -260,6 +280,26 @@ def verify_archive(archive: Path, directory: Path, skill_roots: list[str]) -> No
         raise SystemExit(
             f"Package verification failed for {archive.name}: " + "; ".join(details)
         )
+
+    if expected_root_entries is not None:
+        actual_root_entries = {PurePosixPath(name).parts[0] for name in actual}
+        if actual_root_entries != expected_root_entries:
+            raise SystemExit(
+                f"Package verification failed for {archive.name}: "
+                f"unexpected root entries {summarize_paths(actual_root_entries)}"
+            )
+
+    if forbidden_parts is not None:
+        forbidden_paths = {
+            name
+            for name in actual
+            if forbidden_parts.intersection(PurePosixPath(name).parts)
+        }
+        if forbidden_paths:
+            raise SystemExit(
+                f"Package verification failed for {archive.name}: "
+                f"forbidden path component in {summarize_paths(forbidden_paths)}"
+            )
 
     for name, data in actual.items():
         is_text = PurePosixPath(name).suffix.lower() in TEXT_SUFFIXES
@@ -298,22 +338,26 @@ def create_mega_bundle(specs: list[PackageSpec]) -> Path:
     if bundle_dir.exists():
         shutil.rmtree(bundle_dir)
 
-    skills_dir = bundle_dir / ".github" / "skills"
-    skills_dir.mkdir(parents=True)
+    bundle_dir.mkdir(parents=True)
     for doc_name in ROOT_PACKAGE_DOCS:
         source = ROOT / doc_name
         if source.is_file():
             shutil.copy2(source, bundle_dir / doc_name)
 
     for spec in specs:
-        shutil.copytree(DIST_ROOT / spec.name, skills_dir / spec.name)
+        shutil.copytree(DIST_ROOT / spec.name, bundle_dir / spec.name)
 
     remove_old_archives("nebula-skills")
-    archive = create_archive(bundle_dir, MEGA_BUNDLE_NAME)
-    skill_roots = [
-        f"{bundle_dir.name}/.github/skills/{spec.name}" for spec in specs
-    ]
-    verify_archive(archive, bundle_dir, skill_roots)
+    archive = create_archive(bundle_dir, MEGA_BUNDLE_NAME, include_root=False)
+    skill_roots = [spec.name for spec in specs]
+    verify_archive(
+        archive,
+        bundle_dir,
+        skill_roots,
+        include_root=False,
+        expected_root_entries={*ROOT_PACKAGE_DOCS, *(spec.name for spec in specs)},
+        forbidden_parts={".github"},
+    )
     return archive
 
 

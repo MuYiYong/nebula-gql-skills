@@ -50,7 +50,7 @@ skill 源文件只维护在 `src/` 下。`.github/workflows/` 仅用于发布自
 
 随 skill 保存的 `tests/features/` 子集用于证明当前实现边界：
 
-- Query skill：67 个 feature 文件，覆盖 K-hop、动态标签和 VC-index 路径场景等。
+- Query skill：74 个 feature 文件，覆盖 K-hop、动态标签、VC-index 路径场景和优化器证据等。
 - Procedure skill：88 个 feature 文件，覆盖 `PER PARTITION`、分布式表参数和 Analytics 聚合器/算法等。
 
 ## 打包
@@ -69,21 +69,22 @@ RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
 - `dist/gql-procedure-generator-<version>.zip`
 - `dist/nebula-skills-<version>.zip`
 
-单 skill 压缩包包含一个完整 skill；合集压缩包将两个 skill 放在 `.github/skills/` 下，并携带仓库 README。打包命令只有在重新读取每个 zip 并通过逐文件内容、必需 skill 资源、feature 索引、本地 Markdown 引用、安全归档路径和本机工作区路径检查后才会成功；CI 执行同一套失败即停止的检查。`dist/` 是生成产物，不提交到 Git。
+单 skill 压缩包包含一个完整 skill；合集压缩包将两个 skill 目录和仓库 README 直接放在压缩包根目录，不包含版本外层目录或 `.github/` 路径。打包命令只有在重新读取每个 zip 并通过逐文件内容、必需 skill 资源、feature 索引、本地 Markdown 引用、安全归档路径和本机工作区路径检查后才会成功；合集包还会校验严格的根目录白名单，并拒绝任何 `.github` 路径组件。CI 执行同一套失败即停止的检查。`dist/` 是生成产物，不提交到 Git。
 
 同时，GitHub Actions 会在 `main` 上针对 `src/`、`scripts/` 和顶层 README 的相关变更自动执行同一套打包流程，并发布 tag 为 `v<version>_Build<HHMM>`、标题为 `v<version> Build<HHMM>` 的 release。
 
 ## 安装
 
-同时安装两个 skill 时，将 `nebula-skills-<version>.zip` 解压到目标工作区根目录，得到：
+同时安装两个 skill 时，解压 `nebula-skills-<version>.zip`，压缩包根目录为：
 
 ```text
-.github/skills/
-  gql-query-generator/
-  gql-procedure-generator/
+gql-query-generator/
+gql-procedure-generator/
+README.md
+README.zh-CN.md
 ```
 
-只安装一个 skill 时，将对应单 skill 压缩包解压到目标工作区的 `.github/skills/` 目录。skill 文件夹名必须与 `SKILL.md` 中的 `name` 一致。
+将需要的 skill 目录复制到目标 Agent 或运行时识别的 skills 目录。压缩包不会主动创建 `.github/skills/`；如果目标运行时使用这个工作区级安装位置，请自行创建目标目录后再复制 skill。只安装一个 skill 时，也可以直接将对应单 skill 压缩包解压到目标 skills 目录。skill 文件夹名必须与 `SKILL.md` 中的 `name` 一致。
 
 ## 维护
 

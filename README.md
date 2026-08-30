@@ -50,7 +50,7 @@ Each `SKILL.md` is a concise entrypoint containing task routing, workflow, hard 
 
 The vendored `tests/features/` subsets serve as implementation evidence:
 
-- Query skill: 67 feature files, including K-hop expansion, dynamic labels, and VC-index path cases.
+- Query skill: 74 feature files, including K-hop expansion, dynamic labels, VC-index path cases, and optimizer evidence.
 - Procedure skill: 88 feature files, including `PER PARTITION`, distributed table arguments, and Analytics aggregators/algorithms.
 
 ## Build Packages
@@ -69,21 +69,22 @@ The script creates:
 - `dist/gql-procedure-generator-<version>.zip`
 - `dist/nebula-skills-<version>.zip`
 
-Standalone archives contain one complete skill. The mega archive contains both skills under `.github/skills/` plus the repository README files. Before returning success, the packaging command reads each zip back and verifies its exact file content, required skill resources, feature index, local Markdown links, safe archive paths, and absence of machine-local workspace paths. The same fail-closed check runs in CI. `dist/` is generated output and is not committed.
+Standalone archives contain one complete skill. The mega archive places both skill directories and the repository README files directly at the archive root; it contains neither a version wrapper nor a `.github/` path. Before returning success, the packaging command reads each zip back and verifies its exact file content, required skill resources, feature index, local Markdown links, safe archive paths, and absence of machine-local workspace paths. It also enforces the mega archive's exact root allowlist and rejects `.github` path components. The same fail-closed check runs in CI. `dist/` is generated output and is not committed.
 
 GitHub Actions also runs the same packaging flow automatically on `main` when release-relevant files change under `src/`, `scripts/`, or the top-level README files. The workflow publishes a release tagged as `v<version>_Build<HHMM>` and titled `v<version> Build<HHMM>`.
 
 ## Install
 
-For both skills, extract `nebula-skills-<version>.zip` into the target workspace root. The result contains:
+For both skills, extract `nebula-skills-<version>.zip`. Its archive root contains:
 
 ```text
-.github/skills/
-  gql-query-generator/
-  gql-procedure-generator/
+gql-query-generator/
+gql-procedure-generator/
+README.md
+README.zh-CN.md
 ```
 
-For one skill, extract its standalone archive into the target workspace's `.github/skills/` directory. Keep the skill folder name identical to the `name` in `SKILL.md`.
+Copy the desired skill directories into the skills directory recognized by your agent or runtime. The archive intentionally does not create `.github/skills/`; if a target runtime uses that repository-local destination, create it separately and copy the skill directories there. For one skill, you can instead extract its standalone archive directly into the destination skills directory. Keep the skill folder name identical to the `name` in `SKILL.md`.
 
 ## Maintenance
 
