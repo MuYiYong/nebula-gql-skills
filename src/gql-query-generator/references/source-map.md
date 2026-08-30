@@ -5,7 +5,7 @@
 - Documentation: NebulaGraph `5.3.0` Chinese HTML
 - Feature corpus: NebulaGraph `5.3.0`
 - Skill compatibility: NebulaGraph `5.3.0`
-- Code audit: `nebula-ng` tag `v5.3.0` (`ff090434b`) and master `40ff12b51` (2026-07-10)
+- Code audit: `nebula-ng` tag `v5.3.0` (`ff090434b`) and `release-5.3` `2242f24ff` (2026-08-30 local audit baseline)
 
 Refresh corpora: `v5.3.0_zh_html` and `v5.3.0_features`. The packaged skill is self-contained and does not require the original source directories.
 
@@ -28,6 +28,7 @@ The generated [documented-functions.md](documented-functions.md) is the complete
 | DML | `database-gql-reference/dml/` |
 | Nearest-neighbor queries | `database-gql-reference/dql/nearest-neighbor/` |
 | Parameters and execution hints | `database-gql-reference/executions/` |
+| Query tuning and runtime plans | `database-gql-reference/data-admin/tuning/explain/`, `database-gql-reference/data-admin/tuning/profile/`, `database-gql-reference/executions/hints/` |
 
 ## Feature Mapping
 
@@ -44,9 +45,10 @@ The vendored subset under `tests/features/` is the implementation-evidence layer
 | Result flow and composition | `let/`, `for/`, `filter/`, `subquery/`, `composite/`, `return/` |
 | DML | `insert/Insert.feature`, `set/Set.feature`, `delete/Delete.feature` |
 | Parameters and graph variables | `parameter/Parameter.feature`, selected `variable/*.feature` |
+| Reorder, pushdown, TopN, projection, decorrelation | selected `optimizer/*.feature` |
 
 ## Precedence
 
 Use docs as the complete allowlist for public syntax, functions, predicates, and member methods. A cataloged capability does not require a feature or high-frequency example as a second authorization. Feature scenarios and code only establish confirmed implementation boundaries and cannot promote an undocumented internal capability into default output. If implementation evidence directly conflicts with a documented form, preserve the documented capability record but explain or gate the confirmed environment/version restriction.
 
-The 2026-07-13 audit found no query parser changes between `v5.3.0` and `40ff12b51`; every vendored query feature remained byte-identical to the corresponding master file. Keep the public compatibility baseline at 5.3.0 unless a later release is explicitly selected.
+The public compatibility baseline remains 5.3.0. The 2026-08-30 implementation audit used the current local `release-5.3` head to verify optimizer boundaries; post-tag implementation behavior may refine plans but does not authorize undocumented syntax or functions. Re-run the code and feature comparison before claiming a later release or different branch.

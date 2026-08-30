@@ -38,6 +38,7 @@ Use this file as the detailed NebulaGraph 5.3.0 query syntax reference. Search b
 ## References（按需加载）
 - [expressions.md](expressions.md) — 表达式、谓词、运算符
 - [patterns.md](patterns.md) — 图模式、路径、量词、过滤放置
+- [performance.md](performance.md) — 查询形状、索引、CBO/Hint、TopN/LIMIT、相关子查询与 PROFILE 验证
 - [functions.md](functions.md) — 函数家族、lambda、legacy 迁移
 - [error-codes.md](error-codes.md) — 错误码改写映射与决策树
 - [nearest-neighbor.md](nearest-neighbor.md) — KNN/ANN 查询模板
@@ -53,6 +54,7 @@ MATCH <graph_pattern>
 [WHERE <cross_variable_condition>]
 [CALL <procedure>(<args>) [YIELD <items>]]
 RETURN <items>
+[GROUP BY <binding_variables_or_return_aliases>]
 [ORDER BY <sort_items>]
 [OFFSET <n>]
 [LIMIT <n>]
@@ -63,9 +65,7 @@ RETURN <items>
 ### MATCH
 - 基础：`MATCH <graph_pattern>` / `OPTIONAL MATCH <graph_pattern>`
 - 图模式按点-边-点交替组织。
-- **执行方向**：除全路径/最短路径（双向 BFS）外，引擎从左往右执行。因此：
-  - 把带过滤条件（锚点）的节点放在 pattern 左侧。
-  - 当同一 pattern 中同时存在已绑定变量和未绑定变量时，已绑定变量放左侧。适用于所有场景：子查询引用外层变量、`NEXT` 后第二段引用第一段返回的变量、同一语句中前面 pattern 已绑定的变量在后续 pattern 中复用。
+- **执行方向**：`enable_reorder` 默认 `false`，默认计划优先按文本从左到右展开，所以把已绑定或高选择性锚点放左侧。显式启用重排后 CBO 可改选起点/方向；`NO_REORDER` 才锁定路径文本顺序。shortest path 还可能使用专用 `BiBFS`。具体见 [performance.md](performance.md)。
 - 路径变量：`p = <path_pattern>` — 只在后续引用整条路径时声明。
 - 变长路径量词放在边方向后：`-[:T]->{1,3}`、`-[:T]->*`、`-[:T]->+`。
 - **禁止** Cypher 风格 `[:T*1..3]`。
@@ -79,7 +79,7 @@ RETURN <items>
 2. 单变量非等值（IN、范围、CONTAINS 等） → pattern 内 `WHERE`
 3. 跨变量/结果级约束 → 外层 `WHERE`
 
-**此规则适用于所有图模式**（普通 MATCH、shortest path、quantified path、variable-length 等）——只要过滤条件仅涉及单个变量，就必须写进该变量所在的 pattern，不要留在外层 `WHERE`。
+该优先级只在作用域和 NULL 语义保持不变时应用。只引用一个局部图元素与常量的条件优先写进对应 pattern；引用外部绑定、子查询、路径变量或多个 component 的条件保留原作用域。optimizer 可按依赖下推同一 MATCH 中的部分外层谓词，因此不要把语法下沉本身当作必然加速。
 
 Preferred:
 ```gql
@@ -87,7 +87,7 @@ MATCH (src:Tag WHERE src.id IN <ids>)-[:E]->(dst:Tag WHERE dst.id IN <ids>)
 RETURN src, dst
 ```
 
-Anti-pattern（不要生成）:
+同一 inner-MATCH 中也合法，但没有把两个端点锚点直接写在 pattern 中：
 ```gql
 MATCH (src:Tag)-[:E]->(dst:Tag)
 WHERE src.id IN <ids> AND dst.id IN <ids>
@@ -130,14 +130,17 @@ RETURN *
 ### Aggregation & GROUP BY
 ```gql
 RETURN <group_keys>, <aggregate_functions>
-GROUP BY <group_keys>
+GROUP BY <binding_variables_or_return_aliases>
 ```
 - RETURN 中有聚合函数才进入聚合模式。
 - `GROUP BY ()` — 所有行归为一组。
+- 5.3 的显式分组项必须是绑定变量或 `RETURN` 别名；不要直接写属性/表达式，如 `GROUP BY v.id` 会触发 `NS203`。若按节点身份分组且还需返回属性，使用 `RETURN v.id AS id, count(*) AS cnt GROUP BY v`；若需求确实按属性值合并多个节点，使用 `RETURN v.id AS id, count(*) AS cnt GROUP BY id`。
 - 没有聚合函数不要生成 `GROUP BY`。
 
 ### ORDER BY / OFFSET / LIMIT
-固定顺序：`ORDER BY` → `OFFSET` → `LIMIT`。
+同一个排序分页片段内固定顺序：`ORDER BY` → `OFFSET/SKIP` → `LIMIT`。
+- 5.3.0 同时接受 `RETURN ... ORDER BY ... OFFSET ... LIMIT ...` 与 `ORDER BY ... OFFSET ... LIMIT ... RETURN ...`。默认统一采用前一种尾部风格；迁移合法查询时无需仅为风格改写。
+- 不生成 `RETURN ... LIMIT ... ORDER BY ...`，也不把全局 TopN 的 LIMIT 提前到聚合、去重、UNION 或多 component 之前。
 - `ASC`/`DESC`；`NULLS FIRST`/`NULLS LAST`。
 - `OFFSET` 也可写 `SKIP`，参数为非负整数。
 - `ORDER BY` 不可用子查询表达式。
@@ -266,7 +269,7 @@ FINISH
 - 同一需求既可 `MATCH` 也可 `CALL` → 选更短更直接的。
 - 单变量等值过滤 → 属性字面量 `{prop: value}`，不要 pattern WHERE。
 - 单变量非等值 → pattern 内 `WHERE`，不要外层 WHERE。
-- 所有图模式（含 shortest path、quantified path）的单变量过滤都必须下沉到 pattern，不要留在外层 WHERE。
+- 在不改变 MATCH/OPTIONAL/相关作用域语义时，局部单变量过滤优先写入 pattern；引用外部变量、子查询、路径变量或多个 component 时保留正确作用域。
 - 跨变量约束 → 外层 `WHERE`。
 - 图模式存在性过滤 → `EXISTS { MATCH ... }`；图模式排除过滤 → `NOT EXISTS { MATCH ... }`；不要用 `NOT (a)-[:T]-(b)`。
 - 自然语言若出现“但不是/不是…的人/没有…关系/排除…模式/without/but not”，优先识别为“先匹配主模式，再用 `NOT EXISTS { MATCH ... }` 排除子模式”，不要把否定关系直接写成裸 pattern。
@@ -320,7 +323,7 @@ FINISH
 - 不在没有采样需求时默认加 `SAMPLE`。
 - 不在 KNN 中拼 `APPROX` 或 ANN OPTIONS。
 - 不把 `FOR` 误用成图遍历。
-- 不把任何图模式中的单变量过滤留在外层 `WHERE`（必须下沉到对应 pattern）。
+- 不为追求下沉而改变 `OPTIONAL MATCH` 的 NULL 保留、相关变量可见性、路径集合或跨 component 语义。
 - 不生成裸图模式谓词作为布尔条件，例如 `WHERE NOT (a)-[:T]-(b)` 或 `WHERE (a)-[:T]-(b)`；必须改成 `NOT EXISTS { MATCH ... }` 或 `EXISTS { MATCH ... }`。
 - 不把“但不是/不是…/没有…关系/排除…”这类自然语言排除条件翻译成裸 `NOT (pattern)`；必须生成 `NOT EXISTS { MATCH ... }`。
 - 不跨 `NEXT` 引用未返回的列。

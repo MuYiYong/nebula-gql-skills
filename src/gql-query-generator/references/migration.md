@@ -56,6 +56,7 @@
 |--------|-----|------|
 | `WITH x, y` | `RETURN x, y NEXT` | 中间投影用 `RETURN...NEXT` 串联 |
 | `WITH x ORDER BY x.a LIMIT 10` | `RETURN x ORDER BY x.a LIMIT 10 NEXT` | 含排序分页的中间投影 |
+| `WITH v, count(DISTINCT x) AS c` | `RETURN v, count(DISTINCT x) AS c GROUP BY v NEXT` | 聚合分组项必须是绑定变量或 RETURN 别名，不能写 `GROUP BY v.id` |
 | `UNWIND list AS x` | `FOR x IN list` | 展开列表 |
 | `UNWIND range(1,10) AS i` | `FOR i IN LIST[1,2,...,10]` 或 `FOR i IN range(1,10)` | 展开序列 |
 | `RETURN ... SKIP n` | `RETURN ... OFFSET n` | 分页偏移（GQL 也接受 `SKIP`） |
@@ -64,6 +65,39 @@
 | `MATCH ... YIELD` | **不支持** — 改用 `MATCH ... RETURN` | |
 | `CALL proc() YIELD x` | `CALL proc() YIELD x RETURN x` | GQL 要求 `CALL` 后必须跟结果语句 |
 | `CALL proc() YIELD x MATCH ...` | `CALL proc() YIELD x RETURN x NEXT MATCH ...` | CALL 输出需 RETURN...NEXT 传递给后续语句 |
+
+带聚合、排序和分页的 `WITH` 必须先完成聚合，再执行 TopN，最后通过 `NEXT` 传递结果；不能把 `LIMIT` 提前到聚合前：
+
+```cypher
+MATCH (u:User {node_id: $id})-[:FOLLOWS]->(shared)<-[:FOLLOWS]-(v:User)
+WHERE v <> u
+WITH v, count(DISTINCT shared) AS shared_count
+ORDER BY shared_count DESC
+LIMIT 10
+RETURN v.node_id, shared_count
+```
+
+```gql
+MATCH (u:User {node_id: $id})-[:FOLLOWS]->(shared)<-[:FOLLOWS]-(v:User)
+WHERE v <> u
+RETURN v, count(DISTINCT shared) AS shared_count
+GROUP BY v
+ORDER BY shared_count DESC
+LIMIT 10
+NEXT
+RETURN v.node_id, shared_count
+```
+
+若最终只做标量投影，可在确认输出列不变后合并查询段；仍按节点绑定 `v` 分组，不能改成属性表达式分组：
+
+```gql
+MATCH (u:User {node_id: $id})-[:FOLLOWS]->(shared)<-[:FOLLOWS]-(v:User)
+WHERE v <> u
+RETURN v.node_id, count(DISTINCT shared) AS shared_count
+GROUP BY v
+ORDER BY shared_count DESC
+LIMIT 10
+```
 
 ### 1.3 Neo4j 过程与 APOC → GQL 原生替代
 

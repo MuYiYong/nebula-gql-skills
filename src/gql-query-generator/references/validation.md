@@ -21,6 +21,7 @@
 - 是否需要排序和分页？如果需要，字段和方向是否明确？
 - 是否需要参数化（`PARAMETERS`、`$param`、会话参数赋值）？
 - 是否存在关键 schema 缺口？如果存在，是否改成了明确占位符？
+- 若用户要求性能优化，是否已读取 [performance.md](performance.md)，并区分已知 schema/索引/数据分布与待验证假设？
 - 每个拟保留或生成的函数是否已在 [documented-functions.md](documented-functions.md) 中按完整名称命中，并核对签名、环境、类型和前置条件？
 - 每个不常见语法是否已在 [documented-syntax.md](documented-syntax.md) 或函数目录的非调用形式分区中按关键字命中，并核对文档限制？若已命中，不得仅因 feature 或常用示例缺失而拒绝。
 
@@ -41,11 +42,11 @@
 - 若涉及边标识，是否避免了无效的 `element_id(edge)`，并按需求使用端点、`type(edge)` 与 `multiedge_id(edge)`？
 - 若是业务实体主键过滤，是否优先改写成 `{id: ...}` 或 pattern `WHERE v.id ...`，而不是 `element_id(...)`？
 - 是否错误生成了 `MATCH ... YIELD`（该语法当前不支持）？
-- 只涉及单个变量的过滤条件，是否已优先下沉到 pattern 属性或 pattern `WHERE`？
+- 只涉及单个局部变量与常量的过滤条件，是否在不改变 MATCH/OPTIONAL/相关作用域语义时优先放到 pattern 属性或 pattern `WHERE`？
 - Cypher 的 `ALL(r IN relationships(p) WHERE pred(r))` 若对应单一量化边段且 `pred` 为 edge-local，是否已下推到该 edge pattern，而不是生成 `filter(edges(p))` 计数？
 - 路径节点零重复条件是否已优先改为 `ACYCLIC`？若条件是在筛选含重复节点的路径，是否反向保留了允许重复的 path mode 与后置条件？
 - 单变量等值过滤（尤其是 `id` 主键）是否优先写成属性字面量（如 `MATCH (src{id: "..."})`），而不是冗长的 pattern `WHERE src.id = ...`？
-- 若外层 `WHERE` 中仍有单变量过滤，是否存在必须保留在外层的理由（作用域、可读性、语义保持）？
+- 若外层 `WHERE` 中仍有单变量过滤，是否因为外部绑定、子查询、路径变量、多个 component、NULL 保留或可读性需要而保留？若只是同一 inner MATCH 的局部谓词，是否至少确认 optimizer 能按依赖下推？
 - 外层 `WHERE` 是否主要承载跨变量关系或结果级约束（如 `a.id = b.id`、`ALL_DIFFERENT(...)`、多变量 `EXISTS`）？
 - `WHERE` / `FILTER` 中若表达图模式存在或排除，是否使用了 `EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`，而不是裸 pattern 条件（如 `NOT (a)-[:T]-(b)`）？
 - 若输入自然语言含有“但不是/不是…的人/没有…关系/排除…模式/without/but not”，是否已把该排除语义映射成 `NOT EXISTS { MATCH ... }`，而不是仍输出裸 `NOT (pattern)`？
@@ -61,6 +62,7 @@
 - 是否误生成了当前未实现的高级路径语法（`|`、`|+|`、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`）？
 - 若使用了 `NORMALIZE`，是否只用了单参数形态，且确实来自用户明确的 Unicode 规范化需求？
 - 若使用了 `GROUP BY ()`，是否确实存在全局聚合意图，且 `RETURN` 中至少包含一个聚合函数？
+- 显式 `GROUP BY` 项是否都是绑定变量或 `RETURN` 别名？禁止直接使用 `v.id` 等属性表达式；按节点身份分组用 `GROUP BY v`，按属性值合并用属性的 `RETURN` 别名。
 - 若使用了 `TABLE ... {..} = ...`，后续是否通过 `FOR` 或记录字段访问消费了该表，而不是把它误当作图模式？
 - 若使用了 `TABLE ... {..} = ...`，是否避免直接把表引用本身作为最后一个 `RETURN` 项？
 - 若使用了 `TABLE ... {..} = ...`，字面量值是否都是常量表达式，而不是 `rand()` 或未定义变量？
@@ -71,7 +73,7 @@
 - 分页顺序是否是 `ORDER BY -> OFFSET -> LIMIT`？
 - `ORDER BY` 因子是否错误使用了子查询表达式（如 `VALUE { ... }` / `EXISTS { ... }`）？
 - `RETURN DISTINCT` 或 `GROUP BY` 场景下，`ORDER BY` 是否只引用了 `RETURN` 中可见的列或分组键？
-- `ORDER BY` 是否错误放在 `RETURN` 之后继续形成线性子句？
+- 同一排序分页片段是否保持 `ORDER BY -> OFFSET/SKIP -> LIMIT`？`RETURN` 前置或尾部两种合法形式是否都未被误判？是否避免了 `RETURN ... LIMIT ... ORDER BY ...`？
 - 聚合查询里是否混入了没有分组语义的普通返回项？
 - `VALUE { ... }` 子查询最后一条语句是否是合法 `RETURN`？
 - `VALUE { ... }` / `EXISTS { ... }` 是否只是捕获外层变量，而没有在内部用 `LET` 重定义同名变量？
@@ -103,11 +105,25 @@
 - 是否误引入 `WHILE`、`NODE VALUE`、`ACTIVE_SET` 等 procedure-skill 语法信号？
 - 是否避免输出路径、页面名、外部出处或“去查文档”的表述？
 
+## Performance validation
+
+- 先验证优化前后结果、列类型、重复行、NULL 行、排序稳定性和错误边界等价；没有等价证据时不比较耗时。
+- 默认 `enable_reorder=false` 时，已绑定/高选择性锚点是否位于路径左侧？若启用 CBO 或使用 `NO_REORDER`/`INDEX`/`IGNORE_INDEX`，是否有用户要求、schema 元数据或计划证据，而不是臆造 Hint？
+- 是否只返回需要的标量/元素，避免无需求的 `RETURN *`、整节点、整路径、`nodes(p)`/`edges(p)` 或大列表物化？
+- 是否为变长路径使用了业务允许的最小跳数范围和正确 path mode？不得为性能擅自收窄合法路径集合。
+- `DISTINCT`、`collect_list`、`UNION` 默认去重、独立多分支 `OPTIONAL MATCH` 是否真的符合语义？警惕去重/物化成本和一对多分支乘法放大。
+- `ORDER BY + LIMIT` 是否位于最终应排序的候选集上，并带有业务需要的稳定 tie-breaker？不得把 LIMIT 提前穿过聚合、去重、集合运算或多 planned unit。
+- 相关 `CALL`/`VALUE`/`EXISTS` 是否可能按外层行执行？复杂相关查询是否用 `EXPLAIN DECORRELATED` 检查解关联形状，而不是假定一定转成 join？
+- 若使用索引，是否核对 `details` 中的实际 index、约束、方向、覆盖属性和残余 filter？不能只凭 operator 名称或索引存在性判断。
+- 若执行 `PROFILE`，是否同时检查 `details`、`rows`、`memory`、`time`、`blocked` 和最大中间行，而不是只看总耗时或算子数量？
+- 性能对比是否在同图、同参数、同 Hint/会话配置下交替多次运行，并报告样本数与中位数等统计？空图、单次运行或隔离小图是否被明确标为非业务 SLA？
+- 若是 DML，是否先保持冲突策略和写入集合等价，并避免在业务图上直接用 `PROFILE` 执行写入？批量 `FOR` 是否没有意外笛卡尔积？
+
 ## Fail-safe rewrite rules
 - 如果命中了禁用清单，优先做最小改写：仅移除违规片段，保留已覆盖且合法的高级语法。
 - 如果生成了 `id()`，直接删除该不存在的内置函数写法；若语义是节点内部 ID，改写为 `element_id(node)`。
 - 如果生成了 legacy 风格的 `id(v)` / `id(e)`，先判断语义：业务实体选择默认改写成 `v.id` / `e.id` 的属性过滤；节点内部 ID 才改为 `element_id(v)`，边标识则使用端点、类型与 `multiedge_id(e)` 的必要组合。
-- 如果外层 `WHERE` 里的条件只约束单个变量，优先下沉到该变量所在的 pattern：简单等值改成 `{prop: value}`，其它单变量条件改成 pattern `WHERE`。
+- 如果外层 `WHERE` 里的条件只约束同一 MATCH 的局部变量与常量，且不改变 OPTIONAL/相关/NULL/路径语义，优先放到该变量所在的 pattern：简单等值改成 `{prop: value}`，其它条件改成 pattern `WHERE`。
 - 如果单变量等值过滤仍写成 pattern `WHERE`（例如 `MATCH (src WHERE src.id = "x")`），优先改写为属性字面量（`MATCH (src{id: "x"})`）。
 - 如果外层 `WHERE` 同时混有“可下沉单变量条件 + 必须保留的跨变量条件”，优先把单变量部分下沉到 pattern，外层只保留跨变量部分。
 - 如果 shortest path / quantified path 的 src/dst 过滤仍写在外层 `WHERE`，优先下沉到起点或终点 pattern。
@@ -185,6 +201,7 @@
 - `42N57`: 把命令语句改为单条顶层语句，去掉与查询链（`USE`/`MATCH`/`NEXT`/`UNION`）的混用。
 - `NS103`: 把量词上界修为正整数（上界 > 0），如 `{0}` 改为 `{0,1}` 或 `{1}`。
 - `NS228`: 修正不存在的标签名，或先切换到包含该标签的图。
+- `NS203`: 把 `GROUP BY v.id` 等属性表达式改为绑定变量或 `RETURN` 别名；先判断需求是按节点身份分组（`GROUP BY v`）还是按属性值合并（`RETURN v.id AS id ... GROUP BY id`）。
 - `42000`: 不要直接返回图引用或表引用；先 `FOR` / `MATCH` / 其它消费步骤，再返回字段列或派生标量。
 - `NS002`: 重命名重复变量；子查询内部不要 `LET` 与外层同名的变量。
 - `NS209`: 显式补 `USE <graph_name>` 或 `USE g`，不要假设过程参数会设置 current working graph。

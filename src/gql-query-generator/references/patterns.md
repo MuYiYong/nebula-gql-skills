@@ -11,9 +11,11 @@
 
 ## Execution Direction (Performance)
 
-除全路径/最短路径查询（使用双向 BFS）外，引擎**从左往右**执行图模式。
+`enable_reorder` 默认是 `false`。在默认配置和不能重排的路径中，只要查询可执行，planner 优先按文本从左到右展开；因此把已绑定或高选择性锚点写在左侧是稳妥的默认形式。
 
-### 规则 1：锚点（带过滤条件的节点）放左侧
+当查询级、会话级或部署级显式开启 `enable_reorder` 时，CBO 可依据统计信息改选起点、方向和 join 顺序。此时文本顺序不是执行顺序保证；只有路径级 `/*+ NO_REORDER */` 会锁定该路径。ANN、全文、selective path、相关变量和部分复杂形状还有专用或不可重排计划，必须以 `EXPLAIN CBO`/`PROFILE` 为准。
+
+### 规则 1：默认计划把锚点放左侧
 
 Preferred:
 ```gql
@@ -21,15 +23,15 @@ MATCH (v{id: 123})-[e]->(v2)
 RETURN v2
 ```
 
-Anti-pattern:
+同一 inner-MATCH 中也合法，但端点锚点不够直观：
 ```gql
 MATCH (v2)<-[e]-(v{id: 123})
 RETURN v2
 ```
 
-### 规则 2：已绑定变量放左侧
+### 规则 2：默认计划把已绑定变量放左侧
 
-当同一 pattern 中同时存在已绑定（已确定值）的变量和未绑定变量时，已绑定变量必须放左侧。这包括所有场景：
+当同一 pattern 中同时存在已绑定（已确定值）的变量和未绑定变量时，默认把已绑定变量放左侧。这对不能解关联、关闭重排或需要稳定文本顺序的场景尤其重要，包括：
 - 外层 MATCH 已绑定的变量在子查询 pattern 中使用
 - `NEXT` 连接的第二段语句中，第一段 RETURN 的变量与新变量同处一个 pattern
 - 同一语句前面的 pattern 已绑定的变量在后续 pattern 中复用
@@ -78,8 +80,11 @@ MATCH (friend:Person)<-[:KNOWS]-(src)
 RETURN friend
 ```
 
-### 例外
-`ALL SHORTEST`、`ANY SHORTEST`、`SHORTEST n` 使用双向 BFS，方向不影响性能。
+### 专用遍历与 Hint
+
+- 受支持的 shortest-path 形状可改写为 `BiBFS`，但端点是否已绑定、端点过滤是否先执行、索引可用性和量词边界仍会改变代价；不要写成“方向必然不影响性能”。
+- 不默认添加 `SET_VAR(enable_reorder=true)`、`NO_REORDER`、`INDEX` 或 `IGNORE_INDEX`。只在用户要求、稳定性需求或等价 PROFILE 对比证明有益时保留，并说明适用 schema。
+- 详细决策与验证见 [performance.md](performance.md)。
 
 ## Node Pattern Filler
 组件顺序（稳定）：点变量 → 标签表达式或点类型 → 点属性 → `WHERE`
@@ -168,16 +173,17 @@ p = <path_pattern>
 `|+|`、`|` 路径并集、`?`、`KEEP`、`SHORTEST n GROUPS`、`IS DIRECTED`
 
 ## Filter Placement Priority
-按以下优先级放置过滤条件：
+在保持当前 MATCH/OPTIONAL/相关作用域语义时，按以下优先级组织过滤条件：
 
 1. **单变量简单等值** → pattern 属性 `{prop: value}`
 2. **单变量非等值**（IN、范围、CONTAINS、空值、时间比较） → pattern 内 `WHERE`
 3. **跨变量关系或结果级约束** → 外层 `WHERE`
 
 规则：
-- `(v{id:1})` 与 `(v WHERE v.id = 1)` 视为等价；首选属性字面量。
-- **所有图模式中的单变量过滤都必须下沉到对应变量所在的 pattern**，不要留在外层 `WHERE`。这包括普通 MATCH、shortest path、quantified path、variable-length 等所有模式。
-- 只有会破坏可读性或语义时才保留单变量过滤在外层。
+- `(v{id:1})` 与同一 MATCH 作用域内的 `(v WHERE v.id = 1)` 可表达同一局部约束；简单等值首选属性字面量。
+- 只引用一个局部节点/边和常量的条件优先靠近该 pattern，便于看清锚点、类型和索引候选；optimizer 也可能把同一 MATCH 的外层单变量 `WHERE` 自动附着到 scan/expand，因此这不是无条件性能保证。
+- 引用外部绑定、子查询、路径变量、多个 component 或多个图元素的条件不要机械下沉。`OPTIONAL MATCH` 内部条件会保留未命中的外层行，而 `NEXT` 之后的 `FILTER` 可能删除 NULL 行；两者不能互换。
+- shortest/quantified/variable-length 端点的纯局部条件仍优先写在端点 pattern；路径集合与跨端点条件保留结果级作用域。
 
 ### Path Collection Predicate Normalization
 
@@ -194,7 +200,7 @@ p = <path_pattern>
 - 边零重复约束 → `TRAIL`；仅允许首尾点相同、其它点不重复时才用 `SIMPLE`。
 - 若条件用于筛选**存在重复节点**的路径，例如去重前后长度不等，保留允许重复的 `WALK`/`TRAIL` 和后置条件；改成 `ACYCLIC` 会反转语义。
 
-### General Filter Anti-pattern
+### General Filter Form
 
 Preferred（普通 MATCH）:
 ```gql
@@ -202,7 +208,7 @@ MATCH (a:Person WHERE a.age > 30)-[:KNOWS]->(b:Person WHERE b.city = 'Beijing')
 RETURN a, b
 ```
 
-Anti-pattern:
+Also legal in the same inner-MATCH scope, but less explicit about each anchor:
 ```gql
 MATCH (a:Person)-[:KNOWS]->(b:Person)
 WHERE a.age > 30 AND b.city = 'Beijing'
@@ -227,7 +233,7 @@ WHERE src.id IN <source_ids>
 RETURN p
 ```
 
-原因：`src.id` 只约束 `src`、`dst.id` 只约束 `dst`，它们是独立的单变量条件，必须分别写进各自所在的 pattern。外层 `WHERE` 只保留跨变量关系（如 `a.x = b.y`）。
+原因：`src.id` 只约束 `src`、`dst.id` 只约束 `dst`，写进各自 pattern 能直接表达两个端点锚点。若条件涉及两个端点（如 `src.x = dst.y`）、路径变量或子查询，则保留在外层 `WHERE`。
 
 ## OPTIONAL MATCH
 - 未命中时继续返回该行并产出 `null` 列。

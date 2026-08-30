@@ -29,19 +29,19 @@ RETURN u.<name> AS name, u.<email> AS email
 Input intent:
 - 从指定起点出发查一跳邻居
 
-Output skeleton（锚点在左，性能优）:
+Output skeleton（默认 `enable_reorder=false` 时锚点在左）:
 ```gql
 MATCH (v{id: 123})-[e]->(v2)
 RETURN v2
 ```
 
-Anti-pattern（锚点在右，性能差）:
+Avoid by default（关闭重排时会从非锚点侧打开路径）:
 ```gql
 MATCH (v2)<-[e]-(v{id: 123})
 RETURN v2
 ```
 
-注意：shortest path 使用双向 BFS，方向不影响性能。
+注意：受支持的 shortest-path 形状可使用 `BiBFS`，但端点绑定、端点过滤、索引和量词仍影响代价；以实际计划为准。
 
 ### 1A-2. Bound variable on the left (performance)
 Input intent:
@@ -160,7 +160,7 @@ RETURN src, dst
 
 ### 1G. Keep only multi-variable predicates in outer WHERE
 Input intent:
-- 所有可下沉的单变量条件都下沉，外层 `WHERE` 仅保留多变量关系
+- 在不改变 OPTIONAL/相关/NULL 语义时，把局部常量过滤写进 pattern，外层 `WHERE` 保留多变量关系
 
 Output skeleton:
 ```gql
@@ -222,7 +222,7 @@ Output skeleton:
 ```gql
 MATCH (u:<UserTag>)
 RETURN u.<city> AS city, count(u) AS user_count
-GROUP BY u.<city>
+GROUP BY city
 ```
 
 ### 3A. Global aggregate with `GROUP BY ()`
@@ -1007,10 +1007,10 @@ Output (GQL):
 ```gql
 MATCH (u:User)-[:BOUGHT]->(p:Product)
 RETURN u.name AS name, collect_list(p.name) AS products
-GROUP BY u.name
+GROUP BY name
 ```
 
-改写要点：`collect()` → `collect_list()`；GQL 聚合需显式 `GROUP BY`。
+改写要点：`collect()` → `collect_list()`；GQL 聚合需显式 `GROUP BY`，分组项使用绑定变量或 `RETURN` 别名，不直接使用 `u.name` 属性表达式。
 
 ### M9. Cypher relationships()
 Input (Cypher):
