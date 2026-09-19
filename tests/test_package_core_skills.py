@@ -21,7 +21,7 @@ class MegaBundleLayoutTest(unittest.TestCase):
                 SKILLS_ROOT=source_root,
                 DIST_ROOT=dist_root,
                 RELEASE_VERSION="99.01.02",
-                MEGA_BUNDLE_NAME="nebula-skills-99.01.02",
+                MEGA_BUNDLE_NAME="nebula-gql-skills-99.01.02",
             ):
                 specs = packager.discover_specs()
                 standalone_archives = {

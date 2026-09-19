@@ -21,7 +21,8 @@ DIST_ROOT = ROOT / "dist"
 CORE_SKILLS = ("gql-query-generator", "gql-procedure-generator")
 ROOT_PACKAGE_DOCS = ("README.md", "README.zh-CN.md")
 RELEASE_VERSION = os.environ.get("RELEASE_VERSION") or datetime.now().strftime("%y.%m.%d")
-MEGA_BUNDLE_NAME = f"nebula-skills-{RELEASE_VERSION}"
+MEGA_BUNDLE_PREFIX = "nebula-gql-skills"
+MEGA_BUNDLE_NAME = f"{MEGA_BUNDLE_PREFIX}-{RELEASE_VERSION}"
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 LOCAL_WORKSPACE_PATH = re.compile(
     rb"(?:/(?:Users|home)/[^/\s]+/(?:Documents|Desktop|Downloads|workspace)/"
@@ -347,7 +348,7 @@ def create_mega_bundle(specs: list[PackageSpec]) -> Path:
     for spec in specs:
         shutil.copytree(DIST_ROOT / spec.name, bundle_dir / spec.name)
 
-    remove_old_archives("nebula-skills")
+    remove_old_archives(MEGA_BUNDLE_PREFIX)
     archive = create_archive(bundle_dir, MEGA_BUNDLE_NAME, include_root=False)
     skill_roots = [spec.name for spec in specs]
     verify_archive(

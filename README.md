@@ -67,7 +67,7 @@ The script creates:
 
 - `dist/gql-query-generator-<version>.zip`
 - `dist/gql-procedure-generator-<version>.zip`
-- `dist/nebula-skills-<version>.zip`
+- `dist/nebula-gql-skills-<version>.zip`
 
 Standalone archives contain one complete skill. The mega archive places both skill directories and the repository README files directly at the archive root; it contains neither a version wrapper nor a `.github/` path. Before returning success, the packaging command reads each zip back and verifies its exact file content, required skill resources, feature index, local Markdown links, safe archive paths, and absence of machine-local workspace paths. It also enforces the mega archive's exact root allowlist and rejects `.github` path components. The same fail-closed check runs in CI. `dist/` is generated output and is not committed.
 
@@ -75,7 +75,7 @@ GitHub Actions also runs the same packaging flow automatically on `main` when re
 
 ## Install
 
-For both skills, extract `nebula-skills-<version>.zip`. Its archive root contains:
+For both skills, extract `nebula-gql-skills-<version>.zip`. Its archive root contains:
 
 ```text
 gql-query-generator/
@@ -91,7 +91,7 @@ Copy the desired skill directories into the skills directory recognized by your 
 CC Switch can discover and install both skills directly from this public GitHub repository:
 
 1. Open **Skills → Repository Management → Add Repository**.
-2. Enter **Owner** `MuYiYong`, **Name** `nebula-skills`, **Branch** `main`, and **Subdirectory** `src`.
+2. Enter **Owner** `MuYiYong`, **Name** `nebula-gql-skills`, **Branch** `main`, and **Subdirectory** `src`.
 3. Click **Refresh**. The repository should expose `gql-query-generator` and `gql-procedure-generator` as separate skills.
 4. Install the skill you need. CC Switch will keep the repository coordinates with the installation and can check for updates later.
 

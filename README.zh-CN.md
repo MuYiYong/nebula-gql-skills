@@ -67,7 +67,7 @@ RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
 
 - `dist/gql-query-generator-<version>.zip`
 - `dist/gql-procedure-generator-<version>.zip`
-- `dist/nebula-skills-<version>.zip`
+- `dist/nebula-gql-skills-<version>.zip`
 
 单 skill 压缩包包含一个完整 skill；合集压缩包将两个 skill 目录和仓库 README 直接放在压缩包根目录，不包含版本外层目录或 `.github/` 路径。打包命令只有在重新读取每个 zip 并通过逐文件内容、必需 skill 资源、feature 索引、本地 Markdown 引用、安全归档路径和本机工作区路径检查后才会成功；合集包还会校验严格的根目录白名单，并拒绝任何 `.github` 路径组件。CI 执行同一套失败即停止的检查。`dist/` 是生成产物，不提交到 Git。
 
@@ -75,7 +75,7 @@ RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
 
 ## 安装
 
-同时安装两个 skill 时，解压 `nebula-skills-<version>.zip`，压缩包根目录为：
+同时安装两个 skill 时，解压 `nebula-gql-skills-<version>.zip`，压缩包根目录为：
 
 ```text
 gql-query-generator/
@@ -91,7 +91,7 @@ README.zh-CN.md
 CC Switch 可以直接从这个公开 GitHub 仓库发现并安装两个 skill：
 
 1. 打开 **Skills → Repository Management → Add Repository**。
-2. 填写 **Owner** `MuYiYong`、**Name** `nebula-skills`、**Branch** `main`，以及 **Subdirectory** `src`。
+2. 填写 **Owner** `MuYiYong`、**Name** `nebula-gql-skills`、**Branch** `main`，以及 **Subdirectory** `src`。
 3. 点击 **Refresh**，应看到 `gql-query-generator` 和 `gql-procedure-generator` 两个独立 skill。
 4. 安装需要的 skill。CC Switch 会保存仓库坐标，后续可以据此检查更新。
 

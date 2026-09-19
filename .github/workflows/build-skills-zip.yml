@@ -54,7 +54,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: nebula-skills-zips-${{ github.run_number }}
+          name: nebula-gql-skills-zips-${{ github.run_number }}
           path: dist/*.zip
           if-no-files-found: error
 
