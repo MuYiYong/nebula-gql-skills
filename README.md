@@ -1,120 +1,48 @@
-# Nebula Skills
+# Nebula GQL Skills
 
 [简体中文](README.zh-CN.md)
 
-This repository maintains two skills for NebulaGraph GQL work:
+Two skills for NebulaGraph GQL work:
 
 - `gql-query-generator`: generate, rewrite, and migrate GQL queries.
-- `gql-procedure-generator`: generate procedures, Analytics algorithms, and TigerGraph GSQL migrations.
+- `gql-procedure-generator`: generate procedures, procedure calls, graph algorithms, and TigerGraph GSQL migrations.
 
 ## Compatibility
 
-| Item | Version |
-| --- | --- |
-| Chinese documentation baseline | `5.3.0` |
-| Feature-test baseline | `5.3.0` |
-| Skill compatibility | NebulaGraph `5.3.0` |
+Skill versions use the GitHub Release tag. The table lists the latest compatible skill release for the current NebulaGraph version.
 
-The current refresh used the local `v5.3.0_zh_html` documentation corpus and `v5.3.0_features` test corpus. Each skill is self-contained after packaging; neither external source directory is required at runtime.
+| NebulaGraph | Latest compatible skill release | All-in-one package |
+| --- | --- | --- |
+| `5.3.0` | [`v26.09.19_Build1346`](https://github.com/MuYiYong/nebula-gql-skills/releases/tag/v26.09.19_Build1346) | [`nebula-gql-skills-26.09.19.zip`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/nebula-gql-skills-26.09.19.zip) |
 
-## Repository Layout
+## Install with CC Switch
 
-```text
-.github/
-  workflows/
-    build-skills-zip.yml
-src/
-  gql-query-generator/
-    SKILL.md
-    agents/openai.yaml
-    references/
-    tests/features/
-  gql-procedure-generator/
-    SKILL.md
-    agents/openai.yaml
-    references/
-    tests/features/
-scripts/
-  audit_skill_capabilities.py
-  package_core_skills.py
-  refresh_documented_capabilities.py
-README.md
-README.zh-CN.md
-```
+1. Open **Skills → Repository Management → Add Repository**.
+2. Enter **Owner** `MuYiYong`, **Name** `nebula-gql-skills`, **Branch** `main`, and **Subdirectory** `src`.
+3. Click **Refresh**, then install `gql-query-generator` or `gql-procedure-generator`.
+4. Click **Refresh** again when you want CC Switch to check for updates, then use the skill card's update action.
 
-Maintained skill sources live only under `src/`. `.github/workflows/` is retained solely for release automation. The former repository-level `.github/skills/`, `site-zh/`, and `features/` trees are no longer source inputs.
+## Install manually
 
-## Skill Design
+Download the [latest release](https://github.com/MuYiYong/nebula-gql-skills/releases/latest):
 
-Each `SKILL.md` is a concise entrypoint containing task routing, workflow, hard guardrails, and reference-selection rules. Generated function and syntax catalogs under `references/` provide complete documentation-backed capability discovery; hand-written references provide high-frequency selection and constraints. Cataloged capabilities do not require feature files as a second authorization.
+- [Both skills](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/nebula-gql-skills-26.09.19.zip)
+- [`gql-query-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/gql-query-generator-26.09.19.zip)
+- [`gql-procedure-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/gql-procedure-generator-26.09.19.zip)
 
-The vendored `tests/features/` subsets serve as implementation evidence:
-
-- Query skill: 74 feature files, including K-hop expansion, dynamic labels, VC-index path cases, and optimizer evidence.
-- Procedure skill: 88 feature files, including `PER PARTITION`, distributed table arguments, and Analytics aggregators/algorithms.
-
-## Build Packages
-
-Run:
-
-```bash
-RELEASE_VERSION=5.3.0 python3 scripts/package_core_skills.py
-```
-
-If `RELEASE_VERSION` is omitted, the script uses the build date in `YY.MM.DD` format.
-
-The script creates:
-
-- `dist/gql-query-generator-<version>.zip`
-- `dist/gql-procedure-generator-<version>.zip`
-- `dist/nebula-gql-skills-<version>.zip`
-
-Standalone archives contain one complete skill. The mega archive places both skill directories and the repository README files directly at the archive root; it contains neither a version wrapper nor a `.github/` path. Before returning success, the packaging command reads each zip back and verifies its exact file content, required skill resources, feature index, local Markdown links, safe archive paths, and absence of machine-local workspace paths. It also enforces the mega archive's exact root allowlist and rejects `.github` path components. The same fail-closed check runs in CI. `dist/` is generated output and is not committed.
-
-GitHub Actions also runs the same packaging flow automatically on `main` when release-relevant files change under `src/`, `scripts/`, or the top-level README files. The workflow publishes a release tagged as `v<version>_Build<HHMM>` and titled `v<version> Build<HHMM>`.
-
-## Install
-
-For both skills, extract `nebula-gql-skills-<version>.zip`. Its archive root contains:
+Extract the archive and copy the required skill directory into the skills directory used by your agent or runtime. Keep the directory name unchanged:
 
 ```text
 gql-query-generator/
 gql-procedure-generator/
-README.md
-README.zh-CN.md
 ```
 
-Copy the desired skill directories into the skills directory recognized by your agent or runtime. The archive intentionally does not create `.github/skills/`; if a target runtime uses that repository-local destination, create it separately and copy the skill directories there. For one skill, you can instead extract its standalone archive directly into the destination skills directory. Keep the skill folder name identical to the `name` in `SKILL.md`.
+## Which skill should I use?
 
-## CC Switch
+- Use `gql-query-generator` for queries, `MATCH`, `WHERE`, `RETURN`, filtering, sorting, paging, aggregation, subqueries, and procedure-call queries.
+- Use `gql-procedure-generator` for `CREATE/ALTER/DROP PROCEDURE`, `CALL`, control flow, `match_compute_statement`, and graph algorithms.
+- If a task defines a procedure and then calls it, use `gql-procedure-generator` first and `gql-query-generator` second.
 
-CC Switch can discover and install both skills directly from this public GitHub repository:
+## Privacy
 
-1. Open **Skills → Repository Management → Add Repository**.
-2. Enter **Owner** `MuYiYong`, **Name** `nebula-gql-skills`, **Branch** `main`, and **Subdirectory** `src`.
-3. Click **Refresh**. The repository should expose `gql-query-generator` and `gql-procedure-generator` as separate skills.
-4. Install the skill you need. CC Switch will keep the repository coordinates with the installation and can check for updates later.
-
-CC Switch detects remote skill changes by comparing SHA-256 content hashes. Click **Refresh** to rescan the repository and use the skill card's update action when a new version is available. The `src/` subdirectory is intentional; it keeps source files separate from packaging scripts and release metadata.
-
-The repository may also appear in CC Switch's `skills.sh` search after the public registry indexes it. Registry indexing is external and may lag behind a newly public repository; the custom repository configuration above is the immediate, deterministic path.
-
-## Public repository and privacy
-
-Only publish reusable skill sources, documentation, test fixtures, and release automation. Never commit API keys, passwords, private URLs, exported configuration, session logs, personal data, or machine-local paths. Local planning state, virtual environments, build output, common credential files, and local database files are ignored by `.gitignore`; review `git status` before pushing.
-
-The feature files contain fixed integration-test values and environment-variable placeholders used by the upstream test corpus. They are not production credentials and must not be replaced with real service credentials when running tests.
-
-## Maintenance
-
-When refreshing to a later NebulaGraph version:
-
-1. Regenerate the complete documentation-backed catalogs: `python3 scripts/refresh_documented_capabilities.py --docs-root <path-to-versioned-html>`.
-2. Update each skill's concise entrypoint and hand-written constraint references only where the documentation semantics changed.
-3. Replace the vendored feature subsets under `src/<skill>/tests/features/` from the matching feature corpus.
-4. Update the three compatibility values in both README files and both `references/source-map.md` files.
-5. Run `python3 scripts/refresh_documented_capabilities.py --docs-root <path-to-versioned-html> --check`, `python3 scripts/audit_skill_capabilities.py`, structural validation, and package verification before publishing.
-
-The generated `documented-functions.md` and `documented-syntax.md` files are checked-in skill resources. Do not edit them manually.
-
-Do not reintroduce generated documentation sites, a repository-level feature corpus, a repository-level `.github/skills/` source tree, or hand-edited `dist/` artifacts.
+This is a public repository. Do not commit passwords, API keys, private URLs, exported configuration, session logs, personal data, or machine-local paths.
