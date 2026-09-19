@@ -13,7 +13,7 @@ Skill 版本使用 GitHub Release tag 表示。下表只维护当前 NebulaGraph
 
 | NebulaGraph 版本 | 最新兼容 skill 版本 | 全量压缩包 |
 | --- | --- | --- |
-| `5.3.0` | [`v26.09.19_Build1346`](https://github.com/MuYiYong/nebula-gql-skills/releases/tag/v26.09.19_Build1346) | [`nebula-gql-skills-26.09.19.zip`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/nebula-gql-skills-26.09.19.zip) |
+| `5.3.0` | [`v26.09.19_Build1404`](https://github.com/MuYiYong/nebula-gql-skills/releases/tag/v26.09.19_Build1404) | [`nebula-gql-skills-26.09.19.zip`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/nebula-gql-skills-26.09.19.zip) |
 
 ## 使用 CC Switch 安装
 
@@ -26,9 +26,9 @@ Skill 版本使用 GitHub Release tag 表示。下表只维护当前 NebulaGraph
 
 从 [最新 Release](https://github.com/MuYiYong/nebula-gql-skills/releases/latest) 下载：
 
-- [两个 skill](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/nebula-gql-skills-26.09.19.zip)
-- [`gql-query-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/gql-query-generator-26.09.19.zip)
-- [`gql-procedure-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/gql-procedure-generator-26.09.19.zip)
+- [两个 skill](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/nebula-gql-skills-26.09.19.zip)
+- [`gql-query-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/gql-query-generator-26.09.19.zip)
+- [`gql-procedure-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/gql-procedure-generator-26.09.19.zip)
 
 解压后，将需要的 skill 目录复制到 Agent 或运行时使用的 skills 目录。目录名保持不变：
 

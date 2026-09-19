@@ -13,7 +13,7 @@ Skill versions use the GitHub Release tag. The table lists the latest compatible
 
 | NebulaGraph | Latest compatible skill release | All-in-one package |
 | --- | --- | --- |
-| `5.3.0` | [`v26.09.19_Build1346`](https://github.com/MuYiYong/nebula-gql-skills/releases/tag/v26.09.19_Build1346) | [`nebula-gql-skills-26.09.19.zip`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/nebula-gql-skills-26.09.19.zip) |
+| `5.3.0` | [`v26.09.19_Build1404`](https://github.com/MuYiYong/nebula-gql-skills/releases/tag/v26.09.19_Build1404) | [`nebula-gql-skills-26.09.19.zip`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/nebula-gql-skills-26.09.19.zip) |
 
 ## Install with CC Switch
 
@@ -26,9 +26,9 @@ Skill versions use the GitHub Release tag. The table lists the latest compatible
 
 Download the [latest release](https://github.com/MuYiYong/nebula-gql-skills/releases/latest):
 
-- [Both skills](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/nebula-gql-skills-26.09.19.zip)
-- [`gql-query-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/gql-query-generator-26.09.19.zip)
-- [`gql-procedure-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1346/gql-procedure-generator-26.09.19.zip)
+- [Both skills](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/nebula-gql-skills-26.09.19.zip)
+- [`gql-query-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/gql-query-generator-26.09.19.zip)
+- [`gql-procedure-generator`](https://github.com/MuYiYong/nebula-gql-skills/releases/download/v26.09.19_Build1404/gql-procedure-generator-26.09.19.zip)
 
 Extract the archive and copy the required skill directory into the skills directory used by your agent or runtime. Keep the directory name unchanged:
 
