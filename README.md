@@ -86,6 +86,25 @@ README.zh-CN.md
 
 Copy the desired skill directories into the skills directory recognized by your agent or runtime. The archive intentionally does not create `.github/skills/`; if a target runtime uses that repository-local destination, create it separately and copy the skill directories there. For one skill, you can instead extract its standalone archive directly into the destination skills directory. Keep the skill folder name identical to the `name` in `SKILL.md`.
 
+## CC Switch
+
+CC Switch can discover and install both skills directly from this public GitHub repository:
+
+1. Open **Skills → Repository Management → Add Repository**.
+2. Enter **Owner** `MuYiYong`, **Name** `nebula-skills`, **Branch** `main`, and **Subdirectory** `src`.
+3. Click **Refresh**. The repository should expose `gql-query-generator` and `gql-procedure-generator` as separate skills.
+4. Install the skill you need. CC Switch will keep the repository coordinates with the installation and can check for updates later.
+
+CC Switch detects remote skill changes by comparing SHA-256 content hashes. Click **Refresh** to rescan the repository and use the skill card's update action when a new version is available. The `src/` subdirectory is intentional; it keeps source files separate from packaging scripts and release metadata.
+
+The repository may also appear in CC Switch's `skills.sh` search after the public registry indexes it. Registry indexing is external and may lag behind a newly public repository; the custom repository configuration above is the immediate, deterministic path.
+
+## Public repository and privacy
+
+Only publish reusable skill sources, documentation, test fixtures, and release automation. Never commit API keys, passwords, private URLs, exported configuration, session logs, personal data, or machine-local paths. Local planning state, virtual environments, build output, common credential files, and local database files are ignored by `.gitignore`; review `git status` before pushing.
+
+The feature files contain fixed integration-test values and environment-variable placeholders used by the upstream test corpus. They are not production credentials and must not be replaced with real service credentials when running tests.
+
 ## Maintenance
 
 When refreshing to a later NebulaGraph version:

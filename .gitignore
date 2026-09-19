@@ -16,6 +16,25 @@ dist/
 task_plan.md
 findings.md
 progress.md
+.planning/
+
+# Local credentials and machine state
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.sqlite
+*.sqlite3
+*.db
+credentials*.json
 
 # Editor
 .vscode/

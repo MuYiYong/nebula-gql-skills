@@ -86,6 +86,25 @@ README.zh-CN.md
 
 将需要的 skill 目录复制到目标 Agent 或运行时识别的 skills 目录。压缩包不会主动创建 `.github/skills/`；如果目标运行时使用这个工作区级安装位置，请自行创建目标目录后再复制 skill。只安装一个 skill 时，也可以直接将对应单 skill 压缩包解压到目标 skills 目录。skill 文件夹名必须与 `SKILL.md` 中的 `name` 一致。
 
+## CC Switch 发现、安装与更新
+
+CC Switch 可以直接从这个公开 GitHub 仓库发现并安装两个 skill：
+
+1. 打开 **Skills → Repository Management → Add Repository**。
+2. 填写 **Owner** `MuYiYong`、**Name** `nebula-skills`、**Branch** `main`，以及 **Subdirectory** `src`。
+3. 点击 **Refresh**，应看到 `gql-query-generator` 和 `gql-procedure-generator` 两个独立 skill。
+4. 安装需要的 skill。CC Switch 会保存仓库坐标，后续可以据此检查更新。
+
+CC Switch 通过比较远程 skill 的 SHA-256 内容哈希检测变化。点击 **Refresh** 重新扫描仓库，发现新版本后使用 skill 卡片上的更新操作。`src/` 是有意保留的子目录，用于将 skill 源文件与打包脚本、发布元数据分开。
+
+仓库公开后，也可能在 CC Switch 的 `skills.sh` 搜索中出现；公共注册表的索引由外部服务完成，新公开仓库可能需要等待。上面的自定义仓库配置是立即可用且确定的路径。
+
+## 公开仓库与隐私
+
+只发布可复用的 skill 源文件、文档、测试夹具和发布自动化。不要提交 API Key、密码、私有 URL、导出的配置、会话日志、个人数据或本机路径。`.gitignore` 已忽略本地规划状态、虚拟环境、构建产物、常见凭据文件和本地数据库文件；推送前仍应检查 `git status`。
+
+feature 文件中保留了上游测试语料使用的固定集成测试值和环境变量占位符；它们不是生产凭据，运行测试时也不要替换成真实服务凭据。
+
 ## 维护
 
 适配后续 NebulaGraph 版本时：
