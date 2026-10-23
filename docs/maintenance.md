@@ -19,8 +19,7 @@ reference contracts, ZIP byte/link/layout validation and execution of each
 standalone helper outside the checkout. No database or model key is needed.
 GitHub Actions runs this on every PR and main push, including test-only changes.
 The release job requires the successful validation job and publishes its exact
-artifacts. PR jobs have no write permission. No release was published as part
-of this work.
+artifacts. PR jobs have no write permission.
 
 ## Model evaluation
 

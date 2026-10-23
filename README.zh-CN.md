@@ -13,7 +13,7 @@ Skill 包版本使用压缩包文件名中的版本号表示。下表只维护�
 
 | NebulaGraph 版本 | 最新兼容 skill 版本 | 全量压缩包 |
 | --- | --- | --- |
-| `5.3.0` | `26.09.19` | [最新 Release](https://github.com/MuYiYong/nebula-gql-skills/releases/latest) |
+| `5.3.0` | `26.10.23` | [最新 Release](https://github.com/MuYiYong/nebula-gql-skills/releases/latest) |
 
 ## 使用 CC Switch 安装
 

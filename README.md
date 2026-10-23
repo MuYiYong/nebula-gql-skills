@@ -13,7 +13,7 @@ Skill package versions use the version in the archive filename. The table lists 
 
 | NebulaGraph | Latest compatible skill release | All-in-one package |
 | --- | --- | --- |
-| `5.3.0` | `26.09.19` | [Latest release](https://github.com/MuYiYong/nebula-gql-skills/releases/latest) |
+| `5.3.0` | `26.10.23` | [Latest release](https://github.com/MuYiYong/nebula-gql-skills/releases/latest) |
 
 ## Install with CC Switch
 
