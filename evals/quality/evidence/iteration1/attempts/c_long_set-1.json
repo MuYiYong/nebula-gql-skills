@@ -1,0 +1,7 @@
+{
+  "case_id": "c_long_set",
+  "attempt": 1,
+  "query": "VALUE collected_destination_ids SetAgg<STRING>\nMATCH (src:player)-[:follow]->(dst:player)\nPER PATH {\n  SET @collected_destination_ids += dst.id\n}\nRETURN @collected_destination_ids.size() AS distinct_targets",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Generated independently from the designated public prompt and current procedure skill references. Uses Database local temporary graph match-compute, preserves the requested global SetAgg name, collects target primary-key strings, and returns the set size after computation. No database execution performed."
+}

@@ -1,0 +1,7 @@
+{
+  "case_id": "c_long_set",
+  "attempt": 2,
+  "query": "VALUE collected_destination_ids SetAgg<STRING>\nMATCH (source:player)-[:follow]->(destination:player)\nPER PATH {\n  SET @collected_destination_ids += destination.id\n}\nRETURN @collected_destination_ids.size() AS distinct_targets",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Independently generated from the c_long_set public prompt and current procedure skill references. Preserves the required long aggregator name; the uninitialized SetAgg starts empty and deduplicates destination primary keys, including parallel edges. Uses the documented SetAgg.size() member. No database execution performed."
+}

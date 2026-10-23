@@ -1,0 +1,282 @@
+{
+  "compatibility": "5.3.0",
+  "scope": "graph-free read-only fixtures",
+  "producer": {
+    "kind": "reference-fixture"
+  },
+  "results": [
+    {
+      "id": "scalar",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "ed21d81f18106ab8f0b0dc4593a64a757cc2e6a525fb63d05d09f42441a781c0",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "duplicates",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 4,
+      "query_sha256": "0dd247467f3fb617e71f40675d02d7f3db9c76f3634651f7760660980f9eccaf",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "aggregate",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "5ed91a5634f47ffbbed071581621be0c80cf51b581fc85bbeb0f3d9bc4f2b008",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "pagination",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 2,
+      "query_sha256": "ccf98009f80ae2bd230a9009326f053ffce967a88f2449ef438996dc484a34aa",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "cypher-dedup",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "22361b10c09868835df62c8ad361859f387bb3925497e38cebbae52b6949ac32",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "cypher-unwind",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 3,
+      "query_sha256": "f97e37247b01d76d2fea7d0dd9b2f24e64770441e343436ee64544a411e999fd",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "repair-arity",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "22361b10c09868835df62c8ad361859f387bb3925497e38cebbae52b6949ac32",
+      "original_status": "NR002",
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "repair-page",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 2,
+      "query_sha256": "c64851fc1eabcd1ad2e70da94d24d9883d07e1a3268559d3e80ad378b34c9cf7",
+      "original_status": "42N47",
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "repair-reserved",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "77570331e934bbda17b7ecd0c819909b8108147ed0d0e2d69112ef44133688b4",
+      "original_status": "42001",
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "empty",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 0,
+      "query_sha256": "33ab2bcb9bcf7ebb443e937683a8f9e3d10ff6b0ad7699bb5eb5d3c6a8dbac4b",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "null-duplicate",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 3,
+      "query_sha256": "03cc175799eccdf3d12481e2e1c8a997d4d5fe6e6e15aed3867313093db1ecf4",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "typed-values",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "c407031f928c9a96e9eb613b1b61e3ac009305b01ede11bb17b27a38f7d5137c",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    }
+  ],
+  "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
+  "performance": {
+    "evidence": "fixture-specific repeated execution",
+    "optimality": "not established",
+    "pairs": 6,
+    "metadata": {
+      "fixture": "four scalar rows / duplicate pagination",
+      "scale": "4 input rows",
+      "parameters": "fixed literal fixture",
+      "settings": "same client/default settings",
+      "snapshot": "immutable literals",
+      "ordered": true
+    },
+    "baseline": {
+      "median_ms": 1.3998205540701747,
+      "min_ms": 1.2932280078530312,
+      "max_ms": 1.5587408561259508,
+      "p95_ms": 1.5587408561259508
+    },
+    "candidate": {
+      "median_ms": 1.3876165030524135,
+      "min_ms": 1.2425528839230537,
+      "max_ms": 1.6057260800153017,
+      "p95_ms": 1.6057260800153017
+    },
+    "samples_ms": [
+      {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "baseline": 1.3268140610307455,
+        "candidate": 1.4428750146180391
+      },
+      {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "candidate": 1.3557909987866879,
+        "baseline": 1.4217521529644728
+      },
+      {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "baseline": 1.2932280078530312,
+        "candidate": 1.4025340788066387
+      },
+      {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "candidate": 1.2425528839230537,
+        "baseline": 1.3778889551758766
+      },
+      {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "baseline": 1.5587408561259508,
+        "candidate": 1.6057260800153017
+      },
+      {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "candidate": 1.3726989272981882,
+        "baseline": 1.4996589161455631
+      }
+    ],
+    "plans": {
+      "baseline": {
+        "operator": "[P0]CallbackSink",
+        "rows": 2,
+        "memory_kib": 0.0,
+        "time_ms": 0.003238,
+        "children": [
+          {
+            "operator": "[P0]TopN",
+            "rows": 2,
+            "memory_kib": 0.25,
+            "time_ms": 0.02538,
+            "children": [
+              {
+                "operator": "[P0]Unwind",
+                "rows": 4,
+                "memory_kib": 4.703125,
+                "time_ms": 0.024815,
+                "children": [
+                  {
+                    "operator": "[P0]Values",
+                    "rows": 1,
+                    "memory_kib": 0.0,
+                    "time_ms": 0.001961,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "candidate": {
+        "operator": "[P0]CallbackSink",
+        "rows": 2,
+        "memory_kib": 0.0,
+        "time_ms": 0.003523,
+        "children": [
+          {
+            "operator": "[P0]TopN",
+            "rows": 2,
+            "memory_kib": 0.25,
+            "time_ms": 0.024054,
+            "children": [
+              {
+                "operator": "[P0]Unwind",
+                "rows": 4,
+                "memory_kib": 4.703125,
+                "time_ms": 0.024785,
+                "children": [
+                  {
+                    "operator": "[P0]Values",
+                    "rows": 1,
+                    "memory_kib": 0.0,
+                    "time_ms": 0.002053,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "passed": true
+}

@@ -5,7 +5,7 @@
 Two skills for NebulaGraph GQL work:
 
 - `gql-query-generator`: generate, rewrite, and migrate GQL queries.
-- `gql-procedure-generator`: generate procedures, procedure calls, graph algorithms, and TigerGraph GSQL migrations.
+- `gql-procedure-generator`: generate procedure definitions, control flow, graph algorithms, and TigerGraph GSQL migrations.
 
 ## Compatibility
 
@@ -42,9 +42,13 @@ gql-procedure-generator/
 ## Which skill should I use?
 
 - Use `gql-query-generator` for queries, `MATCH`, `WHERE`, `RETURN`, filtering, sorting, paging, aggregation, subqueries, and procedure-call queries.
-- Use `gql-procedure-generator` for `CREATE/ALTER/DROP PROCEDURE`, `CALL`, control flow, `match_compute_statement`, and graph algorithms.
+- Use `gql-procedure-generator` for `CREATE/ALTER/DROP PROCEDURE`, signature design, control flow, `match_compute_statement`, and graph algorithms.
 - If a task defines a procedure and then calls it, use `gql-procedure-generator` first and `gql-query-generator` second.
 
 ## Privacy
 
 This is a public repository. Do not commit passwords, API keys, private URLs, exported configuration, session logs, personal data, or machine-local paths.
+
+## Maintenance
+
+See the [maintainer guide](docs/maintenance.md) for evaluation, incremental refresh and CI gates. Existing-signature CALL/YIELD retrieval belongs to the query skill; definitions, signature design, management and stateful algorithms belong to the procedure skill.

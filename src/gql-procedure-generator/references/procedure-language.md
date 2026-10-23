@@ -41,6 +41,10 @@ Use this file as the detailed NebulaGraph 5.3.0 procedure and Analytics syntax r
 - 迁移时要把“模式优先级 / mode 顺序”和“逐跳扩展执行”分开：mode 顺序保留在过程控制层，图扩展本身改写成有序的单跳 stage，通常用 `WHILE`、`TABLE`、`ACTIVE_SET`、`NODE VALUE` 传递阶段状态。
 - 如果当前信息不足以把 GSQL 多跳模式安全拆成可执行的单跳轮次，输出保守的 staged skeleton 或 planning procedure；不要伪造不可执行的多跳过程体。
 
+## Sequential stages versus NEXT
+
+A match-compute statement completes its state updates before the next procedure statement. Follow it directly with the next MATCH/PER stage or a FOR over the result table. Do not insert NEXT merely to mean “then”: MATCH ... PER PATH { ... } NEXT MATCH ... is invalid. NEXT belongs to the documented query-result pipeline, such as RETURN ... NEXT RETURN ..., and cannot connect arbitrary control or match-compute statements.
+
 ## Internal Syntax Model
 
 ### 1. CREATE PROCEDURE
@@ -73,7 +77,7 @@ CREATE OR REPLACE PROCEDURE ...
 - 支持重载；若用户明确是在可能重载的上下文中定位过程，生成或删除时应靠名称加参数签名唯一化。
 - 若用户同时提到插件加载的同名 UDP 和当前 Schema 中的同名 UDP，要知道调用时插件定义的 UDP 优先。
 - 无返回值过程可写成 `RETURNS ()`，也可省略 `RETURNS` 并以 `FINISH` 结束过程体。
-- 过程定义体内部必须直接是 `procedure_body`，不要包 `USE graph`、`USE #graph` 或 `USE ... { ... }` 外壳。
+- Database 过程体允许文档示例中的 USE 图选择；默认继承调用方图，仅在请求明确指定时保留合法的图上下文。不要把风格偏好当成语法禁令。
 
 ### 2. ALTER PROCEDURE
 
@@ -293,7 +297,7 @@ NODE VALUE seed_id INT
 - 当前声明时不要初始化的稳定聚合器是：`AvgAgg<T>`、`ListAgg<T>`、`SetAgg<T>`、`MapAgg<K, V>`、`TopKAgg<K, SortFields>`。
 - 文档语法图中常用 `INT` 表示整型输入；若当前上下文已经明确使用 `INT64` 等整型别名，可沿用同类整型，但不要把这条放宽成列表、记录、向量、地理空间、`MAP` 或聚合器类型。
 - 聚合器类型参数必须按文档白名单收紧，不要“看起来像能装进去”就继续嵌套：
-  - 数值聚合器 `SumAgg<T>`、`AvgAgg<T>`、`MinAgg<T>`、`MaxAgg<T>` 的 `T` 只允许数值类型，即整型族或 `DOUBLE`；不要生成 `STRING`、`BOOLEAN`、`LIST`、`RECORD`、`VECTOR`、地理空间或其它聚合器作为其输入类型。
+  - 各聚合器的类型参数按对应文档声明分别核对。`SumAgg<T>` 公开支持 INT8/INT16/INT32/INT64/FLOAT/DOUBLE/STRING，其中 STRING 用于拼接；不能把它误判为仅数值或擅自改为列表。其它聚合器不要沿用同一白名单。
   - 布尔聚合器 `AndAgg`、`OrAgg` 只接受 `BOOLEAN` 输入，且本身不带类型参数。
   - `ListAgg<T>` 的 `T` 只允许文档明确的值载荷类型：稳定标量、`LIST<data_type>` 或 `RECORD{...}`；不要把另一个聚合器、`ACTIVE_SET`、表变量、图变量、文件变量或匿名未确认对象当作 `T`。
   - `SetAgg<T>` 的 `T` 只允许去重键型标量：整型族、`DOUBLE`、`STRING`；不要生成 `BOOLEAN`、`LIST`、`RECORD`、`VECTOR`、地理空间或任意聚合器元素类型。
@@ -335,7 +339,7 @@ NODE VALUE seed_id INT
 - `SetAgg<T>` 的元素类型必须收紧为文档白名单里的键型标量：整型族、`DOUBLE`、`STRING`；`SetAgg<BOOLEAN>`、`SetAgg<LIST<INT>>`、`SetAgg<RECORD{...}>`、`SetAgg<MapAgg<...>>` 都不要生成。
 - `SetAgg<T>` 虽然返回 `LIST<T>`，但语义是去重集合；不要依赖其返回顺序表达业务含义。
 - `SetAgg<T>` 声明时无须指定初始值；不要生成 `VALUE seen SetAgg<STRING> = []` 之类声明期初始化。
-- `SetAgg` 变量名的声明标识符本体必须控制在 15 个字符以内；使用时附加的 `@` 前缀与 `node.` / `NODE(id_expr).` 访问前缀不计入长度。当前实现中，超过这个上限容易触发 bug，因此默认优先生成短名，如 `seen`、`seen_ids`、`frontier`。
+- `SetAgg` 标识符遵循公开文档的 127 字符上限；旧的 15 字符规避建议源于基线发布前已修复的问题，不构成 5.3.0 限制。保留用户给定的合法长变量名。
 - `SetAgg<T>` 支持 `=` 右值为 `LIST<T>` 或同类型 `SetAgg<T>`，也支持 `+=` 右值为单个 `T`、`LIST<T>` 或同类型 `SetAgg<T>`；若文档已支持相应隐式转换，就不要默认补 `CAST`；只有需要强制固定元素类型时，再显式 `CAST(...)` 到 `T` 或 `LIST<T>`；其合并语义始终保持去重，不要把它当保序列表使用。
 - `MapAgg<K, V>` 的 key 类型必须收紧为键型标量：整型族、`DOUBLE`、`STRING`；不要把 `BOOLEAN`、`LIST`、`RECORD`、`VECTOR`、地理空间或其它聚合器写成 key。
 - `MapAgg<K, V>` 声明时无须指定初始值；不要生成 `VALUE buckets MapAgg<INT, SumAgg<INT>> = []`、`= {}` 或其它声明期初始化。
@@ -665,7 +669,7 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 
 ## Hard Constraints
 - 用户显式指定本 skill 时，禁止输出普通 `match_statement` 或普通 `MATCH` 版本作为最终答案。
-- 禁止在 `CREATE PROCEDURE` / `ALTER PROCEDURE` 的过程定义内部包 `USE graph`、`USE #graph` 或 `USE ... { ... }`。
+- 不要凭空增加图选择；Database 文档允许过程体中的 USE，明确指定的合法图上下文不应被删除。
 - 禁止在 `PER PATH` / `PER NODE` 内生成 `FOR`。
 - 禁止给 `match_compute_statement` 的 `PER PATH` / `PER NODE` / `FINALLY` 外面再套一层圆括号。
 - 禁止生成 `NODE VALUE <name> <scalar_type>` 这类点绑定标量声明。
@@ -680,7 +684,7 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 禁止在使用全局聚合值变量时裸写变量名；必须写成 `@agg_name`。
 - 禁止把点绑定聚合值变量写成 `node.agg_name`、`NODE(id_expr).agg_name` 或普通属性访问；必须写成 `node.@agg_name` / `NODE(id_expr).@agg_name`。
 - 禁止把所有类型差异都机械地改写成 `CAST(... AS ...)`；只有文档不支持隐式转换、会报错，或用户明确要求固定目标类型时才显式转换。
-- 禁止给 `SumAgg` / `AvgAgg` / `MinAgg` / `MaxAgg` 生成非数值类型参数，如 `SumAgg<STRING>`、`AvgAgg<RECORD{...}>`。
+- SumAgg<STRING> 是文档支持的拼接。其它聚合器按各自声明核对类型；例如不要给 AvgAgg 使用 RECORD/BOOLEAN。不能用统一的“仅数值”规则覆盖所有聚合器。
 - 禁止生成 `AndAgg<BOOLEAN>`、`OrAgg<BOOLEAN>` 或任何给 `AndAgg` / `OrAgg` 添加类型参数的写法。
 - 禁止生成 `SetAgg<BOOLEAN>`、`SetAgg<LIST<...>>`、`SetAgg<RECORD{...}>`、`SetAgg<MapAgg<...>>` 等非键型 `SetAgg`。
 - 禁止生成 `MapAgg<K, MapAgg<...>>` 或任何 value 不在文档白名单内的 `MapAgg<K, V>`。
@@ -715,7 +719,7 @@ EXPORT <value_expression> [AS <identifier>], ... INTO <table_or_file_variable>
 - 所有点绑定聚合值变量在使用位置是否都写成了 `node.@agg_name` 或 `NODE(id_expr).@agg_name`？
 - 如果存在类型差异，是否先判断过文档是否支持该隐式转换，而不是机械地一律补 `CAST(... AS ...)`？
 - 只有在隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式补上了 `CAST(... AS ...)`？
-- 如果用了 `SumAgg` / `AvgAgg` / `MinAgg` / `MaxAgg`，是否确认类型参数只落在数值类型上？
+- 是否按每个聚合器自己的公开类型签名检查？SumAgg<STRING> 是合法的字符串拼接，不应按数值规则拒绝。
 - 如果用了 `AndAgg` / `OrAgg`，是否确认其声明没有附带类型参数，例如没有生成 `OrAgg<BOOLEAN>`？
 - 如果用了 `ListAgg`，是否确认元素类型只落在稳定标量、`LIST<data_type>` 或 `RECORD{...}` 上，而不是再塞入聚合器或未确认复杂对象？
 - 如果用了 `SetAgg`，是否确认元素类型只落在整型族、`DOUBLE`、`STRING` 这类键型标量上？

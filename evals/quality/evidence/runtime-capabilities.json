@@ -1,0 +1,6 @@
+{
+  "requested_mode": "distributed Analytics empty temp graph only",
+  "query": "CREATE TEMPORARY GRAPH #gql_quality_mode_4a3948572809412d94dbcc94d5dab3c4 TYPED basketballplayer_type PARTITION BY DEFAULT",
+  "status": "NI000",
+  "diagnostic": "Invalid parameter: PARTITION BY is not supported when create temporary graph in graphd service"
+}

@@ -1,6 +1,6 @@
 ---
 name: gql-query-generator
-description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3.0 GQL 查询。Use for DQL, MATCH, FILTER, RETURN, WHERE, YIELD, ORDER BY, GROUP BY, LIMIT, OFFSET, CALL, graph patterns, expressions, variables, statement blocks, nearest-neighbor queries, parameterized queries, error-driven rewrites, and Cypher/openCypher or nGQL-to-GQL migration. Do not use for graph algorithms or traversal procedures that require match_compute_statement.
+description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3.0 GQL 查询。Use for DQL, MATCH, FILTER, RETURN, WHERE, YIELD, ORDER BY, GROUP BY, LIMIT, OFFSET, CALL, graph patterns, expressions, variables, statement blocks, nearest-neighbor queries, parameterized queries, error-driven rewrites, and Cypher/openCypher or nGQL-to-GQL migration. Own relational CALL/OPTIONAL CALL pipelines using an existing signature, including inline read-only subqueries. Exclude procedure definition/management, stateful algorithms, TigerGraph GSQL procedures, and NebulaGraph 3.x nGQL-only or Neo4j-only requests.
 ---
 
 # GQL Query Generator
@@ -9,11 +9,25 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 
 ## Workflow
 
-1. 判断目标是查询还是过程。若用户要定义过程、实现图算法或使用 `match_compute_statement`，切换到 `gql-procedure-generator`。
+1. 按意图而非 `CALL` 关键字路由：已有签名的调用、YIELD 后过滤/聚合/分页和只读内联子查询由本技能处理；定义/管理过程、设计签名、状态循环和匹配计算由过程技能处理。纯 Neo4j 或 3.x nGQL 任务不触发；用户明确迁移到 5.3 GQL 时才触发。判断目标是查询还是过程。若用户要定义过程、实现图算法或使用 `match_compute_statement`，切换到 `gql-procedure-generator`。
 2. 提取图名、节点/边类型与标签、属性、方向、过滤、聚合、排序、分页和返回列。未知标识符使用 `<graph_name>`、`<node_type>` 等占位符，不臆造 schema。
 3. 先生成保持语义的最小基线查询。用户要求性能优化、查询形状可能放大中间结果或提供了 schema/索引/PROFILE 时，再按 [performance.md](references/performance.md) 生成候选；不要把依赖数据分布的猜测直接写进基线。
 4. 按下方路由只加载与请求相关的参考。函数先在完整函数目录中按名称精确检索；其它语法先在完整语法目录中按关键字精确检索，再按需读取专题参考。
-5. 生成后逐项执行 [validation.md](references/validation.md) 的检查；文档目录内的能力不因缺少 feature 或常用示例而拒绝，只有文档限制或已确认的实现冲突才触发降级。性能结论还必须标明是结构推断、静态计划、隔离 PROFILE 还是业务数据验证。
+5. 生成后执行短清单 [checklist.md](references/checklist.md)，再按当前语法定位完整 validation 的相关章节；文档目录内的能力不因缺少 feature 或常用示例而拒绝，只有文档限制或已确认的实现冲突才触发降级。性能结论还必须标明是结构推断、静态计划、隔离 PROFILE 还是业务数据验证。
+
+## Bounded Local Lookup
+
+包内脚本仅依赖 Python 3 标准库，路径相对本技能根目录：
+
+```sh
+python3 scripts/skill_tools.py lookup list_distinct
+python3 scripts/skill_tools.py lookup "OPTIONAL MATCH" --kind topic --limit 4000
+python3 scripts/skill_tools.py lint candidate.gql --scope database
+```
+
+函数查询同时返回签名、环境和文档键；主题查询返回命中章节及行号。主题优先返回精确标题，`other_matches` 表示其他正文提及，可用 `--all-matches` 加载。若 `next_offset` 非空，按需用 `--offset` 继续；截断结果不能作为完整能力依据。无 Python 时用精确名称检索对应 Markdown。静态检查只识别部分错误；无报错不等于语法、类型或语义通过。
+
+修复任务按 [repair.md](references/repair.md) 保留原始语义和错误证据。先定位一类错误、做最小修改、复核相关约束；没有数据库验证时明确标注未执行。
 
 ## Reference Routing
 

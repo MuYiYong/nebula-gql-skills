@@ -1,0 +1,7 @@
+{
+  "case_id": "c_degrees",
+  "attempt": 2,
+  "query": "NODE VALUE out_degree SumAgg<INT64> = 0\nTABLE degrees {id STRING, degree INT64}\n\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET s.@out_degree += 1\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@out_degree AS degree INTO degrees\n}\n\nFOR row IN degrees\nRETURN row.id AS id, row.degree AS degree",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Independent generation from the public c_degrees prompt and current procedure skill references. Database local temporary graph; each directed follow edge contributes one, including parallel edges; a separate zero-hop pass exports every player, including zero-outdegree players. Public-reference checks only; not executed against a database."
+}

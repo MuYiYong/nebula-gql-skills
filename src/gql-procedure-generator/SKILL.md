@@ -1,6 +1,6 @@
 ---
 name: gql-procedure-generator
-description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3.0 GQL Procedure/UDP。Use for TigerGraph GSQL migration, server-side programming, graph algorithms, traversal logic, match_compute_statement, named or inline procedures, CREATE/ALTER/DROP PROCEDURE, CALL or OPTIONAL CALL, control flow, variables, distributed tables, PER PARTITION, logging, and procedure inspection. Do not use for ordinary MATCH/RETURN retrieval queries.
+description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3.0 GQL Procedure/UDP。Use for TigerGraph GSQL migration, server-side programming, graph algorithms, traversal logic, match_compute_statement, named or inline procedures, CREATE/ALTER/DROP PROCEDURE, procedure signature design, control flow, variables, distributed tables, PER PARTITION, logging, and procedure inspection. Route existing-signature CALL/YIELD retrieval pipelines and read-only inline subqueries to gql-query-generator; do not trigger on CALL alone or ordinary MATCH/RETURN queries.
 ---
 
 # GQL Procedure Generator
@@ -9,12 +9,27 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 
 ## Workflow
 
-1. 确认目标是创建、替换、修改、删除、调用、查看过程，还是把 TigerGraph GSQL/自然语言算法迁移为 GQL Procedure。
+1. 按意图路由：定义/管理过程、设计签名、过程内控制流或状态算法由本技能处理。已有签名的独立调用、CALL/YIELD 后的检索和只读内联子查询交给 gql-query-generator；不要仅因出现 CALL 同时加载两个技能。混合任务先完成定义，再按需读取查询参考。
 2. 提取过程名、参数、返回列、运行环境（Database 或 Analytics）、图类型、状态变量、控制流、副作用和终止条件。
-3. 在过程作用域开头声明全部变量。把运行中才得到的值先声明，再在后续语句中赋值。
-4. 普通过程逻辑使用 statement block；图遍历或算法逻辑使用 `match_compute_statement`。多跳算法拆成 `WHILE` 驱动的多轮 0/1 跳计算。
-5. 按下方路由加载相关参考；函数和成员方法先在完整函数目录中精确检索，其它语法先在完整语法目录中精确检索。涉及分布式表时必须读取 [distributed-tables.md](references/distributed-tables.md)，涉及 `IMPORT INTO GRAPH` 后的匹配计算时必须读取 [import-match-compute.md](references/import-match-compute.md)。
-6. 生成后执行 [validation.md](references/validation.md)；无法证明可执行时降级为 staged skeleton，并清楚保留用户的阶段、优先级和副作用意图。
+3. 区分 Database 本地临时图与 Analytics 分布式临时图：两者均有文档化的 match-compute；只有后者使用 PARTITION BY DEFAULT/PER PARTITION。聚合器和 ACTIVE_SET 在顶层过程作用域声明，不能塞进内联 CALL 子作用域。
+4. 在过程作用域开头声明全部变量。把运行中才得到的值先声明，再在后续语句中赋值。
+5. 普通过程逻辑使用 statement block；图遍历或算法逻辑使用 `match_compute_statement`。多跳算法拆成 `WHILE` 驱动的多轮 0/1 跳计算。
+6. 按下方路由加载相关参考；函数和成员方法先在完整函数目录中精确检索，其它语法先在完整语法目录中精确检索。涉及分布式表时必须读取 [distributed-tables.md](references/distributed-tables.md)，涉及 `IMPORT INTO GRAPH` 后的匹配计算时必须读取 [import-match-compute.md](references/import-match-compute.md)。
+7. 生成后执行短清单 [checklist.md](references/checklist.md)，按当前语法定位完整 validation 的相关章节；无法证明可执行时降级为 staged skeleton，并清楚保留用户的阶段、优先级和副作用意图。
+
+## Bounded Local Lookup
+
+包内脚本仅依赖 Python 3 标准库，路径相对本技能根目录：
+
+```sh
+python3 scripts/skill_tools.py lookup list_distinct
+python3 scripts/skill_tools.py lookup "OPTIONAL MATCH" --kind topic --limit 4000
+python3 scripts/skill_tools.py lint candidate.gql --scope database
+```
+
+函数查询同时返回签名、环境和文档键；主题查询返回命中章节及行号。主题优先返回精确标题，`other_matches` 表示其他正文提及，可用 `--all-matches` 加载。若 `next_offset` 非空，按需用 `--offset` 继续；截断结果不能作为完整能力依据。无 Python 时用精确名称检索对应 Markdown。静态检查只识别部分错误；无报错不等于语法、类型或语义通过。
+
+修复任务按 [repair.md](references/repair.md) 保留原始语义和错误证据。先定位一类错误、做最小修改、复核相关约束；没有数据库验证时明确标注未执行。
 
 ## Reference Routing
 
@@ -26,15 +41,16 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 - 用户指定 BFS、SSSP、PageRank、Louvain、Leiden 等算法：先检索 `tests/features/analytic/algo/` 中对应 5.3.0 feature，再按其过程结构生成或改写。
 - 大型全局聚合器或 `global_agg_chunk_size`：检索 `tests/features/analytic/aggregator/GlobalAggChunking.feature`；保持普通聚合器语法，不手工实现传输分块。
 - 输出骨架、算法模式、TigerGraph 迁移与负例：读取 [examples.md](references/examples.md) 的对应小节。
-- 最终静态检查：始终读取 [validation.md](references/validation.md)。
+- 最终检查：始终读取 [checklist.md](references/checklist.md)，复杂结构再检索 [validation.md](references/validation.md) 对应章节。
 - 追溯文档、feature 与能力覆盖：需要维护或核实来源时读取 [source-map.md](references/source-map.md) 和 [coverage.md](references/coverage.md)。
 
 不要一次性加载完整的长参考，也不要通读两个完整目录。先用函数名、成员方法、`CREATE PROCEDURE`、`MATCH COMPUTE`、`ACTIVE_SET`、`PER PARTITION`、聚合器名称或源语言关键字定位章节。
 
 ## Hard Guardrails
 
-- `CREATE PROCEDURE ... AS { ... }` 的过程体内不要包 `USE graph`；调用方负责选择图。
+- Database 文档允许过程体中的 `USE graph`。默认继承调用方的图；用户明确指定已知图时保留合法 USE，不臆造或强行删除图上下文。
 - 算法/遍历场景使用 `match_compute_statement`，不要退化成普通查询式 `MATCH ... RETURN`。
+- 匹配计算、局部表导出和后续 FOR 是顺序过程语句；不要在 MATCH ... PER PATH/PER NODE/FINALLY 与下一过程阶段之间插入 NEXT。NEXT 只连接文档允许的查询结果管线，不是通用阶段分隔符。
 - 每个 `match_compute_statement` 只生成 0 跳或 1 跳图模式。两条及以上边段必须拆成多轮单跳 stage。
 - `match_compute_statement` 中只引用当前边或点和常量/参数的局部条件直接写入对应 pattern `WHERE`；活动集、跨元素和结果级条件保留在 graph pattern `WHERE` 或过程块中。不要为谓词下推引入多跳或 `ACYCLIC`。
 - 将 `PER NODE`、`PER PATH` 和 `FINALLY` 直接放在 `MATCH <graph_pattern>` 后，不添加外层圆括号。

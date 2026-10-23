@@ -1,0 +1,7 @@
+{
+  "case_id": "c_degrees",
+  "attempt": 1,
+  "query": "NODE VALUE out_degree SumAgg<INT64> = 0\nTABLE degree_rows {id STRING, degree INT64}\n\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET s.@out_degree += 1\n}\nNEXT\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@out_degree AS degree INTO degree_rows\n}\nNEXT\nFOR row IN degree_rows\nRETURN row.id AS id, row.degree AS degree",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Independent generation from the c_degrees public prompt and bundled procedure references only. Database LOCAL temporary graph inherited from the caller. Counts each outgoing follow edge with NODE VALUE SumAgg; a separate zero-hop pass exports every player, including zero-outdegree players, to a local TABLE. No database execution performed."
+}

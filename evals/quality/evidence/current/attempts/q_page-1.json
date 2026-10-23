@@ -1,0 +1,7 @@
+{
+  "case_id": "q_page",
+  "attempt": 1,
+  "query": "MATCH (p:player)\nRETURN p.id AS id, p.age AS age\nORDER BY age DESC NULLS LAST, id ASC\nOFFSET 1\nLIMIT 2;",
+  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+  "notes": "Generated from the public q_page prompt and current query skill references. No database execution. NULL ages preserved; unique id provides deterministic ties."
+}

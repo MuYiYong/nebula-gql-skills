@@ -1,0 +1,7 @@
+{
+  "case_id": "q_optional",
+  "attempt": 2,
+  "query": "MATCH (s:player)\nOPTIONAL MATCH (s)-[:follow]->(d:player WHERE d.age > $min_age)\nRETURN s.id AS src, d.id AS dst;",
+  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+  "notes": "依据当前查询技能及 OPTIONAL MATCH、pattern WHERE 和结果契约参考生成；年龄条件位于可选模式内部，保留无合格目标的 NULL 行及平行边重复。未执行数据库验证。"
+}

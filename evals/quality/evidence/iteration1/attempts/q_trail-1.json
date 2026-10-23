@@ -1,0 +1,7 @@
+{
+  "case_id": "q_trail",
+  "attempt": 1,
+  "query": "MATCH p = TRAIL (s:player {id: $seed})-[:follow]->{1,3}(t:player)\nRETURN transform(nodes(p), n -> n.id) AS node_ids;",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Used documented TRAIL, edge quantifier, nodes(PATH), and transform(LIST, lambda). Plain RETURN preserves duplicate rows for distinct parallel-edge paths; node IDs retain traversal order. Static reference review only; no database execution."
+}

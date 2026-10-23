@@ -275,7 +275,7 @@ Key rule:
 - `t TABLE` 可接收分布式表引用，但不因此支持 `size(t)`、直接 `FOR ... IN t` 或其它整表操作。
 
 ## Negative patterns
-- 不要在 `CREATE PROCEDURE` 体里包 `USE graph` 或 `USE #graph`。
+- 不要臆造过程的工作图；Database 过程允许显式 USE，缺省继承调用方。
 - 不要在用户显式指定本技能时退回普通 `MATCH ... RETURN ...`。
 - 不要生成 `NODE VALUE seed_id INT` 这种点绑定标量变量。
 - 不要在 `PER PATH` / `PER NODE` 内写 `FOR`。
@@ -285,8 +285,8 @@ Key rule:
 - 不要把所有类型差异都机械地改写成 `CAST(... AS ...)`；只有文档不支持隐式转换或目标类型必须固定时才显式转换。
 - 不要生成 `OrAgg<BOOLEAN>`、`AndAgg<BOOLEAN>` 这种带类型参数的布尔聚合器声明；应写成 `VALUE flag OrAgg = false`、`VALUE flag AndAgg = true`。
 - 不要给 `AvgAgg`、`ListAgg`、`SetAgg`、`MapAgg`、`TopKAgg` 的声明默认补初始值，例如 `VALUE avg AvgAgg<DOUBLE> = 0`、`VALUE ids ListAgg<INT64> = []`、`VALUE topk TopKAgg<3, score INT DESC> = 1` 都是错误方向。
-- 不要给 `SetAgg` 生成超过 15 个字符的变量名，例如 `VALUE deduplicated_vertex_ids SetAgg<STRING>` 是高风险写法；应缩短成 `VALUE seen_ids SetAgg<STRING>`、`VALUE frontier SetAgg<STRING>` 这类短名。
-- 不要生成 `SumAgg<STRING>`、`AvgAgg<BOOLEAN>`、`MinAgg<RECORD{...}>` 这类非数值聚合器类型参数。
+- `SetAgg` 标识符遵循公开文档的 127 字符上限；旧的 15 字符规避建议源于基线发布前已修复的问题，不构成 5.3.0 限制。保留用户给定的合法长变量名。
+- SumAgg<STRING> 是文档支持的拼接。其它聚合器按各自声明核对类型；例如不要给 AvgAgg 使用 RECORD/BOOLEAN。不能用统一的“仅数值”规则覆盖所有聚合器。
 - 不要生成 `SetAgg<BOOLEAN>`、`SetAgg<LIST<INT>>`、`SetAgg<RECORD{...}>` 或其它非键型标量 `SetAgg`。
 - 不要生成 `MapAgg<INT64,MapAgg<INT64,SumAgg<DOUBLE>>>`；`MapAgg` 的 value 只能是文档白名单里的嵌套聚合器，不能再嵌套 `MapAgg`。
 - 不要把 `TopKAgg` 当成标量聚合器，例如 `SET @topk += 1`、`TopKAgg<3, score LIST<INT> DESC>` 都是错误方向。

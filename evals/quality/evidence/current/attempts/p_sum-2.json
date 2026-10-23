@@ -1,0 +1,11 @@
+{
+  "case_id": "p_sum",
+  "attempt": 2,
+  "query": "VALUE total INT64 = 0\nVALUE i INT64 = 1\nWHILE i <= $n THEN {\n  SET total = total + i\n  SET i = i + 1\n}\nRETURN total AS total",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": [
+    "依据公开提示和当前 Procedure 技能及相关语法参考独立生成。",
+    "total 和 i 显式声明为 INT64；n <= 0 时循环不执行，total 保持 0。",
+    "未执行数据库验证。"
+  ]
+}

@@ -1,0 +1,1599 @@
+{
+  "kind": "judge_calibration_not_model_quality",
+  "suite_sha256": "2b6d3b621fc0c273e98fdc86c68c35af70567fb301143694ed4b5954d09b21b5",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "runner_sha256": "c35d961df78686640fd3c940b8dcc10d8b95260fb095b48e653dad780f113a78",
+  "cases": [
+    {
+      "id": "q_optional",
+      "reference": {
+        "case_id": "q_optional",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "development",
+        "output_sha256": "f4fd80e0384ab01c1653636049d64f8df88cdf539d58620e44afebdf150c166b",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 8,
+            "actual_rows": 8,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "d24fb1c4a5fb7920be9dfedea937c910448a268a6595c24339d49a53689d501b",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "branching",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 6,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "135d18931eed7d2fc22112c861b02cf87674dd76d01c9a32ba3c92e9cf05aa12",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "q_optional",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "development",
+        "output_sha256": "b40f65948c59be305075042781c0d513ea2e4f0d97d6237a65c56fe18f9353bb",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 8,
+            "actual_rows": 7,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "b01053839a2ecd6fdd5d196a5d5b51344b37c53fea84e26a901bc781771de573",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "branching",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 6,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "135d18931eed7d2fc22112c861b02cf87674dd76d01c9a32ba3c92e9cf05aa12",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "STRING"
+            ],
+            "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "q_group",
+      "reference": {
+        "case_id": "q_group",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "development",
+        "output_sha256": "636ba0a73c15a83c8c4147b6a9ec2ab2bf4b3dada287386df0a25a6e1b5af02a",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "INT64",
+              "INT64"
+            ],
+            "result_sha256": "69e94205615a29d1f544932e1a7304f3f623f29a08d7a4a92f511b4f83618f60",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 4,
+            "actual_rows": 4,
+            "column_types": [
+              "INT64",
+              "INT64"
+            ],
+            "result_sha256": "89ad4baf6315785729aa244407e8c7e11dc8d8510ffca6809d12853420aa7f33",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "INT64",
+              "INT64"
+            ],
+            "result_sha256": "ca2d72ee4b3f763738620c5534652119333563ee6a626d5cba456225b4d58f6c",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "q_group",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "development",
+        "output_sha256": "0462fbe132b0557031ccda64fd78aff3df3e16c521a91cef913044e466262edb",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "INT64",
+              "INT64"
+            ],
+            "result_sha256": "9257e2a3c2da99c94563bc4b29cd8902f053b73154465caf55cdd46ce0fdd155",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 4,
+            "actual_rows": 4,
+            "column_types": [
+              "INT64",
+              "INT64"
+            ],
+            "result_sha256": "89ad4baf6315785729aa244407e8c7e11dc8d8510ffca6809d12853420aa7f33",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "INT64",
+              "INT64"
+            ],
+            "result_sha256": "ca2d72ee4b3f763738620c5534652119333563ee6a626d5cba456225b4d58f6c",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "q_trail",
+      "reference": {
+        "case_id": "q_trail",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "development",
+        "output_sha256": "149de2e8c2e12dfac58d2ddb1c851d53120c5abf55cb87f7afdf4f64914159b9",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 13,
+            "actual_rows": 13,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "983470d2dade5c35d0432af8ff5194f0b0e958fe390573a5cfe0342248ced0d0",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "branching",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 6,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "20f3bc0a1b9bc1f8ddd5526250e0a3a18153f2469834e338db84e787a78b20a0",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "q_trail",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "development",
+        "output_sha256": "ace64c01194bbe7b877107cfa69e8e42eff4b37c5be5d497a26cbc24de4492e8",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 13,
+            "actual_rows": 8,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "9053be459c0d9c64c5a05e1fc1b926edeb653b0cb32264d12e42fc225402e415",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "branching",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 2,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "4990cccba209278b5a393901a853b13292a93d5a50fbd19f607a2c2f42673d25",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "q_anti",
+      "reference": {
+        "case_id": "q_anti",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "holdout",
+        "output_sha256": "c9d06541b7ed232b9a8cf06139086b54e13b7183338eb561a9970ca7886c4e18",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 2,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "f7c866e7482097292fbff0cdbc80de018e6621d6c777e5e0dd0029f524037781",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "c4d0ed1c8ab364a7bf5a9a6a35d289a1018b7287d2f3651c277e20de48e84b26",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "efc28590c90aa11b24e3933da691b885ae05e073a2656e0a149ce10684fd1362",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "q_anti",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "holdout",
+        "output_sha256": "b0122138696908e08260fbef4bebbe1adf93bc7283033eadc9c7bab7b8268379",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 4,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "22448b337cd7bbe593ef3186f9752608e438f4199425422c0ba5adfc928dbd22",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 4,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "ba5d021c0a0f7ab73f4e9b75af16ab68b28c072df41e51681d035e699c6e4041",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "efc28590c90aa11b24e3933da691b885ae05e073a2656e0a149ce10684fd1362",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "q_page",
+      "reference": {
+        "case_id": "q_page",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "holdout",
+        "output_sha256": "1615398ae7017fba5c048360fa33a938df939b2165ab63a313bb12e87173228f",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 2,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "ae1c143e5db4a6516bdfbbb4e01609c4c01ea0314d778e2084e1b45087961843",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 2,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "5540562bdb925dae6d4bd63709bc954defc45d8d3bf0aebf6441e17b59c7b023",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "70812f9c2535f03c486eb6f7d451be21b8d98078ac2894d72b830e7367345ea3",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "q_page",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "holdout",
+        "output_sha256": "2000c95e9b3ad017345f5e47060d9f27e6c78b6b19e183d99ba6c10cfc70306e",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 2,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "4a72ceea99fa088cc50a3d93f0d0b0c97e0f91416b83a8e637f2e53757c337b4",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 2,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "5540562bdb925dae6d4bd63709bc954defc45d8d3bf0aebf6441e17b59c7b023",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "70812f9c2535f03c486eb6f7d451be21b8d98078ac2894d72b830e7367345ea3",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "q_acyclic",
+      "reference": {
+        "case_id": "q_acyclic",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "holdout",
+        "output_sha256": "a666e0f8f6aeb3b2f6c5359ada1ab08cb983f8a23b110492661b531433f0e912",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 8,
+            "actual_rows": 8,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "9053be459c0d9c64c5a05e1fc1b926edeb653b0cb32264d12e42fc225402e415",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 2,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "4990cccba209278b5a393901a853b13292a93d5a50fbd19f607a2c2f42673d25",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "q_acyclic",
+        "attempt": 1,
+        "stratum": "query",
+        "split": "holdout",
+        "output_sha256": "a340c5fd22c36040eb9b0530828bb20008d4670ba8e8b95b57d4842229aebf63",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 8,
+            "actual_rows": 13,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "983470d2dade5c35d0432af8ff5194f0b0e958fe390573a5cfe0342248ced0d0",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 2,
+            "actual_rows": 6,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "20f3bc0a1b9bc1f8ddd5526250e0a3a18153f2469834e338db84e787a78b20a0",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "LIST"
+            ],
+            "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "p_sum",
+      "reference": {
+        "case_id": "p_sum",
+        "attempt": 1,
+        "stratum": "database_procedure",
+        "split": "development",
+        "output_sha256": "fbcd296640875181bdfbc8727cd27a6f18d7bdada2972dea8234949f5281498b",
+        "instances": [
+          {
+            "variant": "scalar",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 2,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "c19aa3bd49c74dac5f7b31cab935422392baf99f8f1149dd8309c913888633bd"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 3,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "f160e4e4935854f18317b5f32ba48a7841a71c1aa7cad5a8719b7c0f6c5ae272"
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "p_sum",
+        "attempt": 1,
+        "stratum": "database_procedure",
+        "split": "development",
+        "output_sha256": "772e5c2bfea16edbec9593f2444488d01b603d60bf2f5e792570ec11221a6891",
+        "instances": [
+          {
+            "variant": "scalar",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 2,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "e553a1381f7edeb6348139e9d653df0c725fddeb5169024801b688583e5f1334"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 3,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "99169803051e054477a3224d5de9db7a6841982d869ebea579af91c13249fb09"
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "p_contributions",
+      "reference": {
+        "case_id": "p_contributions",
+        "attempt": 1,
+        "stratum": "database_procedure",
+        "split": "development",
+        "output_sha256": "d94fbf48e2a94842e67136aeb91c3db6e8a54e46658e119760e294f6896744e6",
+        "instances": [
+          {
+            "variant": "scalar",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "310315f952ac8eb935db1dc5e858ccd90f30922a841c8af15efcf741a45d41ea"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 2,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "p_contributions",
+        "attempt": 1,
+        "stratum": "database_procedure",
+        "split": "development",
+        "output_sha256": "77c4d753dba272737e3af2cf706d23a80edccb13c97a5bde2fcfd5b6bbf7f1df",
+        "instances": [
+          {
+            "variant": "scalar",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "e553a1381f7edeb6348139e9d653df0c725fddeb5169024801b688583e5f1334"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 2,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT64"
+            ],
+            "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "p_branch",
+      "reference": {
+        "case_id": "p_branch",
+        "attempt": 1,
+        "stratum": "database_procedure",
+        "split": "holdout",
+        "output_sha256": "9df7f4890d16174ce8b96a8012f9930fdb0a53419ead746282e9a6300796e4e5",
+        "instances": [
+          {
+            "variant": "scalar",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "1408d7289ad6349deaa14cad10018bba227aa9ed6a7437a3465641e97d6599a6"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "86f7311f2d8819723f853ce48f486aba59d2d56139f3cf9239f15a228131380c"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 2,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "4bbf09cc7ac4ce8d6d6598e6b46ca2c04b673cd1c24bc75329af5eabecbade70"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 3,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "f6a2dd3ca7a20a80d7353941ada6613638ff727523b7606b0f213d99a7f2e5ec"
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "p_branch",
+        "attempt": 1,
+        "stratum": "database_procedure",
+        "split": "holdout",
+        "output_sha256": "43894e94af18d664c5a5ac02533d9bf48109307208fcc81364224018bcdaa4ab",
+        "instances": [
+          {
+            "variant": "scalar",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "1408d7289ad6349deaa14cad10018bba227aa9ed6a7437a3465641e97d6599a6"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 1,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "86f7311f2d8819723f853ce48f486aba59d2d56139f3cf9239f15a228131380c"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 2,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "86f7311f2d8819723f853ce48f486aba59d2d56139f3cf9239f15a228131380c"
+          },
+          {
+            "variant": "scalar",
+            "parameters_index": 3,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "STRING"
+            ],
+            "result_sha256": "f6a2dd3ca7a20a80d7353941ada6613638ff727523b7606b0f213d99a7f2e5ec"
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "c_degrees",
+      "reference": {
+        "case_id": "c_degrees",
+        "attempt": 1,
+        "stratum": "local_compute",
+        "split": "development",
+        "output_sha256": "014334968284de9bbee5f7ded34b7549f737a04e54b4c77544fb135df51fff5f",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 6,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "7ae07dd9a72afb578f2759b8f0c870d7a906a1c7722446a3607e118052f7b842",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "6130d90dd0e833b1e927818dd98630bbc4fe70582a1051067295e32017ea7d9b",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "c908fb40bd36e6e74e1bcba5390545029c9dbe434ca2862b472c03b75d194d77",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "c_degrees",
+        "attempt": 1,
+        "stratum": "local_compute",
+        "split": "development",
+        "output_sha256": "41a504f7010640dfd9494aa4ea09bb7abf48f327b4bebcd5bf802f7b090d46b2",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 6,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "e3e168ccdd9907adae4929ba85a3112b8314c864d58e2d5c11425e42b7734782",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "6a816d47536d7bdbef6fdd0575f0887e8b7c0f5090a2bdcc5037409e6dbdf9f5",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "c908fb40bd36e6e74e1bcba5390545029c9dbe434ca2862b472c03b75d194d77",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "c_long_set",
+      "reference": {
+        "case_id": "c_long_set",
+        "attempt": 1,
+        "stratum": "local_compute",
+        "split": "development",
+        "output_sha256": "fab6edf25cdacdc4ea8c161a7082b12a332f5ec95f7085908bf8d0c67f8e21e0",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT32"
+            ],
+            "result_sha256": "816602f1e829a24a9fea51e8658b20c46dcd58f1187e097dad461a753733f006",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT32"
+            ],
+            "result_sha256": "3bff5905fe805e0490fb1464e6b9cb8962b2af4be390e01d4ad22e0df43c834e",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT32"
+            ],
+            "result_sha256": "7ef89528d1502f3448feb5333e35cbb7c67cc60800f22fa351c7db7a9d29e3dd",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [
+          "Special signature requires checking: size"
+        ],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "c_long_set",
+        "attempt": 1,
+        "stratum": "local_compute",
+        "split": "development",
+        "output_sha256": "7b0a988cf3e903948b648eac13e827fa26f41559975051ea2a4f541fde970cfa",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT32"
+            ],
+            "result_sha256": "816602f1e829a24a9fea51e8658b20c46dcd58f1187e097dad461a753733f006",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT32"
+            ],
+            "result_sha256": "816602f1e829a24a9fea51e8658b20c46dcd58f1187e097dad461a753733f006",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 1,
+            "actual_rows": 1,
+            "column_types": [
+              "INT32"
+            ],
+            "result_sha256": "7ef89528d1502f3448feb5333e35cbb7c67cc60800f22fa351c7db7a9d29e3dd",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [
+          "Special signature requires checking: size"
+        ],
+        "state": "failed"
+      },
+      "passed": true
+    },
+    {
+      "id": "c_incoming",
+      "reference": {
+        "case_id": "c_incoming",
+        "attempt": 1,
+        "stratum": "local_compute",
+        "split": "holdout",
+        "output_sha256": "f276844aa925607dab5ec620c790d19b3bb962e7f1a7fe2a6da12daaf0aafa55",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 6,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "fc1b4ab94f7c9246de279b2a50cad038eb22e345527c6900107b1408c04f2091",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "ff619d3de43911e4c45edc7c798545036406124012033041911688e93dbce165",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "dc12b1f2de4502ec414d2c97460514b25e517bf5c654ceb708c3148e42d8feae",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [
+          "Special signature requires checking: coalesce"
+        ],
+        "state": "passed"
+      },
+      "mutant": {
+        "case_id": "c_incoming",
+        "attempt": 1,
+        "stratum": "local_compute",
+        "split": "holdout",
+        "output_sha256": "a6e458fb96c4e00c2db50fe02ae96120c9b3c7f2be61a98fed84d4bd8ab58042",
+        "instances": [
+          {
+            "variant": "branching",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 6,
+            "actual_rows": 6,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "934cf152a7a5aee9f818b576626f8207f332102b8a7e2c3deb6834843a306a8f",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "reversed",
+            "parameters_index": 0,
+            "state": "failed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 5,
+            "actual_rows": 5,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "3047bad682686783bab572da1843dd5eff66d06fc6a82b27cd728e2441f0640f",
+            "cleanup_ok": true
+          },
+          {
+            "variant": "empty",
+            "parameters_index": 0,
+            "state": "passed",
+            "stage": "oracle",
+            "status": "00000",
+            "expected_rows": 0,
+            "actual_rows": 0,
+            "column_types": [
+              "STRING",
+              "INT64"
+            ],
+            "result_sha256": "dc12b1f2de4502ec414d2c97460514b25e517bf5c654ceb708c3148e42d8feae",
+            "cleanup_ok": true
+          }
+        ],
+        "cleanup_ok": true,
+        "static_review_notices": [
+          "Special signature requires checking: coalesce"
+        ],
+        "state": "failed"
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

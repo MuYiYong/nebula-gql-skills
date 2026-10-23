@@ -1,0 +1,7 @@
+{
+  "case_id": "q_trail",
+  "attempt": 2,
+  "query": "MATCH p = TRAIL (s:player {id: $seed})-[:follow]->{1,3}(:player)\nRETURN ALL transform(nodes(p), n -> n.id) AS node_ids;",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Uses documented TRAIL mode and 1-to-3-hop outgoing follow quantifier. transform(nodes(p), n -> n.id) preserves node order; RETURN ALL retains parallel-edge path multiplicity. Checked against current skill references only; no database execution."
+}

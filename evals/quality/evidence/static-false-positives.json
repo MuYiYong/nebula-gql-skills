@@ -1,0 +1,274 @@
+[
+  {
+    "case_id": "basic-filter",
+    "defect": "swapped requested columns/types",
+    "query": "MATCH (p:Person WHERE p.age > 30) RETURN p.name AS id, p.id AS name",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "basic-filter",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "basic"
+    }
+  },
+  {
+    "case_id": "parameter",
+    "defect": "offsets requested primary key",
+    "query": "MATCH (p:Person {id: $id + 1}) RETURN p.name AS name",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "parameter",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "basic"
+    }
+  },
+  {
+    "case_id": "grouping",
+    "defect": "counts names rather than persons",
+    "query": "MATCH (p:Person) RETURN p.age AS age, count(DISTINCT p.name) AS total GROUP BY age",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "grouping",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "aggregation"
+    }
+  },
+  {
+    "case_id": "pagination-ties",
+    "defect": "silently filters population",
+    "query": "MATCH (p:Person WHERE p.age > 30) RETURN p.id AS id, p.age AS age ORDER BY age DESC, id ASC OFFSET 20 LIMIT 10",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "pagination-ties",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "pagination"
+    }
+  },
+  {
+    "case_id": "path-range",
+    "defect": "wrong seed id",
+    "query": "MATCH p = TRAIL (a:Person {id: 2})-[:KNOWS]->{1,3}(b) RETURN p",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "path-range",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "complex_path"
+    }
+  },
+  {
+    "case_id": "path-all",
+    "defect": "extra endpoint filter not in original Cypher",
+    "query": "MATCH p = ACYCLIC (a:Person {id: 1})-[e:KNOWS WHERE e.weight > 0]->{1,3}(b) WHERE b.age > 30 RETURN p",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "path-all",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "migration"
+    }
+  },
+  {
+    "case_id": "path-duplicates",
+    "defect": "selects nonrepeating nodes instead of repeating nodes",
+    "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,4}(b) FILTER WHERE length(nodes(p)) = length(list_distinct(nodes(p))) RETURN p",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "path-duplicates",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "complex_path"
+    }
+  },
+  {
+    "case_id": "ngql-go",
+    "defect": "reverses traversal",
+    "query": "MATCH (p:Person {id: 1})<-[:KNOWS]-(f:Person) RETURN f.name AS name",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "ngql-go",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "migration"
+    }
+  },
+  {
+    "case_id": "zero-hop",
+    "defect": "returns all people instead of requested id=1",
+    "query": "MATCH (p:Person) RETURN p",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "zero-hop",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "repair"
+    }
+  },
+  {
+    "case_id": "call-pipeline",
+    "defect": "wrong argument and reverse order",
+    "query": "CALL neighbors(2) YIELD name RETURN name ORDER BY name DESC LIMIT 5",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "call-pipeline",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "routing"
+    }
+  },
+  {
+    "case_id": "procedure-scalar",
+    "defect": "adds two instead of one",
+    "query": "CREATE PROCEDURE plus_one(x INT64) RETURNS result INT64 AS { RETURN x + 1 + 1 AS result }",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "procedure-scalar",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "procedure"
+    }
+  },
+  {
+    "case_id": "procedure-default",
+    "defect": "adds unsolicited suffix",
+    "query": "CREATE PROCEDURE greet(name STRING, prefix STRING DEFAULT \"hi\") RETURNS message STRING AS { RETURN prefix || name || \"bye\" AS message }",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "procedure-default",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "procedure"
+    }
+  },
+  {
+    "case_id": "procedure-manage",
+    "defect": "modifies unrelated procedure too",
+    "query": "ALTER PROCEDURE plus_one(INT64) COMMENT \"increment\"; ALTER PROCEDURE greet(STRING) COMMENT \"unrelated\"",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "procedure-manage",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "procedure"
+    }
+  },
+  {
+    "case_id": "perf-optional",
+    "defect": "removes parallel-edge duplicate rows",
+    "query": "MATCH (p:Person) OPTIONAL MATCH (p)-[:KNOWS]->(f:Person WHERE f.age > 30) RETURN DISTINCT p.id AS id, f.id AS friend_id",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "perf-optional",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    }
+  },
+  {
+    "case_id": "perf-correlated",
+    "defect": "returns persons with no friends",
+    "query": "MATCH (p:Person) WHERE NOT EXISTS { MATCH (p)-[:KNOWS]->(f) } RETURN p.id AS id",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "perf-correlated",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    }
+  },
+  {
+    "case_id": "perf-pagination",
+    "defect": "reverses required ascending order",
+    "query": "MATCH (p:Person) RETURN p.id AS id ORDER BY id DESC OFFSET 10000 LIMIT 20",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "perf-pagination",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    }
+  },
+  {
+    "case_id": "perf-varlen",
+    "defect": "drops requested paths",
+    "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,8}(b) RETURN p LIMIT 1",
+    "explanation": "结构候选，未执行。",
+    "result": {
+      "id": "perf-varlen",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    }
+  },
+  {
+    "case_id": "scalar",
+    "defect": "Unbound receiver with unknown method is left needs_review but counted passed",
+    "query": "RETURN missing_receiver.mystery() AS n",
+    "explanation": "静态检查",
+    "result": {
+      "id": "scalar",
+      "passed": true,
+      "issues": [],
+      "needs_review": [
+        "Receiver type needed for missing_receiver.mystery"
+      ],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "basic"
+    }
+  }
+]

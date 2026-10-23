@@ -1,0 +1,7 @@
+{
+  "case_id": "q_acyclic",
+  "attempt": 2,
+  "query": "MATCH p = ACYCLIC (src:player {id: $seed})-[:follow]->{1,3}(:player)\nRETURN transform(nodes(p), n -> n.id) AS node_ids;",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Uses documented ACYCLIC path mode, outgoing quantified edges and nodes/transform signatures. No DISTINCT or list sorting, so parallel-edge paths retain duplicate node-id lists. Statically checked against current skill references; no database execution."
+}

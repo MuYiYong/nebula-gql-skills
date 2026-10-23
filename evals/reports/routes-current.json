@@ -1,0 +1,77 @@
+{
+  "producer": {
+    "kind": "model",
+    "model": "session-inherited",
+    "skill_version": "final-iteration",
+    "notes": "single independent batch; tokens unobserved"
+  },
+  "total": 16,
+  "passed": 16,
+  "results": [
+    {
+      "id": "trigger-1",
+      "passed": true
+    },
+    {
+      "id": "trigger-2",
+      "passed": true
+    },
+    {
+      "id": "trigger-3",
+      "passed": true
+    },
+    {
+      "id": "trigger-4",
+      "passed": true
+    },
+    {
+      "id": "trigger-5",
+      "passed": true
+    },
+    {
+      "id": "trigger-6",
+      "passed": true
+    },
+    {
+      "id": "trigger-7",
+      "passed": true
+    },
+    {
+      "id": "trigger-8",
+      "passed": true
+    },
+    {
+      "id": "trigger-9",
+      "passed": true
+    },
+    {
+      "id": "trigger-10",
+      "passed": true
+    },
+    {
+      "id": "trigger-11",
+      "passed": true
+    },
+    {
+      "id": "trigger-12",
+      "passed": true
+    },
+    {
+      "id": "trigger-13",
+      "passed": true
+    },
+    {
+      "id": "trigger-14",
+      "passed": true
+    },
+    {
+      "id": "trigger-15",
+      "passed": true
+    },
+    {
+      "id": "trigger-16",
+      "passed": true
+    }
+  ],
+  "evaluation_kind": "saved route decisions, not host auto-trigger telemetry"
+}

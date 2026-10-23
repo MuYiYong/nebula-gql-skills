@@ -1,0 +1,11 @@
+{
+  "case_id": "p_branch",
+  "attempt": 2,
+  "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS label\n}\nELSEIF $x < 0 THEN {\n  RETURN 'negative' AS label\n}\nELSEIF $x = 0 THEN {\n  RETURN 'zero' AS label\n}\nELSE {\n  RETURN 'positive' AS label\n}",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": [
+    "Generated independently from the public p_branch prompt and current bundled procedure references.",
+    "Final IF branches return one STRING column named label; NULL is tested before numeric comparisons.",
+    "Documentation checked only; no database execution or private evidence accessed."
+  ]
+}

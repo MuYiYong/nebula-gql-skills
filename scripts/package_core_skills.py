@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILLS_ROOT = ROOT / "src"
 DIST_ROOT = ROOT / "dist"
 CORE_SKILLS = ("gql-query-generator", "gql-procedure-generator")
-ROOT_PACKAGE_DOCS = ("README.md", "README.zh-CN.md")
+ROOT_PACKAGE_DOCS = ("README.md", "README.zh-CN.md", "docs/maintenance.md")
 RELEASE_VERSION = os.environ.get("RELEASE_VERSION") or datetime.now().strftime("%y.%m.%d")
 MEGA_BUNDLE_PREFIX = "nebula-gql-skills"
 MEGA_BUNDLE_NAME = f"{MEGA_BUNDLE_PREFIX}-{RELEASE_VERSION}"
@@ -45,6 +45,10 @@ REQUIRED_SKILL_FILES = {
     "references/documented-functions.md",
     "references/documented-syntax.md",
     "FEATURES_INDEX.md",
+    "scripts/skill_tools.py",
+    "references/checklist.md",
+    "references/repair.md",
+    "references/documented-keywords.json",
 }
 
 
@@ -343,6 +347,7 @@ def create_mega_bundle(specs: list[PackageSpec]) -> Path:
     for doc_name in ROOT_PACKAGE_DOCS:
         source = ROOT / doc_name
         if source.is_file():
+            (bundle_dir / doc_name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, bundle_dir / doc_name)
 
     for spec in specs:
@@ -356,7 +361,7 @@ def create_mega_bundle(specs: list[PackageSpec]) -> Path:
         bundle_dir,
         skill_roots,
         include_root=False,
-        expected_root_entries={*ROOT_PACKAGE_DOCS, *(spec.name for spec in specs)},
+        expected_root_entries={*(Path(p).parts[0] for p in ROOT_PACKAGE_DOCS), *(spec.name for spec in specs)},
         forbidden_parts={".github"},
     )
     return archive

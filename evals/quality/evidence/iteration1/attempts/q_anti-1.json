@@ -1,0 +1,7 @@
+{
+  "case_id": "q_anti",
+  "attempt": 1,
+  "query": "MATCH (p:player)\nWHERE NOT EXISTS {\n  MATCH (p)-[:follow]->()\n}\nRETURN p.id AS id;",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Correlated NOT EXISTS captures outer p and checks only outgoing follow edges; checked against bundled 5.3.0 syntax and checklist. No database execution."
+}

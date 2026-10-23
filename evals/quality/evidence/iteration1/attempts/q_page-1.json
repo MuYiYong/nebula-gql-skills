@@ -1,0 +1,7 @@
+{
+  "case_id": "q_page",
+  "attempt": 1,
+  "query": "MATCH (p:player)\nRETURN p.id AS id, p.age AS age\nORDER BY age DESC NULLS LAST, id ASC\nOFFSET 1\nLIMIT 2;",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Generated from the q_page public prompt and current gql-query-generator bundled references. Statically checked against documented ordering, NULL placement, output aliases and pagination; no database access."
+}

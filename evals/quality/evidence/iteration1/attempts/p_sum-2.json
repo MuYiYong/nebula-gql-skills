@@ -1,0 +1,7 @@
+{
+  "case_id": "p_sum",
+  "attempt": 2,
+  "query": "VALUE total INT64 = 0\nVALUE i INT64 = 1\nWHILE i <= $n THEN {\n  SET total = total + i\n  SET i = i + 1\n}\nRETURN total AS total",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Generated independently from p_sum and current procedure skill references. Uses INT64 VALUE variables and one bounded WHILE; n <= 0 leaves total at zero. No database execution performed."
+}

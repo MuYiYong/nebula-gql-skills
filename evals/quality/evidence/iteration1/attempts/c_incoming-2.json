@@ -1,0 +1,7 @@
+{
+  "case_id": "c_incoming",
+  "attempt": 2,
+  "query": "NODE VALUE incoming_total SumAgg<INT64> = 0\nTABLE incoming_results {id STRING, total INT64}\n\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET target.@incoming_total += coalesce(edge.degree, 0)\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@incoming_total AS total INTO incoming_results\n}\n\nFOR row IN incoming_results\nRETURN row.id AS id, row.total AS total",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Independent generation using only c_incoming, the top-level skills hash, and current procedure skill references. Database local temporary graph inherited from evaluator. Target-bound SumAgg counts each incoming parallel edge; coalesce maps NULL degree to zero; separate zero-hop export includes players with no incoming edges. Statically checked against public skill references; no database execution."
+}

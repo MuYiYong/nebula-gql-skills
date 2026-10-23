@@ -1,0 +1,255 @@
+#!/usr/bin/env python3
+"""Standalone bounded reference lookup and conservative GQL lint (stdlib only).
+
+Lint is not a GQL parser/type checker. Findings are violations of documented
+contracts; an empty finding list means only that these checks found no issue.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+from pathlib import Path
+
+
+def sections(path):
+    lines = path.read_text(encoding='utf-8').splitlines()
+    starts = [i for i, line in enumerate(lines) if re.match(r'^#{1,6} ', line)]
+    for n, start in enumerate(starts):
+        end = starts[n + 1] if n + 1 < len(starts) else len(lines)
+        yield lines[start], start + 1, '\n'.join(lines[start:end])
+
+
+def lookup(root, term, kind='function', offset=0, limit=6000, all_matches=False):
+    files = ([root / 'references/documented-functions.md'] if kind == 'function'
+             else sorted((root / 'references').glob('*.md')))
+    found = []
+    needle = re.compile(r'(?<!\w)' + re.escape(term) + r'(?!\w)', re.I)
+    for path in files:
+        for title, line, body in sections(path):
+            key = title.lstrip('# ').strip('`').removesuffix('()')
+            if (kind == 'function' and key.casefold() == term.casefold().removesuffix('()')) or (
+                kind == 'topic' and needle.search(body)
+            ):
+                normalized = re.sub(r'^\d+[.)]\s*', '', key).replace('`','').strip()
+                rank = 0 if normalized.casefold()==term.casefold() else 1 if needle.search(normalized) else 2
+                catalog_rank = 0 if path.name.startswith('documented-') else 1
+                found.append(((rank,catalog_rank,path.name,line),f'{path.relative_to(root)}:{line}\n{body}'))
+    found.sort(key=lambda item:item[0])
+    other_matches=0
+    if kind=='topic' and found and not all_matches and found[0][0][0]<2:
+        best_rank=found[0][0][0]
+        selected=[item for item in found if item[0][0]==best_rank]
+        other_matches=len(found)-len(selected);found=selected
+    content = '\n\n'.join(body for _,body in found)
+    return {'matches': len(found), 'other_matches':other_matches,
+            'hint':'Use --all-matches for cross-topic body mentions' if other_matches else None, 'offset': offset, 'total_chars': len(content),
+            'next_offset': offset + limit if offset + limit < len(content) else None,
+            'text': content[offset:offset + limit]}
+
+
+TOKEN = re.compile(r'''(?P<space>\s+)|(?P<comment>--[^\n]*|//[^\n]*|/\*[\s\S]*?\*/)|(?P<string>'(?:''|\\.|[^'\\])*'|"(?:""|\\.|[^"\\])*")|(?P<quoted>`(?:``|[^`])*`)|(?P<param>\$[\w]+)|(?P<word>[^\W\d]\w*)|(?P<number>\d+(?:\.\d+)?)|(?P<symbol>.)''', re.UNICODE)
+
+
+def tokens(code):
+    return [(m.lastgroup, m.group()) for m in TOKEN.finditer(code)
+            if m.lastgroup not in {'space', 'comment'}]
+
+
+def split_args(ts):
+    result, current, stack = [], [], []
+    for token in ts:
+        value = token[1]
+        if value in ('(', '[', '{'): stack.append(value)
+        elif value in (')', ']', '}') and stack: stack.pop()
+        if value == ',' and not stack:
+            result.append(current); current = []
+        else: current.append(token)
+    if current: result.append(current)
+    return result
+
+
+def catalog(root):
+    result = {}
+    for title, _, body in sections(root / 'references/documented-functions.md'):
+        name = title.lstrip('# ').strip('`')
+        if name.endswith('()'):
+            name = name[:-2].lower()
+            entry = result.setdefault(name, {'bodies': [], 'signatures': [], 'scope': set()})
+            entry['bodies'].append(body)
+            entry['signatures'] += re.findall(r'```text\n([\s\S]*?)\n```', body)
+            scope = re.search(r'- Scope: (.*)', body)
+            if scope: entry['scope'].update(scope.group(1).lower().split())
+    return result
+
+
+def arities(signatures, name):
+    """Parse comma-style signatures only; special grammar stays explicitly unknown."""
+    choices = set()
+    for sig in signatures:
+        pattern = r'(?im)^\s*' + re.escape(name.split('.')[-1]) + r'\s*\((.*?)\)\s*(?:->|$)'
+        for m in re.finditer(pattern, sig):
+            args = m.group(1).strip()
+            if any(s in args for s in ('...', '|', ' FROM ', ' AS ', '->')):
+                continue
+            if not args: choices.add((0, 0)); continue
+            # Type parameters can contain commas; strip their interiors first.
+            simple = re.sub(r'<[^<>]*>', 'TYPE', args)
+            first_optional = simple.find('[')
+            required = simple if first_optional < 0 else simple[:first_optional]
+            minimum = len(re.findall(r'\b\w+\s*:', required))
+            maximum = len(re.findall(r'\b\w+\s*:', simple))
+            if maximum: choices.add((minimum, maximum))
+    return choices
+
+
+STRUCTURAL = {'MATCH', 'OPTIONAL', 'IF', 'WHILE', 'FOR', 'IN', 'EXISTS', 'NOT',
+              'NODE', 'EDGE', 'PATH', 'RECORD', 'TABLE', 'LIST', 'SET', 'MAP',
+              'VECTOR', 'GRAPH', 'ACYCLIC', 'TRAIL', 'WALK', 'SIMPLE', 'CALL',
+              'YIELD', 'RETURN', 'DISTINCT', 'WHERE', 'FILTER', 'AND', 'OR',
+              'THEN', 'ELSE', 'NEXT', 'UNION', 'INSERT', 'UPDATE', 'CAST', 'RETURNS', 'PARTITION'}
+
+
+def lint(code, root, scope='database'):
+    issues, unknown = [], []
+    ts = tokens(code)
+    values = [v.upper() if k == 'word' else v for k, v in ts]
+    clean = ' '.join(v if k not in {'string', 'quoted'} else '?' for k, v in ts)
+    def add(rule, message):
+        item = {'rule': rule, 'message': message}
+        if item not in issues: issues.append(item)
+    stack = []
+    pairs = {')': '(', ']': '[', '}': '{'}
+    for kind, value in ts:
+        if kind != 'symbol': continue
+        if value in '([{': stack.append(value)
+        elif value in ')]}':
+            if not stack or stack.pop() != pairs[value]: add('delimiters', 'Unbalanced delimiters')
+    if stack: add('delimiters', 'Unbalanced delimiters')
+    if re.search(r"['\"]", ''.join(v for k,v in ts if k == 'symbol')):
+        add('literal', 'Unterminated string literal')
+    if re.search(r'\b(?:UNWIND|MERGE|GO)\b|==|\[\s*[^\]]*\*\s*\d', clean, re.I):
+        add('dialect', 'Source dialect syntax requires a documented GQL mapping')
+    if re.search(r'\bWITH\b', clean, re.I):
+        add('dialect', 'Check WITH against GQL statement context; Cypher WITH requires NEXT')
+    if re.search(r'\bLIMIT\s+[^;{}]+\bORDER\s+BY\b', clean, re.I):
+        add('pagination-order', 'ORDER BY precedes OFFSET and LIMIT within a paging fragment')
+    if re.search(r'\b(?:LIMIT|OFFSET|SKIP)\s*-', clean, re.I):
+        add('pagination-value', 'Negative pagination is invalid')
+    if re.search(r'\bCREATE\s+(?:OR\s+REPLACE\s+)?PROCEDURE\b', clean, re.I):
+        if re.search(r'\bRETURNS\b[^{}]*\bLIST\s*<\s*RECORD', clean, re.I):
+            add('procedure-return', 'LIST<RECORD> is not a documented procedure return type')
+    for m in re.finditer(r'\bMATCH\b(.*?)(?=\bPER\s+(?:NODE|PATH)\b|\bFINALLY\b)', clean, re.I|re.S):
+        if re.search(r'\b(?:RETURN|NEXT|MATCH)\b', m.group(1), re.I): continue
+        if len(re.findall(r'\]\s*(?:-\s*>|-)', m.group(1))) > 1 or re.search(r'\}\s*\(', m.group(1)):
+            add('compute-hop', 'Match-compute accepts only zero or one hop')
+    if re.search(r'\bNODE\s+VALUE\s+@?\w+\s+(?:INT\d*|STRING|DOUBLE|BOOLEAN)\b', clean, re.I):
+        add('node-value-type', 'NODE VALUE requires a documented aggregator type')
+    reserved=set(json.loads((root/'references/documented-keywords.json').read_text())['reserved'])
+    contexts=[]
+    for i,(kind,value) in enumerate(ts):
+        if value=='(': contexts.append(values[i-1] if i else '')
+        elif value==')' and contexts: contexts.pop()
+        if value.upper()=='AS' and 'CAST' not in contexts and i+1 < len(ts):
+            if ts[i+1][0]=='word' and values[i+1] in reserved:
+                add('reserved-alias', f'Quote reserved {values[i+1]} when used as an alias')
+    for i in range(len(values)-1):
+        if values[i:i+2] not in (['PER','NODE'], ['PER','PATH']): continue
+        start = next((j for j in range(i+2,len(values)) if values[j]=='{'),None)
+        if start is None: continue
+        depth = 1
+        for j in range(start+1,len(values)):
+            depth += (values[j]=='{') - (values[j]=='}')
+            if not depth: break
+            if values[j]=='RETURN': add('compute-return', 'RETURN is forbidden inside PER NODE/PER PATH')
+    for segment in re.split(r'\bNEXT\b', clean, flags=re.I)[:-1]:
+        last_compute = re.search(r'\b(?:PER\s+(?:NODE|PATH)|FINALLY)\b(.*)$', segment, re.I | re.S)
+        if last_compute and not re.search(r'\bRETURN\b', last_compute.group(1), re.I):
+            add('compute-next', 'NEXT cannot separate match-compute procedure stages')
+    if scope == 'analytics':
+        for segment in re.split(r'\bMATCH\b',clean,flags=re.I)[1:]:
+            before_return = re.split(r'\bRETURN\b',segment,maxsplit=1,flags=re.I)
+            if len(before_return)>1 and not re.search(r'\bPER\s+(?:NODE|PATH)\b|\bFINALLY\b',before_return[0],re.I):
+                add('analytics-match', 'Analytics uses match-compute, not ordinary MATCH RETURN')
+    records = catalog(root)
+    for i, (kind, name) in enumerate(ts[:-1]):
+        if kind not in {'word', 'quoted'} or ts[i+1][1] != '(': continue
+        prev = values[i-1] if i else ''
+        if name.upper() in STRUCTURAL or prev in {'CALL', 'PROCEDURE'}: continue
+        if prev in {':', '@'}: continue  # a label/type before a node's parentheses
+        # Find balanced call body.
+        depth, end = 1, i + 2
+        while end < len(ts) and depth:
+            depth += (ts[end][1] == '(') - (ts[end][1] == ')'); end += 1
+        if depth: continue
+        key = name.strip('`').lower()
+        if prev == '.':
+            receiver = ts[i-2][1] if i >= 2 else ''
+            declared = re.search(r'\b' + re.escape(receiver) + r'\s+([A-Za-z]+Agg)\b', clean, re.I)
+            if declared: key = declared.group(1).lower() + '.' + key
+            else:
+                unknown.append(f'Receiver type needed for {receiver}.{name}'); continue
+        entry = records.get(key)
+        if entry is None:
+            add('undocumented-function', f'No documented function or receiver signature: {key}')
+            continue
+        if scope not in entry['scope']: add('function-scope', f'{key} is unavailable in {scope}')
+        ranges = arities(entry['signatures'], key)
+        args = split_args(ts[i+2:end-1]); count = len(args)
+        if ranges and not any(lo <= count <= hi for lo,hi in ranges):
+            add('function-arity', f'{key}: {count} arguments do not match documented arity')
+        if not ranges: unknown.append(f'Special signature requires checking: {key}')
+        if key == 'list_distinct' and args and args[0][0][0] in {'string','number'}:
+            add('function-type', 'list_distinct requires a LIST argument')
+        if key == 'element_id' and args:
+            variable = ''.join(v for _,v in args[0])
+            if re.search(r'\[\s*' + re.escape(variable) + r'\s*[:@\]]', clean):
+                add('function-type', 'element_id accepts NODE, not EDGE')
+        if key == 'all_different' and count == 1 and args[0] and args[0][0][1].upper() == 'LIST':
+            add('function-type', 'all_different is not a list-deduplication function')
+    return {'issues': issues, 'needs_review': sorted(set(unknown)),
+            'syntax': 'unverified: lint is not a server parser',
+            'semantics': 'unverified: requires case contracts and result comparison'}
+
+
+def read_only(code, root):
+    """Fail closed execution subset. No named/inline procedures, hints, DDL or DML.
+
+    Conservatively blocks ambiguous identifiers too. This runner is intentionally
+    narrower than generation capabilities; rejection never means GQL unsupported.
+    """
+    ts = tokens(code)
+    words = {v.upper() for k,v in ts if k in {'word','quoted'}}
+    banned = {'CREATE','ALTER','DROP','INSERT','DELETE','DETACH','SET','UPDATE','REMOVE',
+              'CALL','IMPORT','EXPORT','LOAD','COPY','SUBMIT','KILL','CANCEL','GRANT',
+              'REVOKE','USE','SESSION','CLEAR','REPLACE','PROCEDURE','LOG','FINISH'}
+    if not ts or ts[0][1].upper() not in {'RETURN','FOR','LET','MATCH','OPTIONAL','FILTER'}:
+        raise ValueError('Outside read-only execution subset')
+    if banned & words or any(v == ';' for k,v in ts) or '/*+' in code:
+        raise ValueError('Potential side effect or multiple statements blocked')
+    report = lint(code, root)
+    if report['issues'] or report['needs_review']:
+        raise ValueError('Execution requires resolved lint and signature checks')
+    return code
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[1])
+    sub = p.add_subparsers(dest='command', required=True)
+    q = sub.add_parser('lookup'); q.add_argument('term')
+    q.add_argument('--kind', choices=['function','topic'], default='function')
+    q.add_argument('--all-matches', action='store_true')
+    q.add_argument('--offset', type=int, default=0); q.add_argument('--limit', type=int, default=6000)
+    l = sub.add_parser('lint'); l.add_argument('file', type=Path)
+    l.add_argument('--scope', choices=['database','analytics'], default='database')
+    a = p.parse_args()
+    if a.command == 'lookup':
+        if a.offset < 0 or not 200 <= a.limit <= 12000: p.error('offset >= 0; limit 200..12000')
+        result = lookup(a.root, a.term, a.kind, a.offset, a.limit, a.all_matches)
+    else: result = lint(a.file.read_text(encoding='utf-8'), a.root, a.scope)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    if a.command == 'lint' and result['issues']: raise SystemExit(1)
+
+
+if __name__ == '__main__': main()

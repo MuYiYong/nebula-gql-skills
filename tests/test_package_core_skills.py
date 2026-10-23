@@ -41,6 +41,7 @@ class MegaBundleLayoutTest(unittest.TestCase):
                 {
                     "README.md",
                     "README.zh-CN.md",
+                    "docs",
                     "gql-query-generator",
                     "gql-procedure-generator",
                 },
@@ -109,10 +110,18 @@ class MegaBundleLayoutTest(unittest.TestCase):
         (root / "README.md").write_text("# English\n", encoding="utf-8")
         (root / "README.zh-CN.md").write_text("# 中文\n", encoding="utf-8")
 
+        (root / "docs").mkdir()
+        (root / "docs/maintenance.md").write_text("# Maintenance\n", encoding="utf-8")
+
         for skill_name in packager.CORE_SKILLS:
             skill_root = source_root / skill_name
             (skill_root / "agents").mkdir(parents=True)
             (skill_root / "references").mkdir()
+            (skill_root / "scripts").mkdir()
+            (skill_root / "scripts/skill_tools.py").write_text("# fixture\n")
+            (skill_root / "references/checklist.md").write_text("# Checklist\n")
+            (skill_root / "references/repair.md").write_text("# Repair\n")
+            (skill_root / "references/documented-keywords.json").write_text('{"reserved": ["VALUES", "BIG"]}')
             (skill_root / "tests" / "features").mkdir(parents=True)
             (skill_root / "SKILL.md").write_text(
                 "# Skill\n\n[Syntax](references/documented-syntax.md)\n",

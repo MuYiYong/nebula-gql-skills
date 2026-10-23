@@ -1,0 +1,7 @@
+{
+  "case_id": "c_incoming",
+  "attempt": 1,
+  "query": "NODE VALUE incoming_sum SumAgg<INT64> = 0\nTABLE incoming_results {id STRING, total INT64}\n\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET target.@incoming_sum += coalesce(edge.degree, 0)\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id, p.@incoming_sum INTO incoming_results\n}\n\nFOR row IN incoming_results\nRETURN row.id AS id, row.total AS total",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Generated independently from c_incoming and current procedure skill references. Database local temporary graph inherited from caller. Single-hop PER PATH accumulates each follow edge into its target; coalesce treats NULL degree as zero. A separate zero-hop PER NODE exports every player to a local typed-column table, preserving zero totals for players without incoming edges. Reviewed against the skill checklist; no database execution performed."
+}

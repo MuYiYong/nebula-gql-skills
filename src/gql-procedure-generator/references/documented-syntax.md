@@ -8,8 +8,8 @@ Search this file by exact keyword, clause, predicate, expression, data type, or 
 
 ## Coverage
 
-- Documented pages: `118`
-- Extracted syntax blocks: `99`
+- Documented pages: `119`
+- Extracted syntax blocks: `100`
 
 ## control-flow
 
@@ -910,6 +910,24 @@ log_statement ::= ('LOG_DEBUG' | 'LOG_INFO' | 'LOG_WARN' | 'LOG_ERROR' | 'LOG_FA
 ### 匹配计算语句
 
 - Documentation key: `analytics-gql-reference/match-compute/`
+- Summary: 匹配计算语句用于在临时图上执行迭代计算。它允许匹配特定的图模式，然后在匹配的子图上执行计算或更新操作。
+- Documented syntax:
+
+```text
+match_compute_statement ::=
+    'MATCH' graph_pattern (( per_block active_set_operation? ) | active_set_operation)
+
+per_block ::=
+    ( ('PER PATH' '{' procedure_body '}') ( 'PER NODE' '(' node_variable ')' '{' procedure_body '}' )* )
+    | ('PER NODE' '(' node_variable ')' '{' procedure_body '}')+
+
+active_set_operation ::=
+    'FINALLY' '{' ('SET' active_set_variable ('=' | '|=') node_variable)+ '}'
+```
+
+### 匹配计算语句
+
+- Documentation key: `database-gql-reference/match-compute/`
 - Summary: 匹配计算语句用于在临时图上执行迭代计算。它允许匹配特定的图模式，然后在匹配的子图上执行计算或更新操作。
 - Documented syntax:
 

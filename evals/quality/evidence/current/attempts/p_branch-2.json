@@ -1,0 +1,7 @@
+{
+  "case_id": "p_branch",
+  "attempt": 2,
+  "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS label\n} ELSEIF $x < 0 THEN {\n  RETURN 'negative' AS label\n} ELSEIF $x = 0 THEN {\n  RETURN 'zero' AS label\n} ELSE {\n  RETURN 'positive' AS label\n}",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Independent generation from the allowed public prompt and current procedure skill references. Final IF branches each return one STRING column named label; NULL is tested first. Documentation-reviewed only; no database execution."
+}

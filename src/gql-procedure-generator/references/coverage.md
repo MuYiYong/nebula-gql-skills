@@ -30,7 +30,7 @@ Compatibility baseline: NebulaGraph `5.3.0` Database and Analytics documentation
 | `ListAgg` | partial | 支持文档明确的标量、`LIST<data_type>`、`RECORD{...}` 载荷，不扩展到聚合器对象或未确认复杂结构 |
 | `SetAgg` | partial | 只支持键型标量元素：整型族、`DOUBLE`、`STRING` |
 | `MapAgg` | partial | 只支持键型标量 key，value 只允许显式白名单聚合器，禁止嵌套 `MapAgg` |
-| `SumAgg` | supported | 可直接用于数值累计 |
+| `SumAgg` | supported | 按文档类型支持数值累计与 STRING 拼接 |
 | `MinAgg` | supported | 支持保守使用 |
 | `MaxAgg` | supported | 支持保守使用 |
 | `AvgAgg` | partial | 支持基础聚合，不扩展复杂派生模式 |

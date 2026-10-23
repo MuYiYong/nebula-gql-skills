@@ -1680,14 +1680,14 @@ CURRENT_TIME
 CURRENT_TIMESTAMP
 ```
 
-## Analytics Aggregator Member Methods
+## Aggregator Member Methods
 
 These are receiver methods, not global functions. Generate them only on the documented aggregator type.
 
 ### `ListAgg.clear()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/list_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/list_agg/`, `database-gql-reference/variable-definition/agg/list_agg/`
 - Signature:
 
 ```text
@@ -1696,8 +1696,8 @@ clear() -> VOID
 
 ### `ListAgg.size()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/list_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/list_agg/`, `database-gql-reference/variable-definition/agg/list_agg/`
 - Signature:
 
 ```text
@@ -1706,8 +1706,8 @@ size() -> UINT64
 
 ### `MapAgg.clear()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/map_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/map_agg/`, `database-gql-reference/variable-definition/agg/map_agg/`
 - Signature:
 
 ```text
@@ -1716,8 +1716,8 @@ clear() -> VOID
 
 ### `MapAgg.contains_key()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/map_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/map_agg/`, `database-gql-reference/variable-definition/agg/map_agg/`
 - Signature:
 
 ```text
@@ -1726,8 +1726,8 @@ contains_key(key: K) -> BOOL
 
 ### `MapAgg.get()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/map_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/map_agg/`, `database-gql-reference/variable-definition/agg/map_agg/`
 - Signature:
 
 ```text
@@ -1736,8 +1736,8 @@ get(key: K) -> aggregated_value
 
 ### `MapAgg.size()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/map_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/map_agg/`, `database-gql-reference/variable-definition/agg/map_agg/`
 - Signature:
 
 ```text
@@ -1746,8 +1746,8 @@ size() -> UINT64
 
 ### `SetAgg.clear()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/set_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/set_agg/`, `database-gql-reference/variable-definition/agg/set_agg/`
 - Signature:
 
 ```text
@@ -1756,8 +1756,8 @@ clear() -> VOID
 
 ### `SetAgg.contains_key()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/set_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/set_agg/`, `database-gql-reference/variable-definition/agg/set_agg/`
 - Signature:
 
 ```text
@@ -1766,8 +1766,8 @@ contains_key(value: T) -> BOOL
 
 ### `SetAgg.size()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/set_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/set_agg/`, `database-gql-reference/variable-definition/agg/set_agg/`
 - Signature:
 
 ```text
@@ -1776,8 +1776,8 @@ size() -> UINT64
 
 ### `TopKAgg.clear()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/topk_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/topk_agg/`, `database-gql-reference/variable-definition/agg/topk_agg/`
 - Signature:
 
 ```text
@@ -1786,8 +1786,8 @@ clear() -> VOID
 
 ### `TopKAgg.min()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/topk_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/topk_agg/`, `database-gql-reference/variable-definition/agg/topk_agg/`
 - Signature:
 
 ```text
@@ -1796,8 +1796,8 @@ min() -> RECORD
 
 ### `TopKAgg.size()`
 
-- Scope: Analytics only
-- Documentation key: `analytics-gql-reference/variable-definition/agg/topk_agg/`
+- Scope: Database and Analytics
+- Documentation keys: `analytics-gql-reference/variable-definition/agg/topk_agg/`, `database-gql-reference/variable-definition/agg/topk_agg/`
 - Signature:
 
 ```text

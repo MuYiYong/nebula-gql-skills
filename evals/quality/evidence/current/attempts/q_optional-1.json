@@ -1,0 +1,7 @@
+{
+  "case_id": "q_optional",
+  "attempt": 1,
+  "query": "MATCH (s:player)\nOPTIONAL MATCH (s)-[:follow]->(d:player WHERE d.age > $min_age)\nRETURN s.id AS src, d.id AS dst;",
+  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+  "notes": "Generated from the public q_optional prompt and current query skill references. Optional-local age predicate preserves unmatched sources; no DISTINCT preserves parallel-edge duplicates. No database execution."
+}

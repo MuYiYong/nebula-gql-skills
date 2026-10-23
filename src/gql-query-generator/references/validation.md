@@ -33,8 +33,8 @@
 - 是否残留了 Cypher 语法（`WITH`、`UNWIND`、`[:T*]`、`shortestPath()`、`collect()`、`exists(n.prop)`、`toSet()`、列表推导式、`STARTS WITH`/`ENDS WITH`/`CONTAINS` 运算符、`^` 求幂），或未文档化的内部函数 `property_exists()`？
 - 是否错误地把单个 LIST 传给 `all_different()`？它要求至少两个显式图元素参数，不能用于列表去重。
 - 是否残留了 Neo4j 特有过程调用（`db.*`、`apoc.*`、`gds.*`、`dbms.*`）？若有，必须完全重写为 GQL 原生语法。
-- 是否在同一 WHERE/FILTER 中对 `ftscore()` 使用了 `OR` 组合（如 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0`）？`ftscore()` 不支持 OR，多属性搜索必须拆成 UNION + `sum()` 聚合。
-- 是否在同一 MATCH 子句中对同一节点变量多次调用了 `ftscore()`？每个 MATCH 分支中只能调用一次 `ftscore()`，多属性需拆成多个 MATCH + UNION。
+- 是否在同一 WHERE/FILTER 中对 `ftscore()` 使用了 `OR` 组合（如 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0`）？`ftscore()` 不支持 OR，多属性搜索必须拆成 UNION ALL + `sum()` 聚合。
+- 是否在同一 MATCH 子句中对同一节点变量多次调用了 `ftscore()`？每个 MATCH 分支中只能调用一次 `ftscore()`，多属性需拆成多个 MATCH + UNION ALL。
 - 是否残留了 nGQL 语法（`GO`、`FETCH`、`LOOKUP`、`|`、`$-.col`、`$^`、`$$`、`v.tag.prop`、`==`等值比较、`[:T1|:T2]`多边类型并集、`rank(edge)`/`@rank`、`properties()`/`keys()`、`src(edge)`/`dst(edge)`、`allShortestPaths`/`shortestPath` 函数包裹、`exists(v.tag.prop)`）？
 - 是否使用了 `type(r) IN ['T1', 'T2']` 或 `WHERE type(r) IN [...]` 来过滤多边类型？应优先改写为标签表达式 `-[:T1|T2]->`，仅在边类型列表来自参数或动态计算时才用 `type()`。
 - 若输入含有 legacy nGQL 的 `id(v)` / `id(e)`，是否已先判断它代表业务属性 `id`、节点内部 ID，还是边标识？
@@ -158,7 +158,7 @@
 - 如果残留了 nGQL/Cypher `STARTS WITH` / `ENDS WITH` / `CONTAINS` 运算符形式，改为 `like(str, 'prefix%')` / `like(str, '%suffix')` / `contains(str, substr)`（GQL 无 `starts_with`/`ends_with` 函数）。
 - 如果残留了 Cypher `^` 求幂运算符，改为 `power(x, y)` 函数。
 - 如果残留了 Neo4j 特有过程（`CALL db.*`/`apoc.*`/`gds.*`/`dbms.*`），必须完全重写为 GQL 原生语法：`db.index.fulltext.queryNodes` → `ftscore()` + MATCH；`apoc.path.*` → MATCH 变长路径/UNION ALL 分层展开。不做机械桥接。
-- 如果生成了 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0` 的 OR 组合，必须拆成 UNION 模式：每个属性单独一个 `MATCH ... LET score = ftscore(...) FILTER WHERE score > 0 RETURN node, score`，用 `UNION` 合并后 `NEXT RETURN DISTINCT node, sum(score) AS score`。
+- 如果生成了 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0` 的 OR 组合，必须拆成 UNION ALL 模式：每个属性单独一个 `MATCH ... LET score = ftscore(...) FILTER WHERE score > 0 RETURN node, score`，用 `UNION ALL` 合并后 `NEXT RETURN DISTINCT node, sum(score) AS score`。
 - 如果在同一 MATCH 中对同一节点多次调用 `ftscore()`（例如 `LET s1 = ftscore(n.a, q) LET s2 = ftscore(n.b, q)`），必须拆成多个 MATCH + UNION，每个 MATCH 只调用一次 `ftscore()`。
 - 如果对 Neo4j 过程做了 `CALL ... YIELD x RETURN x NEXT MATCH (x)...` 的桥接但过程本身不存在于 GQL，则删除整个 CALL 段，用 GQL 原生语句重写等价逻辑。
 - 如果同时使用了 `ACYCLIC` 和 `all_different()` 列出同一条路径的所有点，删除冗余的 `all_different()` 调用，仅保留 `ACYCLIC`。
@@ -215,3 +215,5 @@
 - `NR014`: 保证 `CASE` 各分支类型兼容，必要时在分支值上增加 `CAST`。
 - `NS241` / `NS251`: 删除 `CALL { ... }` 内 DDL/DML，只保留 DQL。
 - `42016`: 去掉 `SAMPLE` 与 ANN 的混用，保留其中一种语义。
+
+- APOC NODE_GLOBAL 不能按 ACYCLIC 的路径内唯一性处理；确认共享 visited 与遍历顺序。多字段分数相加不是默认的跨数据库排名等价。

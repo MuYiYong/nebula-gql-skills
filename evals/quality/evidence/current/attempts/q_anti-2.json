@@ -1,0 +1,7 @@
+{
+  "case_id": "q_anti",
+  "attempt": 2,
+  "query": "MATCH (p:player)\nWHERE NOT EXISTS {\n  MATCH (p)-[:follow]->()\n}\nRETURN p.id AS id;",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Uses a correlated NOT EXISTS pattern capturing outer p and testing only outgoing follow edges. Parallel edges do not multiply the outer result; incoming edges do not exclude a player. Checked against current skill documented EXISTS syntax and applicable checklist. No database execution performed."
+}

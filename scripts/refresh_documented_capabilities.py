@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import json
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -46,6 +47,7 @@ PROCEDURE_SYNTAX_ROOTS = (
     "analytics-gql-reference/log",
     "database-gql-reference/procedures",
     "database-gql-reference/server-prog",
+    "database-gql-reference/match-compute",
     "database-gql-reference/variable-definition",
     "database-gql-reference/statement-block",
     "database-gql-reference/control-flow",
@@ -91,6 +93,7 @@ class MemberRecord:
     name: str
     signature: str
     source: str
+    scope: str
 
 
 @dataclass(frozen=True)
@@ -310,9 +313,10 @@ def add_coalesce(
 
 
 def extract_members(docs_root: Path) -> list[MemberRecord]:
-    base = docs_root / "analytics-gql-reference/variable-definition/agg"
     members: set[MemberRecord] = set()
-    for page in sorted(base.glob("*/index.html")):
+    pages = sorted(page for scope in ("database", "analytics")
+                   for page in (docs_root / f"{scope}-gql-reference/variable-definition/agg").glob("*/index.html"))
+    for page in pages:
         receiver = AGGREGATOR_NAMES.get(page.parent.name)
         if not receiver:
             continue
@@ -334,9 +338,10 @@ def extract_members(docs_root: Path) -> list[MemberRecord]:
                         name=name,
                         signature=signature,
                         source=source,
+                        scope="database" if source.startswith("database-") else "analytics",
                     )
                 )
-    return sorted(members, key=lambda item: (item.receiver, item.name, item.signature))
+    return sorted(members, key=lambda item: (item.receiver, item.name, item.signature, item.scope))
 
 
 def extract_summary(raw: str, first_heading: re.Match[str]) -> str:
@@ -495,28 +500,25 @@ def render_functions(
     if members is not None:
         lines.extend(
             [
-                "## Analytics Aggregator Member Methods",
+                "## Aggregator Member Methods",
                 "",
                 "These are receiver methods, not global functions. Generate them only on the "
                 "documented aggregator type.",
                 "",
             ]
         )
+        grouped = defaultdict(list)
         for member in members:
-            lines.extend(
-                [
-                    f"### `{member.receiver}.{member.name}()`",
-                    "",
-                    "- Scope: Analytics only",
-                    f"- Documentation key: `{member.source}`",
-                    "- Signature:",
-                    "",
-                    "```text",
-                    member.signature,
-                    "```",
-                    "",
-                ]
-            )
+            grouped[(member.receiver, member.name, member.signature)].append(member)
+        for (receiver, name, signature), items in sorted(grouped.items()):
+            scopes = {item.scope for item in items}
+            scope = "Database and Analytics" if len(scopes) == 2 else next(iter(scopes)).title() + " only"
+            sources = ", ".join(f"`{item.source}`" for item in items)
+            lines.extend([
+                f"### `{receiver}.{name}()`", "", f"- Scope: {scope}",
+                f"- Documentation keys: {sources}", "- Signature:", "",
+                "```text", signature, "```", "",
+            ])
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -581,12 +583,31 @@ def render_syntax(pages: list[SyntaxPage], skill_name: str) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def render_keywords(docs_root: Path) -> str:
+    key = "database-gql-reference/overview/keywords-identifiers/"
+    raw = visible_html((docs_root / key / "index.html").read_text(encoding="utf-8"))
+    hs = headings(raw)
+    index = next(i for i, h in enumerate(hs) if clean_text(h.group("body")) == "保留关键字")
+    fragment = raw[hs[index].end():section_end(hs, index, len(raw))]
+    words = set()
+    for paragraph in re.findall(r"<p[^>]*>(.*?)</p>", fragment, flags=re.S):
+        value = clean_text(paragraph)
+        if re.fullmatch(r"[A-Z_0-9 ]+", value): words.update(value.split())
+    if not {"BIG", "VALUES", "RETURN", "MATCH"} <= words:
+        raise ValueError("Reserved keyword extraction failed")
+    return json.dumps({"compatibility": VERSION, "documentation": key,
+                       "policy": "Reserved identifiers only; not a capability allowlist",
+                       "reserved": sorted(words)}, ensure_ascii=False, indent=2) + "\n"
+
+
 def expected_outputs(docs_root: Path) -> dict[Path, str]:
     functions, forms = merge_functions(docs_root)
     members = extract_members(docs_root)
     query_syntax = extract_syntax_pages(docs_root, QUERY_SYNTAX_ROOTS)
     procedure_syntax = extract_syntax_pages(docs_root, PROCEDURE_SYNTAX_ROOTS)
     return {
+        **{ROOT / "src" / name / "references/documented-keywords.json": render_keywords(docs_root)
+           for name in ("gql-query-generator", "gql-procedure-generator")},
         ROOT / "src/gql-query-generator/references/documented-functions.md": render_functions(
             functions, forms, None, "gql-query-generator"
         ),
@@ -617,8 +638,11 @@ def main() -> None:
                 mismatches.append(path.relative_to(ROOT).as_posix())
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(content, encoding="utf-8")
-            print(f"Wrote {path.relative_to(ROOT)}")
+            if not path.is_file() or path.read_text(encoding="utf-8") != content:
+                path.write_text(content, encoding="utf-8")
+                print(f"Updated {path.relative_to(ROOT)}")
+            else:
+                print(f"Unchanged {path.relative_to(ROOT)}")
 
     if mismatches:
         raise SystemExit("Catalogs are stale or missing:\n" + "\n".join(mismatches))

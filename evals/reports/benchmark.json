@@ -1,0 +1,1602 @@
+{
+  "metadata": {
+    "skill_name": "nebula-gql-skills",
+    "timestamp": "2026-10-23",
+    "evals_run": [
+      "basic-filter",
+      "parameter",
+      "scalar",
+      "duplicates",
+      "aggregate",
+      "grouping",
+      "pagination",
+      "pagination-ties",
+      "path-range",
+      "path-all",
+      "path-duplicates",
+      "cypher-dedup",
+      "cypher-unwind",
+      "ngql-go",
+      "repair-arity",
+      "repair-page",
+      "repair-reserved",
+      "empty",
+      "null-duplicate",
+      "typed-values",
+      "unknown-property",
+      "missing-schema",
+      "zero-hop",
+      "call-pipeline",
+      "inline-call",
+      "procedure-scalar",
+      "procedure-default",
+      "procedure-manage",
+      "procedure-algorithm",
+      "procedure-multihop",
+      "distributed-boundary",
+      "perf-supernode",
+      "perf-varlen",
+      "perf-fanout",
+      "perf-optional",
+      "perf-correlated",
+      "perf-pagination"
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "basic-filter",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "basic-filter",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "parameter",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "parameter",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "scalar",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"scalar\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"ed21d81f18106ab8f0b0dc4593a64a757cc2e6a525fb63d05d09f42441a781c0\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "scalar",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"scalar\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"ed21d81f18106ab8f0b0dc4593a64a757cc2e6a525fb63d05d09f42441a781c0\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "duplicates",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"duplicates\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 4, \"query_sha256\": \"3b170e90e32d132e563d5e09532de6b4d78635b656b23ea2f1ed69d4468f9535\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "duplicates",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"duplicates\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 4, \"query_sha256\": \"3b170e90e32d132e563d5e09532de6b4d78635b656b23ea2f1ed69d4468f9535\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "aggregate",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"aggregate\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"bd4cf3c1e27a54652d7e8d580ca21b58c0c571dd7482d87f3cea1f1a1b8b6536\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "aggregate",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"aggregate\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"bd4cf3c1e27a54652d7e8d580ca21b58c0c571dd7482d87f3cea1f1a1b8b6536\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "grouping",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "grouping",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "pagination",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"pagination\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 2, \"query_sha256\": \"47c76f081d6273e891ac8a3b1a0d8a4f14531a887369c9d3c6a616796527e347\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "pagination",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"pagination\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 2, \"query_sha256\": \"47c76f081d6273e891ac8a3b1a0d8a4f14531a887369c9d3c6a616796527e347\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "pagination-ties",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "pagination-ties",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "path-range",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "path-range",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 9,
+      "eval_name": "path-all",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 9,
+      "eval_name": "path-all",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 10,
+      "eval_name": "path-duplicates",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 10,
+      "eval_name": "path-duplicates",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 11,
+      "eval_name": "cypher-dedup",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"cypher-dedup\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"acece1a36802df9fea46059c54b33c64ccb6431c6b49d01a293f9ee356104a98\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 11,
+      "eval_name": "cypher-dedup",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"cypher-dedup\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"acece1a36802df9fea46059c54b33c64ccb6431c6b49d01a293f9ee356104a98\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 12,
+      "eval_name": "cypher-unwind",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"cypher-unwind\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 3, \"query_sha256\": \"f38236bb92f7836ceaa1aa9d60d6dcd305b5bb178227505fa730baf4955cdf0e\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 12,
+      "eval_name": "cypher-unwind",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"cypher-unwind\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 3, \"query_sha256\": \"f38236bb92f7836ceaa1aa9d60d6dcd305b5bb178227505fa730baf4955cdf0e\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 13,
+      "eval_name": "ngql-go",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 13,
+      "eval_name": "ngql-go",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 14,
+      "eval_name": "repair-arity",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"repair-arity\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"acece1a36802df9fea46059c54b33c64ccb6431c6b49d01a293f9ee356104a98\", \"original_status\": \"NR002\", \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 14,
+      "eval_name": "repair-arity",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"repair-arity\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"acece1a36802df9fea46059c54b33c64ccb6431c6b49d01a293f9ee356104a98\", \"original_status\": \"NR002\", \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 15,
+      "eval_name": "repair-page",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"repair-page\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 2, \"query_sha256\": \"f95e7f4b4a1008c9677f7c35b924762f7ca396ecd12a2f76869c548d3da47a46\", \"original_status\": \"42N47\", \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 15,
+      "eval_name": "repair-page",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"repair-page\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 2, \"query_sha256\": \"f95e7f4b4a1008c9677f7c35b924762f7ca396ecd12a2f76869c548d3da47a46\", \"original_status\": \"42N47\", \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 16,
+      "eval_name": "repair-reserved",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"repair-reserved\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"1be3139d4ddcdd3dfe8ccd4cdda13d44691390d3142b9ce781548a5ac6d6aacf\", \"original_status\": \"42001\", \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 16,
+      "eval_name": "repair-reserved",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"repair-reserved\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"1be3139d4ddcdd3dfe8ccd4cdda13d44691390d3142b9ce781548a5ac6d6aacf\", \"original_status\": \"42001\", \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 17,
+      "eval_name": "empty",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"empty\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 0, \"query_sha256\": \"35615b58e4b8c4bc8e7f9a1abe76ec851d1250e508e25c234ff5bc7c3068ec9a\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 17,
+      "eval_name": "empty",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"empty\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 0, \"query_sha256\": \"35615b58e4b8c4bc8e7f9a1abe76ec851d1250e508e25c234ff5bc7c3068ec9a\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 18,
+      "eval_name": "null-duplicate",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"null-duplicate\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 3, \"query_sha256\": \"22c7ee214f593b727bb9d776e215aff88132f6928e862672d9e88d4d50d5b38d\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 18,
+      "eval_name": "null-duplicate",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"null-duplicate\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 3, \"query_sha256\": \"22c7ee214f593b727bb9d776e215aff88132f6928e862672d9e88d4d50d5b38d\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 19,
+      "eval_name": "typed-values",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": true,
+          "evidence": "{\"id\": \"typed-values\", \"passed\": true, \"stage\": \"result-comparison\", \"status\": \"00000\", \"row_count\": 1, \"query_sha256\": \"c407031f928c9a96e9eb613b1b61e3ac009305b01ede11bb17b27a38f7d5137c\", \"original_status\": null, \"grammar\": \"server EXPLAIN passed\", \"semantics\": \"fixture comparison passed\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 19,
+      "eval_name": "typed-values",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0,
+        "passed": 0,
+        "failed": 1,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": false,
+          "evidence": "[{\"rule\": \"reserved-alias\", \"message\": \"Quote reserved BIG when used as an alias\"}]"
+        },
+        {
+          "text": "Live typed result / repair comparison",
+          "passed": false,
+          "evidence": "{\"id\": \"typed-values\", \"passed\": false, \"stage\": \"read-only guard\"}"
+        }
+      ]
+    },
+    {
+      "eval_id": 20,
+      "eval_name": "unknown-property",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 20,
+      "eval_name": "unknown-property",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 21,
+      "eval_name": "missing-schema",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 21,
+      "eval_name": "missing-schema",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 22,
+      "eval_name": "zero-hop",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 22,
+      "eval_name": "zero-hop",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 23,
+      "eval_name": "call-pipeline",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 23,
+      "eval_name": "call-pipeline",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 24,
+      "eval_name": "inline-call",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 24,
+      "eval_name": "inline-call",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 25,
+      "eval_name": "procedure-scalar",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 25,
+      "eval_name": "procedure-scalar",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 26,
+      "eval_name": "procedure-default",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 26,
+      "eval_name": "procedure-default",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 27,
+      "eval_name": "procedure-manage",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 27,
+      "eval_name": "procedure-manage",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 28,
+      "eval_name": "procedure-algorithm",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 28,
+      "eval_name": "procedure-algorithm",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0,
+        "passed": 0,
+        "failed": 1,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": false,
+          "evidence": "[{\"rule\": \"compute-return\", \"message\": \"RETURN is forbidden inside PER NODE/PER PATH\"}]"
+        }
+      ]
+    },
+    {
+      "eval_id": 29,
+      "eval_name": "procedure-multihop",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 29,
+      "eval_name": "procedure-multihop",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 30,
+      "eval_name": "distributed-boundary",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 30,
+      "eval_name": "distributed-boundary",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 31,
+      "eval_name": "perf-supernode",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 31,
+      "eval_name": "perf-supernode",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 32,
+      "eval_name": "perf-varlen",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 32,
+      "eval_name": "perf-varlen",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 33,
+      "eval_name": "perf-fanout",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 33,
+      "eval_name": "perf-fanout",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 34,
+      "eval_name": "perf-optional",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 34,
+      "eval_name": "perf-optional",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 35,
+      "eval_name": "perf-correlated",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 35,
+      "eval_name": "perf-correlated",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 36,
+      "eval_name": "perf-pagination",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    },
+    {
+      "eval_id": 36,
+      "eval_name": "perf-pagination",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 1,
+        "failed": 0,
+        "total": 1
+      },
+      "expectations": [
+        {
+          "text": "Static generation contracts",
+          "passed": true,
+          "evidence": "All fixture-specific static checks passed; not a full grammar/semantic proof."
+        }
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    "old_skill": {
+      "pass_rate": {
+        "mean": 0.9459459459459459,
+        "stddev": 0,
+        "min": 0.9459459459459459,
+        "max": 0.9459459459459459
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.0541"
+    }
+  },
+  "notes": [
+    "Existing-skill comparison: with_skill=current; old_skill=d414605. Single independent agent batch per version; no repeated-run confidence estimate.",
+    "Checks cover static contracts and 12 graph-free live result comparisons. Remaining graph/Analytics semantics are not claimed executed.",
+    "No token telemetry. Batch reference bytes did not decrease; see the focused request comparison separately.",
+    "Prompt procedure-manage was corrected to supply its missing signature; both compared runs used that correction.",
+    "Reference defects and static false positives were corrected from documentation and independent grading; saved model outputs were not edited to match oracles."
+  ]
+}

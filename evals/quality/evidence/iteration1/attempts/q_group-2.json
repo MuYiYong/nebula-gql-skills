@@ -1,0 +1,7 @@
+{
+  "case_id": "q_group",
+  "attempt": 2,
+  "query": "MATCH (p:player)\nRETURN p.age AS age, count(*) AS total\nGROUP BY age;",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Independent generation from the public q_group prompt and current query skill references. Uses the RETURN alias age as the grouping key and count(*) to retain every player, including the NULL-age group; no name deduplication. Static reference review only; no database execution."
+}

@@ -1414,23 +1414,31 @@ WHERE s.technology = 'kongapig'
 RETURN a.project_code, s.service_name, s.technology, node.path, score, node.summary, node.description
 ```
 
-Output (GQL):
+Output policy:
+原查询使用 Neo4j 多属性索引分数，不能假定多个 GQL 单属性分数之和与其排名相同。先确认两个属性均有对应全文索引及业务是否接受按字段相加。
+
+用户明确接受逐字段分数相加后，可使用以下候选；尚未证明与 Neo4j 排名相等：
 ```gql
+CALL {
+  MATCH (node:WebAPI)
+  LET score = ftscore(node.summary, 'get equipment')
+  FILTER WHERE score > 0
+  RETURN node, score
+  UNION ALL
+  MATCH (node:WebAPI)
+  LET score = ftscore(node.description, 'get equipment')
+  FILTER WHERE score > 0
+  RETURN node, score
+}
+RETURN node, sum(score) AS score
+NEXT
 MATCH (a:Application)-[]-(s:Service{technology: 'kongapig'})-[]-(node)
-LET score_summary = ftscore(node.summary, 'get equipment')
-LET score_desc = ftscore(node.description, 'get equipment')
-WHERE score_summary > 0 OR score_desc > 0
 RETURN a.project_code, s.service_name, s.technology, node.path,
-       score_summary + score_desc AS score, node.summary, node.description
+       score, node.summary, node.description
 ORDER BY score DESC
 ```
 
-改写要点：
-1. `db.index.fulltext.queryNodes` 是 Neo4j 内置过程，GQL 不支持 `db.*`/`apoc.*` 命名空间的过程，必须完全重写。
-2. GQL 全文搜索用 `ftscore(property, query)` 函数（BM25 算法），直接嵌入 MATCH/LET/WHERE。
-3. Neo4j 多属性全文索引需拆成多次 `ftscore()` 调用（每个索引只覆盖一个属性）。
-4. **不要**机械地保留 `CALL` 再加 `RETURN...NEXT` 桥接；整个过程调用需替换为原生函数。
-5. 单属性过滤 `s.technology = 'kongapig'` 下沉到 pattern 属性字面量。
+每个分支只调用一次 ftscore；UNION ALL 保留相等贡献。普通 UNION 会把两行相同 (node, score) 去重并少加一次。WebAPI 标签与两个全文索引是本候选的显式前提，缺少 Schema 时应使用用户实际类型或占位符。
 
 ### M16. Neo4j apoc.path.expandConfig → GQL MATCH
 Input (Cypher/Neo4j):
@@ -1444,20 +1452,10 @@ CALL apoc.path.expandConfig(a, {
 RETURN path
 ```
 
-Output (GQL):
-```gql
-MATCH path = ACYCLIC (a:Application{code: 'MNR'})-[:HAS_SERVICE]->(n1)
-RETURN path
-UNION ALL
-MATCH path = ACYCLIC (a:Application{code: 'MNR'})-[:HAS_SERVICE]->(n1)-[:PUBLISH_MESSAGE|SUBSCRIBE_QUEUE]->(n2)
-RETURN path
-```
+Output policy:
+该请求的 NODE_GLOBAL 需要整个遍历共享 visited 状态。先确认 BFS/DFS 和同层多路径选择规则，再生成维护 visited 的 Procedure；不能用 ACYCLIC MATCH 替代。
 
-改写要点：
-1. `apoc.path.expandConfig` 是 Neo4j APOC 过程，GQL 不支持。
-2. `uniqueness: "NODE_GLOBAL"` → `ACYCLIC`（路径中点不重复）。
-3. `relationshipFilter` 的 `>` 表示方向、`|` 分隔多类型 → GQL 标签析取 `[:T1|T2]->`。
-4. `minLevel`/`maxLevel` 决定分层 UNION ALL 展开（每层一个 MATCH pattern）。
+若用户明确改为 NODE_PATH，才可按各层边类型/方向用 ACYCLIC 和 UNION ALL 构造对应路径集合。这会改变原请求的唯一性范围，必须说明并取得需求变更。
 
 ## Negative patterns
 - 不要把普通检索需求改写成 `CREATE PROCEDURE`。

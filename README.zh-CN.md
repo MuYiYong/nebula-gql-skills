@@ -5,7 +5,7 @@
 面向 NebulaGraph GQL 的两个 skill：
 
 - `gql-query-generator`：生成、改写和迁移 GQL 查询。
-- `gql-procedure-generator`：生成过程、过程调用、图算法和 TigerGraph GSQL 迁移。
+- `gql-procedure-generator`：生成过程定义、控制流、图算法和 TigerGraph GSQL 迁移。
 
 ## 兼容版本
 
@@ -42,9 +42,13 @@ gql-procedure-generator/
 ## 如何选择 skill
 
 - 查询、`MATCH`、`WHERE`、`RETURN`、过滤、排序、分页、聚合、子查询和过程调用查询：使用 `gql-query-generator`。
-- `CREATE/ALTER/DROP PROCEDURE`、`CALL`、控制流、`match_compute_statement` 和图算法：使用 `gql-procedure-generator`。
+- `CREATE/ALTER/DROP PROCEDURE`、签名设计、控制流、`match_compute_statement` 和图算法：使用 `gql-procedure-generator`。
 - 如果任务需要先定义过程再调用过程，先使用 `gql-procedure-generator`，再使用 `gql-query-generator`。
 
 ## 隐私提示
 
 这是公开仓库。不要提交密码、API Key、私有 URL、导出的配置、会话日志、个人数据或本机路径。
+
+## 维护与评测
+
+[维护指南](docs/maintenance.md)说明回归评测、增量更新和 CI 门禁。已有签名的 CALL/YIELD 检索由查询技能处理；定义、签名设计、管理和有状态算法由过程技能处理。

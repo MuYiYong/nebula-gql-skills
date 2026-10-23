@@ -115,47 +115,19 @@ LIMIT 10
 
 `relationshipFilter` 语法：`TYPE>` 出方向、`<TYPE` 入方向、`TYPE` 任意方向；`,` 分隔层级；`|` 同层级多类型析取。
 
-转换规则：
-1. 分析 `relationshipFilter` 的每个层级，识别边类型和方向
-2. `uniqueness: "NODE_GLOBAL"` → 使用 `ACYCLIC` 路径模式前缀
-3. `minLevel` ~ `maxLevel` → 对每个层级深度用 `UNION ALL` 合并
-4. **同层级多边类型用标签表达式 `[:T1|T2]`**，不要用 `type(r) IN [...]`
+转换时分别核对每层方向、深度范围、遍历顺序和唯一性作用域。
 
+- `NODE_PATH` 表示单条路径内节点不重复，可在其它约束等价时映射为 `ACYCLIC`。
+- `NODE_GLOBAL` 表示整次遍历共享访问集合，**不能**映射为 `ACYCLIC` 或多个独立 MATCH/UNION 分支。菱形图 `a→b→d`、`a→c→d` 中，两条路径都无重复点，但全局遍历只首次访问 d。
+- 保留 NODE_GLOBAL 时需要过程级 visited 状态及 BFS/DFS、同层选择和路径返回规则；信息不足时说明缺口，不把全部简单路径冒充等价结果。仅当用户明确改成 NODE_PATH 时才生成 ACYCLIC 候选。
+- `minLevel/maxLevel`、`relationshipFilter` 的分层含义与方向必须保留；可用 `[:T1|T2]` 表达同层标签析取，但它不解决全局访问状态问题。
+
+```text
+原需求：apoc.path.expandConfig(..., {uniqueness: 'NODE_GLOBAL', ...})
+处理：确认遍历顺序与路径选择规则，转交 Procedure 维护全局 visited；
+不能直接输出 ACYCLIC MATCH 并宣称完全等价。
 ```
--- Cypher: apoc.path.expandConfig 示例
-MATCH (a:Application {code: 'MNR'})
-CALL apoc.path.expandConfig(a, {
-  relationshipFilter: 'HAS_SERVICE>,PUBLISH_MESSAGE>|SUBSCRIBE_QUEUE>|OWNS_BACKING_SERVICE>|DEPENDS_ON>,SUBSCRIBE_TOPIC,<PUBLISH_MESSAGE|<SUBSCRIBE_QUEUE',
-  minLevel: 1, maxLevel: 4,
-  uniqueness: 'NODE_GLOBAL'
-})
-YIELD path
-RETURN path
 
--- ❌ 错误写法：用 type() IN [] 代替标签表达式
-MATCH p = ACYCLIC (a:Application {code: 'MNR'})-[:HAS_SERVICE]->(n1)
-  -[r2 WHERE type(r2) IN ['PUBLISH_MESSAGE','SUBSCRIBE_QUEUE','OWNS_BACKING_SERVICE','DEPENDS_ON']]->(n2)
-RETURN p AS path
-
--- ✅ 正确写法：用标签表达式
-MATCH p = ACYCLIC (a:Application {code: 'MNR'})-[:HAS_SERVICE]->(n1)
-RETURN p AS path
-UNION ALL
-MATCH p = ACYCLIC (a:Application {code: 'MNR'})-[:HAS_SERVICE]->(n1)
-  -[:PUBLISH_MESSAGE|SUBSCRIBE_QUEUE|OWNS_BACKING_SERVICE|DEPENDS_ON]->(n2)
-RETURN p AS path
-UNION ALL
-MATCH p = ACYCLIC (a:Application {code: 'MNR'})-[:HAS_SERVICE]->(n1)
-  -[:PUBLISH_MESSAGE|SUBSCRIBE_QUEUE|OWNS_BACKING_SERVICE|DEPENDS_ON]->(n2)
-  -[:SUBSCRIBE_TOPIC]-(n3)
-RETURN p AS path
-UNION ALL
-MATCH p = ACYCLIC (a:Application {code: 'MNR'})-[:HAS_SERVICE]->(n1)
-  -[:PUBLISH_MESSAGE|SUBSCRIBE_QUEUE|OWNS_BACKING_SERVICE|DEPENDS_ON]->(n2)
-  -[:SUBSCRIBE_TOPIC]-(n3)
-  <-[:PUBLISH_MESSAGE|SUBSCRIBE_QUEUE]-(n4)
-RETURN p AS path
-```
 | `CALL apoc.periodic.iterate(...)` | 无直接等价 — 业务层批处理 | |
 | `CALL apoc.create.node(...)` | `INSERT (:Type{...})` | |
 | `CALL apoc.merge.node(...)` | `INSERT OR UPDATE (:Type{...})` | |
@@ -166,13 +138,14 @@ RETURN p AS path
 | `CALL gds.*` | 无直接等价 — 用 UDP / procedure 实现 | |
 
 **ftscore() 使用要点**：
+- 不默认把多个属性的分数相加视为 Neo4j 原索引分数等价。分词、索引和统计口径可能不同；必须先确认业务评分策略。下面相加示例仅用于用户明确要求“逐字段分数相加”的契约。
 - 语法：`ftscore(property_expr, query_string) -> DOUBLE`
 - 必须先创建全文索引：`CREATE FULLTEXT INDEX idx ON NODE Type(prop)`
 - 每个索引只覆盖**一个** STRING 属性；Neo4j 多属性索引需拆成多次 `ftscore()` 调用
 - 返回 0.0 表示不匹配，> 0 表示匹配（BM25 得分）
 - 用 `WHERE ftscore(...) > 0` 过滤，或用 `ORDER BY ftscore(...) DESC` 按相关性排序
-- **`ftscore()` 不支持 `OR` 组合**：不能在同一 WHERE 中写 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0`。多属性搜索必须拆成多个 MATCH + UNION，最后用 `sum()` 聚合分数
-- **每个 MATCH 子句中只能对同一节点变量调用一次 `ftscore()`**；需要搜索多个属性时，每个属性单独一个 MATCH 分支，通过 UNION 合并
+- **`ftscore()` 不支持 `OR` 组合**：不能在同一 WHERE 中写 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0`。多属性搜索必须拆成多个 MATCH + UNION ALL，最后用 `sum()` 聚合分数
+- **每个 MATCH 子句中只能对同一节点变量调用一次 `ftscore()`**；需要搜索多个属性时，每个属性单独一个 MATCH 分支，通过 UNION ALL 合并
 
 **Neo4j 多属性全文索引的 GQL 等价模式**：
 ```
@@ -186,13 +159,13 @@ LET s2 = ftscore(node.description, 'search text')
 WHERE s1 > 0 OR s2 > 0
 RETURN node, s1 + s2 AS score
 
--- ✅ 正确写法：每个属性单独 MATCH，用 UNION 合并后 sum 聚合
+-- ✅ 正确写法：每个属性单独 MATCH，用 UNION ALL 合并后 sum 聚合
 {
   MATCH (node:<Type>)
   LET score = ftscore(node.summary, 'search text')
   FILTER WHERE score > 0
   RETURN node, score
-  UNION
+  UNION ALL
   MATCH (node:<Type>)
   LET score = ftscore(node.description, 'search text')
   FILTER WHERE score > 0
@@ -211,7 +184,7 @@ ORDER BY score DESC
   LET score = ftscore(node.summary, 'search text')
   FILTER WHERE score > 0
   RETURN node, score
-  UNION
+  UNION ALL
   MATCH (node:<Type>)
   LET score = ftscore(node.description, 'search text')
   FILTER WHERE score > 0
@@ -450,7 +423,7 @@ ORDER BY score DESC
 | 改写 Cypher Label / nGQL Tag 时改名 | 直接复用原名作为 GQL Label |
 | nGQL `exists(v.tag.prop)` 或 Cypher `exists(n.prop)` 直接保留 | 常见属性检查改为 `v.prop IS NOT NULL`；若必须区分属性缺失与 NULL，说明不支持，不调用未文档化的 `property_exists()` |
 | Neo4j `CALL db.index.fulltext.queryNodes(...)` 直接保留 | GQL 不支持 `db.*` 过程；改为 `ftscore()` 函数 + MATCH |
-| 多属性 `ftscore()` 用 `OR` 组合 | `ftscore()` 不支持 `OR`；必须拆成 UNION + `sum()` 聚合 |
+| 多属性 `ftscore()` 用 `OR` 组合 | `ftscore()` 不支持 `OR`；必须拆成 UNION ALL + `sum()` 聚合 |
 | Neo4j `CALL apoc.*` 直接保留 | GQL 不支持 `apoc.*` 过程；必须完全重写为 GQL 原生语法 |
 | 多边类型用 `type(r) IN [...]` 代替标签表达式 | 优先用标签表达式 `-[:T1\|T2]->`；仅在需要动态边类型列表时才用 `type()` |
 | `CALL neo4j过程() YIELD x MATCH (x)` 直接加 `RETURN x NEXT` 桥接 | 若过程本身不存在，整个 CALL 需重写为 GQL 原生语句，不做机械桥接 |

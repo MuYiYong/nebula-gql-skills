@@ -1,0 +1,7 @@
+{
+  "case_id": "q_anti",
+  "attempt": 2,
+  "query": "MATCH (p:player)\nWHERE NOT EXISTS {\n  MATCH (p)-[:follow]->()\n}\nRETURN p.id AS id;",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Fresh independent generation from the public q_anti prompt and current query skill references. The EXISTS subquery captures outer p and checks only outgoing follow edges. Documented syntax and result contract reviewed; not executed against a database."
+}

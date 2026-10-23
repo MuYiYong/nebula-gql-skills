@@ -1,0 +1,82 @@
+[
+  {
+    "id": "trigger-1",
+    "prompt": "MATCH筛选人员并分页",
+    "expected_skill": "gql-query-generator"
+  },
+  {
+    "id": "trigger-2",
+    "prompt": "CALL neighbors(1) YIELD name后排序",
+    "expected_skill": "gql-query-generator"
+  },
+  {
+    "id": "trigger-3",
+    "prompt": "只读CALL { RETURN 1 AS n }子查询",
+    "expected_skill": "gql-query-generator"
+  },
+  {
+    "id": "trigger-4",
+    "prompt": "修改CREATE PROCEDURE的参数和循环",
+    "expected_skill": "gql-procedure-generator"
+  },
+  {
+    "id": "trigger-5",
+    "prompt": "GSQL SELECT ACCUM迁移到GQL",
+    "expected_skill": "gql-procedure-generator"
+  },
+  {
+    "id": "trigger-6",
+    "prompt": "实现PageRank的WHILE单跳match-compute",
+    "expected_skill": "gql-procedure-generator"
+  },
+  {
+    "id": "trigger-7",
+    "prompt": "Neo4j 5 Cypher保持目标方言",
+    "expected_skill": null
+  },
+  {
+    "id": "trigger-8",
+    "prompt": "NebulaGraph 3.8 nGQL GO查询，不迁移",
+    "expected_skill": null
+  },
+  {
+    "id": "trigger-9",
+    "prompt": "GraphQL API resolver",
+    "expected_skill": null
+  },
+  {
+    "id": "trigger-10",
+    "prompt": "已有5.3过程结果的聚合与分页",
+    "expected_skill": "gql-query-generator"
+  },
+  {
+    "id": "trigger-11",
+    "prompt": "SHOW CREATE PROCEDURE plus_one",
+    "expected_skill": "gql-procedure-generator"
+  },
+  {
+    "id": "trigger-12",
+    "prompt": "PER PARTITION分布式表",
+    "expected_skill": "gql-procedure-generator"
+  },
+  {
+    "id": "trigger-13",
+    "prompt": "Cypher转换到NebulaGraph 5.3 GQL",
+    "expected_skill": "gql-query-generator"
+  },
+  {
+    "id": "trigger-14",
+    "prompt": "修复5.3 GQL的NR002函数错误",
+    "expected_skill": "gql-query-generator"
+  },
+  {
+    "id": "trigger-15",
+    "prompt": "创建数据库备份脚本",
+    "expected_skill": null
+  },
+  {
+    "id": "trigger-16",
+    "prompt": "写SQL SELECT",
+    "expected_skill": null
+  }
+]

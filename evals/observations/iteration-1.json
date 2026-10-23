@@ -1,0 +1,232 @@
+{
+  "producer": {
+    "kind": "model",
+    "model": "session-inherited",
+    "skill_version": "working-tree",
+    "notes": "single independent agent batch; no token telemetry available; procedure-manage regenerated after prompt correction supplied explicit plus_one(x INT64) RETURNS result INT64 signature"
+  },
+  "outputs": [
+    {
+      "id": "basic-filter",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person WHERE p.age > 30)\nRETURN p.id AS id, p.name AS name;",
+      "explanation": "使用已选 social 图和给定属性；局部年龄条件放在节点模式内。未执行数据库验证。"
+    },
+    {
+      "id": "parameter",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person {id: $id})\nRETURN p.name AS name;",
+      "explanation": "调用方绑定 INT64 参数 $id；按业务主键匹配。未执行。"
+    },
+    {
+      "id": "scalar",
+      "skill": "gql-query-generator",
+      "query": "RETURN 1 AS n;",
+      "explanation": "直接返回整数常量，列名为 n。未执行。"
+    },
+    {
+      "id": "duplicates",
+      "skill": "gql-query-generator",
+      "query": "FOR x IN LIST[1, 2, 2, 3]\nRETURN x\nORDER BY x ASC;",
+      "explanation": "FOR 逐项展开，保留两个 2；无 DISTINCT。未执行。"
+    },
+    {
+      "id": "aggregate",
+      "skill": "gql-query-generator",
+      "query": "FOR x IN LIST[1, 2, 2, 3]\nRETURN count(*) AS total, count(DISTINCT x) AS unique_count;",
+      "explanation": "对完整输入全局聚合；预期总行数 4、不同数字数 3。count 签名和 DISTINCT 聚合形式已按包内文档核对，未执行。"
+    },
+    {
+      "id": "grouping",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person)\nRETURN p.age AS age, count(*) AS total\nGROUP BY age;",
+      "explanation": "按 RETURN 别名 age 分组，合并年龄相同的节点；完整输入参与聚合。未执行。"
+    },
+    {
+      "id": "pagination",
+      "skill": "gql-query-generator",
+      "query": "FOR x IN LIST[3, 1, 2, 2]\nRETURN x\nORDER BY x ASC\nOFFSET 1\nLIMIT 2;",
+      "explanation": "先排序再跳过和截取；保留重复，预期两行均为 2。未执行。"
+    },
+    {
+      "id": "pagination-ties",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person)\nRETURN p.id AS id, p.name AS name, p.age AS age\nORDER BY age DESC, id ASC\nOFFSET 20\nLIMIT 10;",
+      "explanation": "唯一业务主键 id 用于年龄相同时的稳定排序。未执行。"
+    },
+    {
+      "id": "path-range",
+      "skill": "gql-query-generator",
+      "query": "MATCH p = TRAIL (a:Person {id: 1})-[:KNOWS]->{1,3}(b:Person)\nRETURN p;",
+      "explanation": "TRAIL 禁止重复边而允许重复节点；方向为 KNOWS 出边，上下界保持 1 至 3。未执行。"
+    },
+    {
+      "id": "path-all",
+      "skill": "gql-query-generator",
+      "query": "MATCH p = ACYCLIC (a:Person {id: 1})-[e:KNOWS WHERE e.weight > 0]->{1,3}(b)\nRETURN p;",
+      "explanation": "逐边 weight 条件只依赖当前边，等价下推到量化边；节点无重复由 ACYCLIC 表达，保留 1 至 3 跳。已按迁移和路径规则静态核对，未执行。"
+    },
+    {
+      "id": "path-duplicates",
+      "skill": "gql-query-generator",
+      "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,4}(b:Person)\nWHERE length(nodes(p)) > length(list_distinct(nodes(p)))\nRETURN p;",
+      "explanation": "按“保留含重复点”解释为只选择存在重复节点的路径；TRAIL 保证边不重复，长度比较保留重复节点筛选。已核对 nodes、length、list_distinct 签名，未执行。"
+    },
+    {
+      "id": "cypher-dedup",
+      "skill": "gql-query-generator",
+      "query": "RETURN list_distinct(LIST[1, 1, 2]) AS items;",
+      "explanation": "toSet 映射为公开的 list_distinct(LIST)；保留列名 items。未执行。"
+    },
+    {
+      "id": "cypher-unwind",
+      "skill": "gql-query-generator",
+      "query": "FOR x IN LIST[1, 2, 2]\nRETURN x\nORDER BY x ASC;",
+      "explanation": "UNWIND 改成 FOR；重复值和排序保持。未执行。"
+    },
+    {
+      "id": "ngql-go",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person {id: 1})-[:KNOWS]->(friend:Person)\nRETURN friend.name AS name;",
+      "explanation": "GO 映射为一跳有向 MATCH；1 明确是 Person.id，未改成内部 ID；保留每条匹配边产生的行。未执行。"
+    },
+    {
+      "id": "repair-arity",
+      "skill": "gql-query-generator",
+      "query": "RETURN list_distinct(LIST[1, 1, 2]) AS items;",
+      "explanation": "NR002 对应本例缺少 list_distinct 所需的一个 LIST 参数；仅补齐原意列表并保留 items。静态核对，未执行。"
+    },
+    {
+      "id": "repair-page",
+      "skill": "gql-query-generator",
+      "query": "FOR x IN LIST[3, 1, 2]\nRETURN x\nORDER BY x ASC\nLIMIT 2;",
+      "explanation": "补上给定 FOR 输入，并将 ORDER BY 放在 LIMIT 前；预期返回 1、2。未执行。"
+    },
+    {
+      "id": "repair-reserved",
+      "skill": "gql-query-generator",
+      "query": "RETURN list_distinct(LIST[1, 1, 2]) AS `values`;",
+      "explanation": "保留函数与列表，仅将列名 values 作为引用标识符处理，保留原列名；未执行解析器验证。"
+    },
+    {
+      "id": "empty",
+      "skill": "gql-query-generator",
+      "query": "FOR x IN LIST[]\nRETURN x;",
+      "explanation": "空列表展开应产生零行，不添加占位行。未执行。"
+    },
+    {
+      "id": "null-duplicate",
+      "skill": "gql-query-generator",
+      "query": "FOR x IN LIST[1, NULL, 1]\nRETURN x;",
+      "explanation": "不加过滤、排序或 DISTINCT，保留 NULL 和两个 1。未执行。"
+    },
+    {
+      "id": "typed-values",
+      "skill": "gql-query-generator",
+      "query": "RETURN NULL AS missing, TRUE AS flag, 9007199254740993 AS `big`;",
+      "explanation": "大整数保持为原始整数词法值，不经过浮点数转换；在 INT64 范围内。big 按静态检查提示引用为标识符以保持输出列名。未执行。"
+    },
+    {
+      "id": "unknown-property",
+      "skill": "gql-query-generator",
+      "query": "",
+      "explanation": "不能用未文档化的 property_exists。公开的 IS NOT NULL 只能检查非 NULL，不能可靠区分属性缺失与属性值 NULL；严格 5.3.0 文档没有满足本要求的可靠等价构造。"
+    },
+    {
+      "id": "missing-schema",
+      "skill": "gql-query-generator",
+      "query": "",
+      "explanation": "缺少图名、客户节点类型、证件号属性、风险分属性及证件号的类型/唯一性信息，不能生成可执行查询或臆造 schema。请提供这些字段以及证件号参数值。"
+    },
+    {
+      "id": "zero-hop",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person {id: 1})\nRETURN p;",
+      "explanation": "原意只取起点，直接匹配 Person.id=1；不扩大到 {0,1}，不引入一跳邻居。未执行。"
+    },
+    {
+      "id": "call-pipeline",
+      "skill": "gql-query-generator",
+      "query": "CALL neighbors(1) YIELD name\nRETURN name\nORDER BY name ASC\nLIMIT 5;",
+      "explanation": "使用已给出的现有签名，仅组织结果检索；不创建过程。未执行。"
+    },
+    {
+      "id": "inline-call",
+      "skill": "gql-query-generator",
+      "query": "CALL {\n  RETURN 1 AS n\n}\nRETURN n;",
+      "explanation": "只读内联 DQL 子查询，再将 n 从外层返回。未执行。"
+    },
+    {
+      "id": "procedure-scalar",
+      "skill": "gql-procedure-generator",
+      "query": "CREATE PROCEDURE plus_one(x INT64)\nRETURNS result INT64\nAS {\n  RETURN x + 1 AS result\n};",
+      "explanation": "采用文档的单返回列声明；调用方负责选图，过程体直接返回 x+1。未执行。"
+    },
+    {
+      "id": "procedure-default",
+      "skill": "gql-procedure-generator",
+      "query": "CREATE PROCEDURE greet(name STRING, prefix STRING DEFAULT 'hi')\nRETURNS message STRING\nAS {\n  RETURN prefix || name AS message\n};",
+      "explanation": "默认参数连续位于右端，使用文档字符串连接运算符 || 直接拼接 prefix 和 name，不额外插入空格。未执行。"
+    },
+    {
+      "id": "procedure-manage",
+      "skill": "gql-procedure-generator",
+      "query": "ALTER PROCEDURE plus_one(INT64) COMMENT 'increment';",
+      "explanation": "已按补充的 plus_one(x INT64) RETURNS result INT64 签名定位，只修改注释，不重建或修改过程体、参数及返回列。未执行。"
+    },
+    {
+      "id": "procedure-algorithm",
+      "skill": "gql-procedure-generator",
+      "query": "CREATE PROCEDURE count_incoming_knows()\nRETURNS (id INT64, score INT64)\nAS {\n  NODE VALUE score SumAgg<INT64> = 0\n  TABLE results TYPED TABLE {id INT64, score INT64} PARTITION BY DEFAULT\n\n  MATCH (s:Person)-[:KNOWS]->(t:Person)\n  PER PATH {\n    SET t.@score += 1\n  }\n\n  MATCH (n:Person)\n  PER NODE (n) {\n    EXPORT n.id, n.@score INTO results\n  }\n\n  PER PARTITION (part) OF results {\n    FOR row IN part\n    RETURN row.id AS id, row.score AS score\n  }\n};",
+      "explanation": "假设 social 是调用方已选的 Analytics 临时图。传播只有一跳；随后零跳 PER NODE 导出全部 Person，包括得分 0 的点，再按分区返回。所有变量前置声明，点绑定状态使用 .@score。未执行。"
+    },
+    {
+      "id": "procedure-multihop",
+      "skill": "gql-procedure-generator",
+      "query": "",
+      "explanation": "Schema、种子集合及 ACCUM/POST-ACCUM 副作用未给出，无法证明可执行等价翻译。应分为 stage 1 的 s→m 单跳匹配并保留 s/e1/m 上下文，再用 stage 2 的 m→t 单跳匹配关联第一阶段上下文，按原 mode/优先级落地副作用；不能只保留去重 frontier 以免丢失路径倍数，也不能生成一个两跳 match-compute。补齐信息后才能给出过程。"
+    },
+    {
+      "id": "distributed-boundary",
+      "skill": "gql-procedure-generator",
+      "query": "",
+      "explanation": "严格 5.3.0 不支持本地 BindingTable 导入 PARTITION BY DEFAULT 分布式临时图（NR125）。同时，导入后在同一过程或其祖先调用链执行 match-compute 会触发图版本边界（NR153）。需改用受支持的分布式表/文件来源，并拆成同级 import、compute 子过程顺序调用；当前要求不能按原样生成可执行过程。"
+    },
+    {
+      "id": "perf-supernode",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person {id: 1})-[:KNOWS]->(friend:Person)\nRETURN friend.id AS id\nLIMIT 10;",
+      "explanation": "结构候选，未做 EXPLAIN/PROFILE。把最终 LIMIT 10 移到扩展前不等价：主键锚点最多一行，提前 LIMIT 不再限制扩展产生的朋友行。保留末尾 LIMIT；实际是否提前停止扩展需计划验证。前提是给定 Person.id 主键可用；没有额外索引或性能保证。"
+    },
+    {
+      "id": "perf-varlen",
+      "skill": "gql-query-generator",
+      "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,8}(b:Person)\nRETURN p;",
+      "explanation": "保留所有 1 至 8 跳 TRAIL 路径，未收窄范围、改模式或添加 LIMIT。没有提供起点过滤，按全图 Person 起点处理；结构上路径数可能很大。无额外索引前提，也没有足以证明加速的等价改写；需实际 schema/统计与 PROFILE 验证，当前仅结构分析。"
+    },
+    {
+      "id": "perf-fanout",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person)-[:KNOWS]->(f1:Person)\nMATCH (p)-[:KNOWS]->(f2:Person)\nRETURN f1.id AS f1_id, f2.id AS f2_id;",
+      "explanation": "按同一人的两条独立出边解释，第二段从已绑定 p 展开，保留所有组合及重复，同一邻居/边可在两个独立匹配中出现。所需输出本身存在度数乘积，不能用 DISTINCT 或 UNION 消除。仅返回要求的标量；未增加索引假设，结构候选尚无 PROFILE。"
+    },
+    {
+      "id": "perf-optional",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person)\nOPTIONAL MATCH (p)-[:KNOWS]->(friend:Person WHERE friend.age > 30)\nRETURN p, friend;",
+      "explanation": "年龄条件保留在 OPTIONAL 分支内，无符合条件朋友时保留 p 和 NULL friend。没有将条件移到结果 FILTER，也没有去重。已知 schema 足够生成；未提供可用索引，无索引 Hint。当前仅结构候选，速度和计划待 PROFILE 验证。"
+    },
+    {
+      "id": "perf-correlated",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person)\nWHERE EXISTS {\n  MATCH (p)-[:KNOWS]->(:Person)\n}\nRETURN p;",
+      "explanation": "存在性语义保留每个 p 一行，不物化朋友列表或计数；子查询从已绑定 p 出发。给定 schema 即可生成，无额外索引假设。需 EXPLAIN DECORRELATED 和 PROFILE 判断是否解关联/半连接或逐行 Apply，当前仅结构候选，未宣称提速。"
+    },
+    {
+      "id": "perf-pagination",
+      "skill": "gql-query-generator",
+      "query": "MATCH (p:Person)\nRETURN p.id AS id\nORDER BY id ASC\nOFFSET 10000\nLIMIT 20;",
+      "explanation": "按已知唯一 id 稳定排序，严格保留 offset=10000、limit=20 的接口。暂以 id 为返回列；大 OFFSET 仍可能产生并跳过前 10000 行。若存在排序兼容的主键访问路径可能减少排序工作，但须检查实际计划，不能仅凭主键推断。当前仅结构分析，未执行 EXPLAIN/PROFILE。"
+    }
+  ]
+}

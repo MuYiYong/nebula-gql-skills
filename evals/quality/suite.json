@@ -1,0 +1,542 @@
+{
+  "version": 1,
+  "compatibility": "5.3.0",
+  "required_attempts": 2,
+  "required_unavailable_strata": [
+    "named_procedure_lifecycle",
+    "distributed_analytics"
+  ],
+  "fixtures": {
+    "branching": {
+      "nodes": [
+        {
+          "id": "a",
+          "name": "Alpha",
+          "age": 30
+        },
+        {
+          "id": "b",
+          "name": "Same",
+          "age": 40
+        },
+        {
+          "id": "c",
+          "name": "Same",
+          "age": 40
+        },
+        {
+          "id": "d",
+          "name": "Delta",
+          "age": null
+        },
+        {
+          "id": "e",
+          "name": "Epsilon",
+          "age": 20
+        },
+        {
+          "id": "z",
+          "name": "Zed",
+          "age": 50
+        }
+      ],
+      "edges": [
+        {
+          "src": "a",
+          "dst": "b",
+          "degree": 10
+        },
+        {
+          "src": "a",
+          "dst": "b",
+          "degree": 20
+        },
+        {
+          "src": "a",
+          "dst": "c",
+          "degree": 30
+        },
+        {
+          "src": "b",
+          "dst": "c",
+          "degree": 40
+        },
+        {
+          "src": "c",
+          "dst": "a",
+          "degree": 50
+        },
+        {
+          "src": "c",
+          "dst": "d",
+          "degree": null
+        },
+        {
+          "src": "e",
+          "dst": "a",
+          "degree": 5
+        }
+      ]
+    },
+    "reversed": {
+      "nodes": [
+        {
+          "id": "a",
+          "name": "a",
+          "age": 5
+        },
+        {
+          "id": "b",
+          "name": "b",
+          "age": -1
+        },
+        {
+          "id": "c",
+          "name": "c",
+          "age": null
+        },
+        {
+          "id": "d",
+          "name": "d",
+          "age": 5
+        },
+        {
+          "id": "z",
+          "name": "z",
+          "age": 90
+        }
+      ],
+      "edges": [
+        {
+          "src": "b",
+          "dst": "a",
+          "degree": 0
+        },
+        {
+          "src": "b",
+          "dst": "a",
+          "degree": -2
+        },
+        {
+          "src": "a",
+          "dst": "a",
+          "degree": 3
+        },
+        {
+          "src": "a",
+          "dst": "c",
+          "degree": 1
+        },
+        {
+          "src": "c",
+          "dst": "d",
+          "degree": 2
+        },
+        {
+          "src": "d",
+          "dst": "a",
+          "degree": 3
+        }
+      ]
+    },
+    "empty": {
+      "nodes": [],
+      "edges": []
+    },
+    "scalar": {
+      "nodes": [],
+      "edges": []
+    },
+    "word_ids": {
+      "nodes": [
+        {
+          "id": "origin",
+          "name": "Alpha",
+          "age": 30
+        },
+        {
+          "id": "b",
+          "name": "Same",
+          "age": 40
+        },
+        {
+          "id": "target_long",
+          "name": "Same",
+          "age": 40
+        },
+        {
+          "id": "d",
+          "name": "Delta",
+          "age": null
+        },
+        {
+          "id": "edge_source",
+          "name": "Epsilon",
+          "age": 20
+        },
+        {
+          "id": "solo",
+          "name": "Zed",
+          "age": 50
+        }
+      ],
+      "edges": [
+        {
+          "src": "origin",
+          "dst": "b",
+          "degree": 10
+        },
+        {
+          "src": "origin",
+          "dst": "b",
+          "degree": 20
+        },
+        {
+          "src": "origin",
+          "dst": "target_long",
+          "degree": 30
+        },
+        {
+          "src": "b",
+          "dst": "target_long",
+          "degree": 40
+        },
+        {
+          "src": "target_long",
+          "dst": "origin",
+          "degree": 50
+        },
+        {
+          "src": "target_long",
+          "dst": "d",
+          "degree": null
+        },
+        {
+          "src": "edge_source",
+          "dst": "origin",
+          "degree": 5
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "q_optional",
+      "stratum": "query",
+      "split": "development",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。参数 $min_age INT64。返回每个player及其年龄大于参数的出边目标，src/dst均为id；无合格目标时dst=NULL；保留平行边重复。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "optional",
+      "columns": [
+        "src",
+        "dst"
+      ],
+      "parameter_sets": [
+        {
+          "min_age": 35
+        },
+        {
+          "min_age": 100
+        }
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "q_group",
+      "stratum": "query",
+      "split": "development",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。按age分组统计所有player数量，返回age,total；NULL单独一组，不能按name去重。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "group",
+      "columns": [
+        "age",
+        "total"
+      ],
+      "parameter_sets": [
+        {}
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "q_trail",
+      "stratum": "query",
+      "split": "development",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。参数 $seed STRING。返回从seed沿follow出边1至3跳的全部TRAIL路径；点可重复、同一边不可重复；列node_ids为顺序节点业务id列表。不同平行边形成的重复id列表仍保留，不排序列表。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "paths_trail",
+      "columns": [
+        "node_ids"
+      ],
+      "parameter_sets": [
+        {
+          "seed": "a"
+        },
+        {
+          "seed": "missing"
+        }
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "q_anti",
+      "stratum": "query",
+      "split": "holdout",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。仅返回没有follow出边的player，列id；有入边不影响，不能把未关联的存在子查询套到每个人。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "anti",
+      "columns": [
+        "id"
+      ],
+      "parameter_sets": [
+        {}
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "q_page",
+      "stratum": "query",
+      "split": "holdout",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。按age降序且NULL在最后，年龄相同时按唯一id升序，跳过1行取2行，返回id,age。不要添加年龄过滤。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "page",
+      "columns": [
+        "id",
+        "age"
+      ],
+      "parameter_sets": [
+        {}
+      ],
+      "ordered": true,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "q_acyclic",
+      "stratum": "query",
+      "split": "holdout",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。参数 $seed STRING。返回从seed沿follow出边1至3跳的全部ACYCLIC路径，列node_ids为顺序节点业务id列表；不同平行边的路径仍保留。不排序列表。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "paths_acyclic",
+      "columns": [
+        "node_ids"
+      ],
+      "parameter_sets": [
+        {
+          "seed": "a"
+        }
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "p_sum",
+      "stratum": "database_procedure",
+      "split": "development",
+      "prompt": "Database 过程体；由评测器提供以下参数。参数 $n INT64，范围-2至6。用VALUE/WHILE把1到n所有整数相加，n<=0返回0，列total INT64。使用循环变量i，初值1，条件i<=$n，循环每轮末尾SET i=i+1；不要嵌套循环或重置i。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "sum",
+      "columns": [
+        "total"
+      ],
+      "parameter_sets": [
+        {
+          "n": -2
+        },
+        {
+          "n": 0
+        },
+        {
+          "n": 1
+        },
+        {
+          "n": 6
+        }
+      ],
+      "ordered": false,
+      "variants": [
+        "scalar"
+      ],
+      "critical": true,
+      "declared_types": [
+        "INT64"
+      ],
+      "required_constructs": [
+        "WHILE",
+        "VALUE"
+      ]
+    },
+    {
+      "id": "p_contributions",
+      "stratum": "database_procedure",
+      "split": "development",
+      "prompt": "Database 过程体；由评测器提供以下参数。参数 $left INT64 和 $right INT64 均非空。用两个独立RETURN分支合并后聚合SUM，返回total，表示两个贡献之和；相同数值也应累加两次。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "contributions",
+      "columns": [
+        "total"
+      ],
+      "parameter_sets": [
+        {
+          "left": 2,
+          "right": 2
+        },
+        {
+          "left": 0,
+          "right": 5
+        },
+        {
+          "left": -2,
+          "right": 7
+        }
+      ],
+      "ordered": false,
+      "variants": [
+        "scalar"
+      ],
+      "critical": true
+    },
+    {
+      "id": "p_branch",
+      "stratum": "database_procedure",
+      "split": "holdout",
+      "prompt": "Database 过程体；由评测器提供以下参数。参数 $x INT64 可空。使用IF/ELSEIF/ELSE返回label STRING：NULL→missing，负数→negative，0→zero，正数→positive；只产生一行。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "branch",
+      "columns": [
+        "label"
+      ],
+      "parameter_sets": [
+        {
+          "x": null
+        },
+        {
+          "x": -3
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 8
+        }
+      ],
+      "ordered": false,
+      "variants": [
+        "scalar"
+      ],
+      "critical": true,
+      "required_constructs": [
+        "IF"
+      ]
+    },
+    {
+      "id": "c_degrees",
+      "stratum": "local_compute",
+      "split": "development",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。Database本地临时图，不是分布式Analytics。用NODE VALUE SumAgg和单跳match-compute统计各player出边数量，再通过本地TABLE返回id,degree。包含零出度节点，平行边分别计数，不要在PER NODE里RETURN。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "degrees",
+      "columns": [
+        "id",
+        "degree"
+      ],
+      "parameter_sets": [
+        {}
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "c_long_set",
+      "stratum": "local_compute",
+      "split": "development",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。Database本地临时图。声明全局SetAgg<STRING>，名称必须保留为collected_destination_ids，通过单跳match-compute收集follow目标id，返回distinct_targets数量；空图返回0。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "targets",
+      "columns": [
+        "distinct_targets"
+      ],
+      "parameter_sets": [
+        {}
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "c_incoming",
+      "stratum": "local_compute",
+      "split": "holdout",
+      "prompt": "评测器已选择自有内存临时图。节点类型/标签 player：id STRING 主键、name STRING、age INT64 可空；边类型/标签 follow：player→player，degree INT64 可空，允许平行边。不要输出 USE、建图或数据写入。Database本地临时图。用NODE VALUE SumAgg和单跳match-compute按目标点累计入边degree之和，degree=NULL按0；本地TABLE输出所有player的id,total，包括无入边节点的0。不得累计到源点。返回要求的列名；遵守5.3.0公开文档。只输出待执行语句/过程体，不附命名过程DDL。",
+      "oracle": "incoming",
+      "columns": [
+        "id",
+        "total"
+      ],
+      "parameter_sets": [
+        {}
+      ],
+      "ordered": false,
+      "variants": [
+        "branching",
+        "reversed",
+        "empty"
+      ],
+      "critical": true
+    },
+    {
+      "id": "c_string_concat",
+      "stratum": "local_compute",
+      "split": "fresh_holdout",
+      "prompt": "Database 本地内存临时图已由评测器选择。节点/标签 player(id STRING主键, name STRING, age INT64可空)，边/标签 follow(player->player, degree INT64可空)，可有平行边。请生成顶层过程体，使用全局 SumAgg<STRING> 在单跳 match-compute 中拼接每条 follow 边的目标业务 id；然后返回拼接字符串的字符长度 total_chars。每条平行边都贡献一次，空图为0，不要求拼接顺序。必须使用STRING聚合器，不能改成按边计数或数值累计。不要USE、DDL、业务写入或命名过程定义。",
+      "oracle": "destination_chars",
+      "columns": [
+        "total_chars"
+      ],
+      "parameter_sets": [
+        {}
+      ],
+      "ordered": false,
+      "variants": [
+        "word_ids",
+        "empty"
+      ],
+      "critical": true,
+      "required_constructs": [
+        "SUMAGG",
+        "STRING",
+        "PER"
+      ]
+    }
+  ]
+}

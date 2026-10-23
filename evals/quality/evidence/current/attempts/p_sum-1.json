@@ -1,0 +1,9 @@
+{
+  "case_id": "p_sum",
+  "attempt": 1,
+  "query": "VALUE total INT64 = 0\nVALUE i INT64 = 1\nWHILE i <= $n THEN {\n  SET total = total + i\n  SET i = i + 1\n}\nRETURN total AS total",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": [
+    "Uses documented Database VALUE, WHILE THEN, SET, and RETURN forms. Loop is skipped when n <= 0. Not executed against a database."
+  ]
+}

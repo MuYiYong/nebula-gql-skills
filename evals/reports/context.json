@@ -1,0 +1,25 @@
+{
+  "full_batch": {
+    "baseline_source_bytes": 146977,
+    "iteration_1_source_bytes": 160386,
+    "final_source_bytes": 163519,
+    "tokens": null,
+    "conclusion": "No full-batch context reduction demonstrated; read accounting includes repeated excerpts and differs in wrappers."
+  },
+  "focused_request": {
+    "prompt": "Cypher toSet list migration",
+    "baseline_bytes": 36102,
+    "current_bytes": 35220,
+    "reduction_percent": 2.44,
+    "baseline_seconds": 68.97404,
+    "current_seconds": 104.695,
+    "conclusion": "Single observed request, modest source-byte reduction, no latency improvement; not a token benchmark."
+  },
+  "retrieval_regression": {
+    "topic": "RETURN",
+    "before_total_chars": 92249,
+    "after_primary_chars": 570,
+    "other_mentions": 129,
+    "conclusion": "Exact headings now prioritized; cross-topic body hits available explicitly via --all-matches. Unit test confirms canonical grammar precedes checklist."
+  }
+}

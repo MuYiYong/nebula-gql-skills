@@ -1,0 +1,11 @@
+{
+  "case_id": "c_string_concat",
+  "attempt": 2,
+  "query": "VALUE target_ids SumAgg<STRING> = ''\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET @target_ids += target.id\n}\nRETURN length(@target_ids) AS total_chars",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": [
+    "Uses a global SumAgg<STRING> initialized to the empty string; each directed follow path contributes the target player business id once, preserving parallel-edge multiplicity.",
+    "Returns the documented length(STRING) result as total_chars; the empty initialized string gives zero for an empty graph.",
+    "Generated independently from the permitted public case and current procedure skill references; no database execution was performed."
+  ]
+}

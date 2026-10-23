@@ -1,0 +1,7 @@
+{
+  "case_id": "p_contributions",
+  "attempt": 1,
+  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN sum(contribution) AS total;",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Uses UNION ALL to retain both contribution rows even when values are equal, then NEXT to aggregate the merged result. Checked against the current procedure skill syntax/function references; not executed against a database."
+}

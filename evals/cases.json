@@ -1,0 +1,1028 @@
+{
+  "version": 1,
+  "compatibility": "5.3.0",
+  "cases": [
+    {
+      "id": "basic-filter",
+      "category": "basic",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。查年龄大于30的人的id和name。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "\\b\\w+\\.age\\s*>\\s*30",
+          "\\b\\w+\\.id",
+          "\\b\\w+\\.name"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "MATCH (p:Person WHERE p.age > 30) RETURN p.id AS id, p.name AS name",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "parameter",
+      "category": "basic",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。用参数 $id 找人，只返回 name。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "\\$id",
+          "name"
+        ],
+        "forbids": [
+          "['\\\"]\\$id['\\\"]"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (p:Person {id: $id}) RETURN p.name AS name",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "scalar",
+      "category": "basic",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "5.3 GQL返回整数1，列名n。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [],
+        "forbids": []
+      },
+      "reference": {
+        "query": "RETURN 1 AS n",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "n"
+        ],
+        "rows": [
+          [
+            1
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "duplicates",
+      "category": "boundary",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "从列表[1,2,2,3]逐行返回x，保留重复，按x升序。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "FOR",
+          "ORDER BY"
+        ],
+        "forbids": [
+          "DISTINCT"
+        ]
+      },
+      "reference": {
+        "query": "FOR x IN LIST[1,2,2,3] RETURN x ORDER BY x",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "ordered": true
+      }
+    },
+    {
+      "id": "aggregate",
+      "category": "aggregation",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "从列表[1,2,2,3]返回总行数total和不同数字个数unique_count。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "count"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "FOR x IN LIST[1,2,2,3] RETURN count(*) AS total, count(DISTINCT x) AS unique_count",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "total",
+          "unique_count"
+        ],
+        "rows": [
+          [
+            4,
+            3
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "grouping",
+      "category": "aggregation",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。按age统计人数total，返回age和total，不要用LIMIT截断聚合输入。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "count",
+          "GROUP BY",
+          "GROUP BY\\s+age"
+        ],
+        "forbids": [
+          "LIMIT"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (p:Person) RETURN p.age AS age, count(*) AS total GROUP BY age",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "pagination",
+      "category": "pagination",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "对列表[3,1,2,2]按x升序排序后跳过1行返回2行，不去重。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "ORDER BY",
+          "OFFSET\\s+1",
+          "LIMIT\\s+2"
+        ],
+        "forbids": [
+          "DISTINCT"
+        ]
+      },
+      "reference": {
+        "query": "FOR x IN LIST[3,1,2,2] RETURN x ORDER BY x OFFSET 1 LIMIT 2",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          [
+            2
+          ],
+          [
+            2
+          ]
+        ],
+        "ordered": true
+      }
+    },
+    {
+      "id": "pagination-ties",
+      "category": "pagination",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。年龄降序分页，年龄相同按唯一id升序；跳过20行取10行。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "age DESC",
+          "id ASC",
+          "OFFSET 20",
+          "LIMIT 10"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "MATCH (p:Person) RETURN p.id AS id, p.age AS age ORDER BY age DESC, id ASC OFFSET 20 LIMIT 10",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "path-range",
+      "category": "complex_path",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。从id=1出发沿KNOWS出边找1至3跳可达的人，返回路径p，边不可重复，点可重复。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "TRAIL",
+          "\\{1,\\s*3\\}"
+        ],
+        "forbids": [
+          "ACYCLIC",
+          "\\*1\\.\\.3"
+        ]
+      },
+      "reference": {
+        "query": "MATCH p = TRAIL (a:Person {id: 1})-[:KNOWS]->{1,3}(b) RETURN p",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "path-all",
+      "category": "migration",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。迁移Cypher: MATCH p=(a:Person {id:1})-[:KNOWS*1..3]->(b) WHERE all(e IN relationships(p) WHERE e.weight>0) AND size(nodes(p))=size(toSet(nodes(p))) RETURN p",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "ACYCLIC",
+          "weight\\s*>\\s*0",
+          "\\{1,\\s*3\\}"
+        ],
+        "forbids": [
+          "toSet",
+          "relationships",
+          "\\*1\\.\\.3"
+        ]
+      },
+      "reference": {
+        "query": "MATCH p = ACYCLIC (a:Person {id: 1})-[e:KNOWS WHERE e.weight > 0]->{1,3}(b) RETURN p",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "path-duplicates",
+      "category": "complex_path",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。沿KNOWS查1至4跳，保留含重复点但不含重复边的路径；返回p。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "TRAIL",
+          "nodes",
+          "list_distinct"
+        ],
+        "forbids": [
+          "ACYCLIC"
+        ]
+      },
+      "reference": {
+        "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,4}(b) FILTER WHERE length(nodes(p)) <> length(list_distinct(nodes(p))) RETURN p",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "cypher-dedup",
+      "category": "migration",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "将Cypher RETURN toSet([1,1,2]) AS items迁移到5.3 GQL。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "list_distinct"
+        ],
+        "forbids": [
+          "toSet",
+          "array_distinct"
+        ]
+      },
+      "reference": {
+        "query": "RETURN list_distinct(LIST[1,1,2]) AS items",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "items"
+        ],
+        "rows": [
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "cypher-unwind",
+      "category": "migration",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "迁移Cypher UNWIND [1,2,2] AS x RETURN x ORDER BY x，不去重。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "FOR",
+          "ORDER BY"
+        ],
+        "forbids": [
+          "UNWIND",
+          "DISTINCT"
+        ]
+      },
+      "reference": {
+        "query": "FOR x IN LIST[1,2,2] RETURN x ORDER BY x",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            2
+          ]
+        ],
+        "ordered": true
+      }
+    },
+    {
+      "id": "ngql-go",
+      "category": "migration",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。把 nGQL GO FROM 1 OVER KNOWS YIELD $$.Person.name AS name 迁移到5.3 GQL。1是Person.id业务键，不是内部ID。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "KNOWS",
+          "id",
+          "name"
+        ],
+        "forbids": [
+          "\\bGO\\b",
+          "element_id"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (p:Person {id: 1})-[:KNOWS]->(f:Person) RETURN f.name AS name",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "repair-arity",
+      "category": "repair",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "错误NR002: RETURN list_distinct() AS items。原意去重列表[1,1,2]，修复并保持输出列items。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "list_distinct"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "RETURN list_distinct(LIST[1,1,2]) AS items",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "items"
+        ],
+        "rows": [
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "ordered": false,
+        "original_error": {
+          "query": "RETURN list_distinct() AS items",
+          "status": "NR002"
+        }
+      }
+    },
+    {
+      "id": "repair-page",
+      "category": "repair",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "修复 RETURN x LIMIT 2 ORDER BY x，用FOR展开[3,1,2]，返回最小两个x。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "ORDER BY",
+          "LIMIT 2"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "FOR x IN LIST[3,1,2] RETURN x ORDER BY x LIMIT 2",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "ordered": true,
+        "original_error": {
+          "query": "FOR x IN LIST[3,1,2] RETURN x LIMIT 2 ORDER BY x",
+          "status": "42N47"
+        }
+      }
+    },
+    {
+      "id": "repair-reserved",
+      "category": "repair",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "修复42001: RETURN list_distinct(LIST[1,1,2]) AS values，必须保留列名values。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "`values`"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "RETURN list_distinct(LIST[1,1,2]) AS `values`",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "values"
+        ],
+        "rows": [
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "ordered": false,
+        "original_error": {
+          "query": "RETURN list_distinct(LIST[1,1,2]) AS values",
+          "status": "42001"
+        }
+      }
+    },
+    {
+      "id": "empty",
+      "category": "boundary",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "展开空列表返回x，不凭空添加占位行。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "FOR"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "FOR x IN LIST[] RETURN x",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "x"
+        ],
+        "rows": [],
+        "ordered": false
+      }
+    },
+    {
+      "id": "null-duplicate",
+      "category": "boundary",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "展开[1,NULL,1]，保留NULL和重复，返回x，不排序。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "FOR"
+        ],
+        "forbids": [
+          "DISTINCT"
+        ]
+      },
+      "reference": {
+        "query": "FOR x IN LIST[1,NULL,1] RETURN x",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            null
+          ],
+          [
+            1
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "typed-values",
+      "category": "boundary",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "返回NULL AS missing, TRUE AS flag和9007199254740993 AS big，保留精度。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [],
+        "forbids": []
+      },
+      "reference": {
+        "query": "RETURN NULL AS missing, TRUE AS flag, 9007199254740993 AS `big`",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "missing",
+          "flag",
+          "big"
+        ],
+        "rows": [
+          [
+            null,
+            true,
+            9007199254740993
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "unknown-property",
+      "category": "negative",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。区分属性不存在与属性值NULL，可以使用未文档化的property_exists吗？",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [],
+        "forbids": [
+          "property_exists\\s*\\("
+        ],
+        "explanation_requires": [
+          "文档|document|不支持|unsupported"
+        ]
+      },
+      "reference": {
+        "query": "",
+        "explanation": "5.3.0文档没有可靠等价构造，不能用未文档化函数区分；IS NOT NULL仅表示非空。"
+      }
+    },
+    {
+      "id": "missing-schema",
+      "category": "negative",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "为未知图按客户证件号查客户并返回风险分，未提供图名、类型、属性或主键。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [],
+        "forbids": [],
+        "explanation_requires": [
+          "Schema|属性|property|properties"
+        ]
+      },
+      "reference": {
+        "query": "",
+        "explanation": "请提供图名、客户节点类型、证件号属性和风险分属性；缺少Schema无法给出可执行标识符。"
+      }
+    },
+    {
+      "id": "zero-hop",
+      "category": "repair",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。{0}报NS103，但我只要起点id=1本身，不能包含一跳邻居。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "RETURN"
+        ],
+        "forbids": [
+          "\\{0,\\s*1\\}",
+          "->"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (p:Person {id: 1}) RETURN p",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "call-pipeline",
+      "category": "routing",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已有过程neighbors(id INT64) RETURNS (name STRING)，只需调用neighbors(1)，取name升序前5行。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "CALL",
+          "ORDER BY",
+          "LIMIT 5"
+        ],
+        "forbids": [
+          "CREATE PROCEDURE"
+        ]
+      },
+      "reference": {
+        "query": "CALL neighbors(1) YIELD name RETURN name ORDER BY name LIMIT 5",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "inline-call",
+      "category": "routing",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "只读内联子查询先返回1 AS n，外层返回n；不要创建过程。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "CALL",
+          "RETURN"
+        ],
+        "forbids": [
+          "CREATE"
+        ]
+      },
+      "reference": {
+        "query": "CALL { RETURN 1 AS n } RETURN n",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "procedure-scalar",
+      "category": "procedure",
+      "skill": "gql-procedure-generator",
+      "scope": "database",
+      "prompt": "创建5.3 Database过程plus_one(x INT64)，返回result INT64等于x+1。调用方选图。",
+      "documentation": [
+        "database-gql-reference/procedures/"
+      ],
+      "contract": {
+        "requires": [
+          "CREATE PROCEDURE",
+          "RETURNS",
+          "x\\s*\\+\\s*1"
+        ],
+        "forbids": [
+          "\\bUSE\\b"
+        ]
+      },
+      "reference": {
+        "query": "CREATE PROCEDURE plus_one(x INT64) RETURNS result INT64 AS { RETURN x + 1 AS result }",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "procedure-default",
+      "category": "procedure",
+      "skill": "gql-procedure-generator",
+      "scope": "database",
+      "prompt": "定义过程greet(name STRING, prefix STRING DEFAULT \"hi\")，返回message STRING，拼接prefix和name，用文档字符串拼接运算符。",
+      "documentation": [
+        "database-gql-reference/procedures/"
+      ],
+      "contract": {
+        "requires": [
+          "DEFAULT",
+          "\\|\\|",
+          "DEFAULT\\s+[\\\"\\x27]hi[\\\"\\x27]",
+          "prefix\\s*\\|\\|\\s*name"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "CREATE PROCEDURE greet(name STRING, prefix STRING DEFAULT \"hi\") RETURNS message STRING AS { RETURN prefix || name AS message }",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "procedure-manage",
+      "category": "procedure",
+      "skill": "gql-procedure-generator",
+      "scope": "database",
+      "prompt": "已有过程plus_one(x INT64) RETURNS result INT64。修改注释为increment，不改过程体、参数或返回列。",
+      "documentation": [
+        "database-gql-reference/procedures/"
+      ],
+      "contract": {
+        "requires": [
+          "ALTER PROCEDURE",
+          "COMMENT",
+          "ALTER\\s+PROCEDURE\\s+plus_one\\s*\\(\\s*(?:x\\s+)?INT64\\s*\\)",
+          "COMMENT\\s+[\\\"\\x27]increment[\\\"\\x27]"
+        ],
+        "forbids": [
+          "DROP",
+          "CREATE"
+        ]
+      },
+      "reference": {
+        "query": "ALTER PROCEDURE plus_one(INT64) COMMENT \"increment\"",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "procedure-algorithm",
+      "category": "procedure",
+      "skill": "gql-procedure-generator",
+      "scope": "analytics",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。Analytics过程传播：声明NODE VALUE score SumAgg<INT64> = 0；对一跳KNOWS的每个终点累加1，再返回各点id和score。只生成单跳match-compute，不要多跳。",
+      "documentation": [
+        "analytics-gql-reference/match-compute/",
+        "analytics-gql-reference/dql/",
+        "analytics-gql-reference/variable-definition/table-variable/"
+      ],
+      "contract": {
+        "requires": [
+          "NODE VALUE",
+          "PER PATH",
+          "->\\s*\\((\\w+)(?::Person)?\\)\\s*PER\\s+PATH\\s*\\{\\s*SET\\s+\\1\\.@score\\s*\\+=\\s*1"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "CREATE PROCEDURE count_incoming_knows()\nRETURNS (id INT64, score INT64)\nAS {\n  NODE VALUE score SumAgg<INT64> = 0\n  TABLE results TYPED TABLE {id INT64, score INT64} PARTITION BY DEFAULT\n\n  MATCH (s:Person)-[:KNOWS]->(t:Person)\n  PER PATH {\n    SET t.@score += 1\n  }\n\n  MATCH (n:Person)\n  PER NODE (n) {\n    EXPORT n.id, n.@score INTO results\n  }\n\n  PER PARTITION (part) OF results {\n    FOR row IN part\n    RETURN row.id AS id, row.score AS score\n  }\n};",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "procedure-multihop",
+      "category": "negative",
+      "skill": "gql-procedure-generator",
+      "scope": "analytics",
+      "prompt": "把GSQL两跳SELECT s-(e1)->m-(e2)->t ACCUM逻辑迁移成5.3 Analytics过程；Schema和副作用未给出，不能生成一个多跳MATCH COMPUTE。",
+      "documentation": [
+        "analytics-gql-reference/match-compute/"
+      ],
+      "contract": {
+        "requires": [],
+        "forbids": [],
+        "explanation_requires": [
+          "单跳|one.hop|single.hop",
+          "Schema|副作用|side.effects"
+        ]
+      },
+      "reference": {
+        "query": "",
+        "explanation": "需要节点/边Schema和ACCUM副作用；按优先级拆成多个单跳stage，声明状态和终止条件，缺失输入时只给阶段设计。"
+      }
+    },
+    {
+      "id": "distributed-boundary",
+      "category": "negative",
+      "skill": "gql-procedure-generator",
+      "scope": "analytics",
+      "prompt": "在严格5.3.0 Analytics中把本地BindingTable导入PARTITION BY DEFAULT分布式临时图，然后在同一过程match-compute。",
+      "documentation": [
+        "analytics-gql-reference/in-out/"
+      ],
+      "contract": {
+        "requires": [],
+        "forbids": [],
+        "explanation_requires": [
+          "不支持|禁止|不能|unsupported|not support",
+          "sibling|兄弟|同级|拆"
+        ]
+      },
+      "reference": {
+        "query": "",
+        "explanation": "5.3.0不支持该本地表到分布式图组合；导入和match-compute还需拆成sibling子过程，不能伪造可执行过程。"
+      }
+    },
+    {
+      "id": "perf-supernode",
+      "category": "performance",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。超级节点id=1查询朋友id。评估把末尾LIMIT 10提前到扩展前是否等价；没有PROFILE。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "KNOWS"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "MATCH (p:Person {id: 1})-[:KNOWS]->(f) RETURN f.id AS id LIMIT 10",
+        "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
+      },
+      "risk": "supernode"
+    },
+    {
+      "id": "perf-varlen",
+      "category": "performance",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。优化1至8跳TRAIL路径，返回所有路径，不能缩短上界或改ACYCLIC。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "TRAIL",
+          "\\{1,\\s*8\\}"
+        ],
+        "forbids": [
+          "ACYCLIC"
+        ]
+      },
+      "reference": {
+        "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,8}(b) RETURN p",
+        "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
+      },
+      "risk": "variable_path"
+    },
+    {
+      "id": "perf-fanout",
+      "category": "performance",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。两条独立朋友边要返回所有(f1.id,f2.id)组合，包括重复。优化但不能DISTINCT或UNION改语义。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "f1",
+          "f2"
+        ],
+        "forbids": [
+          "DISTINCT",
+          "UNION"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (p:Person)-[:KNOWS]->(f1), (p)-[:KNOWS]->(f2) RETURN f1.id AS first_id, f2.id AS second_id",
+        "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
+      },
+      "risk": "intermediate_rows"
+    },
+    {
+      "id": "perf-optional",
+      "category": "performance",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。返回每个人和年龄>30的朋友，无符合条件朋友时仍返回人和NULL。优化时保持OPTIONAL范围。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "OPTIONAL MATCH"
+        ],
+        "forbids": [
+          "NEXT",
+          "\\bFILTER\\s+(?:WHERE\\s+)?\\w+\\.age\\s*>"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (p:Person) OPTIONAL MATCH (p)-[:KNOWS]->(f:Person WHERE f.age > 30) RETURN p.id AS id, f.id AS friend_id",
+        "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
+      },
+      "risk": "optional_match"
+    },
+    {
+      "id": "perf-correlated",
+      "category": "performance",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。只查至少有一位朋友的人，每人一行。优化相关存在子查询；尚无PROFILE。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "EXISTS",
+          "MATCH\\s*\\((\\w+):Person\\).*?EXISTS\\s*\\{\\s*MATCH\\s*\\(\\1\\)"
+        ],
+        "forbids": [
+          "collect_list"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (p:Person) WHERE EXISTS { MATCH (p)-[:KNOWS]->(f) } RETURN p.id AS id",
+        "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
+      },
+      "risk": "correlated_subquery"
+    },
+    {
+      "id": "perf-pagination",
+      "category": "performance",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "已选图 social：Person(id INT64 主键,name STRING,age INT64)，KNOWS(Person->Person,weight DOUBLE)。API必须保留offset=10000、limit=20，按id升序；评估性能但不更换游标接口。",
+      "documentation": [
+        "database-gql-reference/dql/"
+      ],
+      "contract": {
+        "requires": [
+          "OFFSET 10000",
+          "LIMIT 20",
+          "ORDER BY"
+        ],
+        "forbids": []
+      },
+      "reference": {
+        "query": "MATCH (p:Person) RETURN p.id AS id ORDER BY id OFFSET 10000 LIMIT 20",
+        "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
+      },
+      "risk": "pagination"
+    }
+  ]
+}

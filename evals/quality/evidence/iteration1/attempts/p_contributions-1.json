@@ -1,0 +1,7 @@
+{
+  "case_id": "p_contributions",
+  "attempt": 1,
+  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN sum(contribution) AS total;",
+  "skills_sha256": "420d5a342c0ddb53205a84a810c42fcd65651917b731e779322fc9d548e7c8aa",
+  "notes": "Uses two independent RETURN branches joined by UNION ALL, preserving equal contributions, then NEXT and documented sum(Numeric) to return total. Reviewed the bundled syntax/function catalogs and procedure checklist; bundled database static lint passed. No database execution performed."
+}
