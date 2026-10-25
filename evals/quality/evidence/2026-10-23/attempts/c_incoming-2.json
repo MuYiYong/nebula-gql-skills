@@ -1,0 +1,7 @@
+{
+  "case_id": "c_incoming",
+  "attempt": 2,
+  "query": "NODE VALUE incoming_total SumAgg<INT64> = 0\nTABLE incoming_rows {id STRING, total INT64}\n\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET target.@incoming_total += coalesce(edge.degree, 0)\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@incoming_total AS total INTO incoming_rows\n}\n\nFOR row IN incoming_rows\nRETURN row.id AS id, row.total AS total",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Generated independently from the selected public prompt and current procedure skill references. Accumulates every follow edge into its target, treats NULL degree as zero, then exports all player nodes including zero-incoming nodes. Not executed against a database."
+}

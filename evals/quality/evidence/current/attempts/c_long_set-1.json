@@ -1,7 +1,12 @@
 {
   "case_id": "c_long_set",
   "attempt": 1,
-  "query": "VALUE collected_destination_ids SetAgg<STRING>\nMATCH (source:player)-[:follow]->(destination:player)\nPER PATH {\n  SET @collected_destination_ids += destination.id\n}\nRETURN @collected_destination_ids.size() AS distinct_targets",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Generated from the assigned public prompt and current procedure skill references only. Preserves the required long global SetAgg name; collects destination primary-key properties through one-hop match-compute and returns the documented set size, including zero on an empty graph. Not executed against a database."
+  "query": "VALUE collected_destination_ids SetAgg<STRING>\nMATCH (s:player)-[:follow]->(d:player)\nPER PATH {\n  SET @collected_destination_ids += d.id\n}\nRETURN @collected_destination_ids.size() AS distinct_targets",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": [
+    "Assumes the caller has already selected its owned Database local temporary graph, as stated in the public prompt. No graph selection, DDL, persistent data writes, or named procedure wrapper.",
+    "Uses the required long global SetAgg<STRING> name unchanged; collects destination player.id through one directed follow hop. Parallel edges collapse through set aggregation; uninitialized SetAgg.size() returns 0.",
+    "References: SKILL.md; references/procedure-language.md (Match Compute Model, Global aggregate variables, SetAgg, container methods); references/documented-syntax.md (Database match-compute and SetAgg); references/documented-functions.md (SetAgg.size); references/identifiers.md; references/checklist.md; applicable references/validation.md checks.",
+    "Bundled quote-identifiers confirms all emitted identifiers are ordinary names. Bundled lint reports no issues or needs_review; server parsing and database execution were not performed."
+  ]
 }

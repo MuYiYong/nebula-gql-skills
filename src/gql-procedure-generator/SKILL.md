@@ -11,6 +11,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 
 1. 按意图路由：定义/管理过程、设计签名、过程内控制流或状态算法由本技能处理。已有签名的独立调用、CALL/YIELD 后的检索和只读内联子查询交给 gql-query-generator；不要仅因出现 CALL 同时加载两个技能。混合任务先完成定义，再按需读取查询参考。
 2. 提取过程名、参数、返回列、运行环境（Database 或 Analytics）、图类型、状态变量、控制流、副作用和终止条件。
+   标识符若命中保留或非保留关键字（忽略大小写），生成时一律用反引号包围，并同步处理声明和所有引用；普通合法标识符可以不加。按 [identifiers.md](references/identifiers.md) 核对完整清单，不给语法关键字、内置函数、数据类型或字符串值机械加反引号。 过程形参属于标识符；外部查询参数 `$name` 是独立词法 token，保持原语法，不在 `$` 后拼接反引号。
 3. 区分 Database 本地临时图与 Analytics 分布式临时图：两者均有文档化的 match-compute；只有后者使用 PARTITION BY DEFAULT/PER PARTITION。聚合器和 ACTIVE_SET 在顶层过程作用域声明，不能塞进内联 CALL 子作用域。
 4. 在过程作用域开头声明全部变量。把运行中才得到的值先声明，再在后续语句中赋值。
 5. 普通过程逻辑使用 statement block；图遍历或算法逻辑使用 `match_compute_statement`。多跳算法拆成 `WHILE` 驱动的多轮 0/1 跳计算。
@@ -25,6 +26,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 python3 scripts/skill_tools.py lookup list_distinct
 python3 scripts/skill_tools.py lookup "OPTIONAL MATCH" --kind topic --limit 4000
 python3 scripts/skill_tools.py lint candidate.gql --scope database
+python3 scripts/skill_tools.py quote-identifiers property version person_id
 ```
 
 函数查询同时返回签名、环境和文档键；主题查询返回命中章节及行号。主题优先返回精确标题，`other_matches` 表示其他正文提及，可用 `--all-matches` 加载。若 `next_offset` 非空，按需用 `--offset` 继续；截断结果不能作为完整能力依据。无 Python 时用精确名称检索对应 Markdown。静态检查只识别部分错误；无报错不等于语法、类型或语义通过。

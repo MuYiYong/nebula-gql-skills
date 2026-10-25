@@ -1,0 +1,7 @@
+{
+  "case_id": "q_page",
+  "attempt": 2,
+  "query": "MATCH (p:player)\nRETURN p.id AS id, p.age AS age\nORDER BY age DESC NULLS LAST, id ASC\nOFFSET 1\nLIMIT 2;",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Independent generation from the q_page public prompt and current query skill references. Uses documented RETURN-tail ordering and pagination; preserves nullable ages without filtering. Not executed against a database."
+}

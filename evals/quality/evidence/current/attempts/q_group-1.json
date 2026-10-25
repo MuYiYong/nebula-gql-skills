@@ -2,6 +2,6 @@
   "case_id": "q_group",
   "attempt": 1,
   "query": "MATCH (p:player)\nRETURN p.age AS age, count(*) AS total\nGROUP BY age;",
-  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
-  "notes": "Read only the public q_group prompt, top-level skills hash, and current query skill with relevant aggregation and validation references. Uses the RETURN alias as the grouping key and count(*) to count every player, including the NULL age group. No database execution."
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": "Uses the caller-selected graph. Matches each player node once without traversing follow edges; count(*) includes every player, including NULL age values, without name-based deduplication. Groups by the RETURN alias age as required by the 5.3.0 skill. No ordering was requested. References: SKILL.md; references/documented-syntax.md GROUP BY; references/documented-functions.md count(); references/query-language.md RETURN and Aggregation & GROUP BY; references/identifiers.md; references/checklist.md; references/validation.md relevant aggregation checks. The bundled quote-identifiers helper confirms p, player, age, and total are ordinary identifiers. Manually checked against bundled references; no database execution."
 }

@@ -584,20 +584,53 @@ def render_syntax(pages: list[SyntaxPage], skill_name: str) -> str:
 
 
 def render_keywords(docs_root: Path) -> str:
-    key = "database-gql-reference/overview/keywords-identifiers/"
-    raw = visible_html((docs_root / key / "index.html").read_text(encoding="utf-8"))
-    hs = headings(raw)
-    index = next(i for i, h in enumerate(hs) if clean_text(h.group("body")) == "保留关键字")
-    fragment = raw[hs[index].end():section_end(hs, index, len(raw))]
-    words = set()
-    for paragraph in re.findall(r"<p[^>]*>(.*?)</p>", fragment, flags=re.S):
-        value = clean_text(paragraph)
-        if re.fullmatch(r"[A-Z_0-9 ]+", value): words.update(value.split())
-    if not {"BIG", "VALUES", "RETURN", "MATCH"} <= words:
-        raise ValueError("Reserved keyword extraction failed")
-    return json.dumps({"compatibility": VERSION, "documentation": key,
-                       "policy": "Reserved identifiers only; not a capability allowlist",
-                       "reserved": sorted(words)}, ensure_ascii=False, indent=2) + "\n"
+    keys = [f"{scope}-gql-reference/overview/keywords-identifiers/"
+            for scope in ("database", "analytics")]
+    catalogs = []
+    for key in keys:
+        raw = visible_html((docs_root / key / "index.html").read_text(encoding="utf-8"))
+        hs = headings(raw)
+        categories = {}
+        for category, title in (("reserved", "保留关键字"), ("non_reserved", "非保留关键字")):
+            index = next((i for i, h in enumerate(hs) if clean_text(h.group("body")) == title), None)
+            if index is None:
+                raise ValueError(f"Missing keyword category: {key} {title}")
+            fragment = raw[hs[index].end():section_end(hs, index, len(raw))]
+            words = set()
+            for paragraph in re.findall(r"<p[^>]*>(.*?)</p>", fragment, flags=re.S):
+                value = clean_text(paragraph)
+                if re.fullmatch(r"[A-Z_0-9 ]+", value):
+                    words.update(value.split())
+            if not words:
+                raise ValueError(f"Empty keyword category: {key} {title}")
+            categories[category] = sorted(words)
+        if set(categories["reserved"]) & set(categories["non_reserved"]):
+            raise ValueError(f"Overlapping keyword categories: {key}")
+        catalogs.append(categories)
+    if catalogs[0] != catalogs[1]:
+        raise ValueError("Database and Analytics keyword categories differ")
+    return json.dumps({
+        "compatibility": VERSION, "documentation": keys[0], "documentation_keys": keys,
+        "policy": "Backtick reserved and non-reserved keywords when used as identifiers; "
+                  "ordinary regular identifiers may remain unquoted. Not a capability allowlist.",
+        **catalogs[0],
+    }, ensure_ascii=False, indent=2) + "\n"
+
+
+def parse_parser_keywords(source: str) -> dict[str, set[str]]:
+    source = re.sub(r"/\*[\s\S]*?\*/|//[^\n]*", "", source)
+    return {category: set(re.findall(r'^NG_' + macro + r'_KEYWORD\("([A-Z_0-9]+)"', source, re.M))
+            for category, macro in (("reserved", "RESERVED"), ("non_reserved", "NON_RESERVED"))}
+
+
+def check_parser_keywords(code_root: Path, catalog_text: str) -> None:
+    import subprocess
+    source = subprocess.check_output(
+        ["git", "-C", str(code_root), "show", f"v{VERSION}:src/parser/Keywords.h"], text=True)
+    documented = json.loads(catalog_text)
+    for category, words in parse_parser_keywords(source).items():
+        if words != set(documented[category]):
+            raise ValueError(f"v{VERSION} parser and documentation differ: {category}")
 
 
 def expected_outputs(docs_root: Path) -> dict[Path, str]:
@@ -626,11 +659,15 @@ def expected_outputs(docs_root: Path) -> dict[Path, str]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--docs-root", required=True, type=Path)
+    parser.add_argument("--code-root", type=Path,
+                        help="Also compare both keyword categories with the v5.3.0 parser tag")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
     docs_root = args.docs_root.resolve()
     outputs = expected_outputs(docs_root)
+    if args.code_root:
+        check_parser_keywords(args.code_root, render_keywords(docs_root))
     mismatches = []
     for path, content in outputs.items():
         if args.check:

@@ -49,6 +49,7 @@ REQUIRED_SKILL_FILES = {
     "references/checklist.md",
     "references/repair.md",
     "references/documented-keywords.json",
+    "references/identifiers.md",
 }
 
 

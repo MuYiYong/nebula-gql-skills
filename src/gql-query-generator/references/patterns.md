@@ -91,9 +91,9 @@ RETURN friend
 
 ```gql
 (v)                        -- 仅变量
-(v:Label)                  -- 标签表达式
-(v IS Label)               -- IS 形式
-(v @Type)                  -- 点类型
+(v:`Label`)                  -- 标签表达式
+(v IS `Label`)               -- IS 形式
+(v @`Type`)                  -- 点类型
 (v @[Type1, Type2])        -- 多点类型
 (v {prop: expr})           -- 属性过滤
 (v WHERE v.prop > 10)      -- pattern WHERE
@@ -105,9 +105,9 @@ RETURN friend
 组件顺序（稳定）：边变量 → 标签表达式或边类型 → 边属性 → `SAMPLE` → `WHERE`
 
 ```gql
--[e:Label]->               -- 标签
--[e IS Label]->            -- IS 形式
--[e @Type]->               -- 边类型
+-[e:`Label`]->               -- 标签
+-[e IS `Label`]->            -- IS 形式
+-[e @`Type`]->               -- 边类型
 -[e {prop: expr}]->        -- 属性过滤
 -[e SAMPLE RIGHT 10]->     -- 采样
 -[e WHERE e.weight > 0.5]-> -- pattern WHERE

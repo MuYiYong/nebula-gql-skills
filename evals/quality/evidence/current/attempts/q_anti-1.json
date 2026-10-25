@@ -2,6 +2,6 @@
   "case_id": "q_anti",
   "attempt": 1,
   "query": "MATCH (p:player)\nWHERE NOT EXISTS {\n  MATCH (p)-[:follow]->()\n}\nRETURN p.id AS id;",
-  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
-  "notes": "Generated independently from q_anti and current query skill references. Correlated NOT EXISTS checks outgoing follow edges from the current player; incoming edges and nullable edge properties do not affect exclusion. Reviewed against skill checklist; no database execution."
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": "Uses the evaluator-selected graph. The NOT EXISTS subquery captures outer p and tests only outgoing follow edges, so incoming edges do not disqualify a player and parallel edges do not duplicate output. The output column is id. References: SKILL.md; references/documented-syntax.md EXISTS predicate; references/query-language.md MATCH and correlated NOT EXISTS guidance; references/expressions.md Subquery Expressions; references/patterns.md bound left anchor; references/identifiers.md; references/checklist.md and applicable references/validation.md checks. The bundled quote-identifiers helper confirms p, player, follow and id require no keyword quoting. No database execution was performed."
 }

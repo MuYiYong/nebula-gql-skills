@@ -1,11 +1,11 @@
 {
   "case_id": "c_string_concat",
   "attempt": 2,
-  "query": "VALUE target_ids SumAgg<STRING> = ''\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET @target_ids += target.id\n}\nRETURN length(@target_ids) AS total_chars",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "query": "VALUE collected_ids SumAgg<STRING> = ''\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET @collected_ids += t.id\n}\nRETURN length(@collected_ids) AS total_chars",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
   "notes": [
-    "Uses a global SumAgg<STRING> initialized to the empty string; each directed follow path contributes the target player business id once, preserving parallel-edge multiplicity.",
-    "Returns the documented length(STRING) result as total_chars; the empty initialized string gives zero for an empty graph.",
-    "Generated independently from the permitted public case and current procedure skill references; no database execution was performed."
+    "Assumes the evaluator-selected Database local temporary graph and the schema stated in .planning/2026-10-25-publish-gql-keyword-quoting-release/public-prompts/c_string_concat.json. Reads target business id t.id once per directed follow edge path; parallel edges contribute independently. Empty-string initialization yields zero length for an empty graph; concatenation order is unspecified.",
+    "References: src/gql-procedure-generator/SKILL.md; src/gql-procedure-generator/references/procedure-language.md (single-hop PER PATH, global aggregate usage, SumAgg<STRING> initialization); src/gql-procedure-generator/references/documented-functions.md (length(STRING) -> INT32, Database); src/gql-procedure-generator/references/identifiers.md; src/gql-procedure-generator/references/checklist.md; src/gql-procedure-generator/references/validation.md.",
+    "Identifier spellings checked with src/gql-procedure-generator/scripts/skill_tools.py quote-identifiers. Reviewed against the bundled checklist; no database execution performed."
   ]
 }

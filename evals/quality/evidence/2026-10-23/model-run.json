@@ -1,0 +1,5466 @@
+{
+  "version": 1,
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "suite_sha256": "1ef49b157eee45c0e05f1225f1b6a399f0b10d2c2dbf95fe0a7e8255571ba564",
+  "runner_sha256": "12b2bad2b686d4898f7a9df2bb57a92e0622b41076d9b02ae15dac14624f0f99",
+  "attempts": [
+    {
+      "case_id": "c_degrees",
+      "attempt": 1,
+      "stratum": "local_compute",
+      "split": "development",
+      "output_sha256": "34f5f0009cd071f740cb7df933beea28f3653d8de613436340e53da8ccd72d89",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "degree"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "3"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "7ae07dd9a72afb578f2759b8f0c870d7a906a1c7722446a3607e118052f7b842",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "degree"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "6130d90dd0e833b1e927818dd98630bbc4fe70582a1051067295e32017ea7d9b",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "degree"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "c908fb40bd36e6e74e1bcba5390545029c9dbe434ca2862b472c03b75d194d77",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "c_degrees",
+      "attempt": 2,
+      "stratum": "local_compute",
+      "split": "development",
+      "output_sha256": "cbb8007c2987a9089352688c49f803bf21a83e9222e1bcb643f4ba4297b0d9aa",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "degree"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "3"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "7ae07dd9a72afb578f2759b8f0c870d7a906a1c7722446a3607e118052f7b842",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "degree"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "6130d90dd0e833b1e927818dd98630bbc4fe70582a1051067295e32017ea7d9b",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "degree"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "c908fb40bd36e6e74e1bcba5390545029c9dbe434ca2862b472c03b75d194d77",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "c_incoming",
+      "attempt": 1,
+      "stratum": "local_compute",
+      "split": "holdout",
+      "output_sha256": "0eed86c81752dcef82b2b9594571d8a3d6a5439c17bcfb5a6ca817da346220a4",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "70"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "30"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "55"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "fc1b4ab94f7c9246de279b2a50cad038eb22e345527c6900107b1408c04f2091",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "4"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "ff619d3de43911e4c45edc7c798545036406124012033041911688e93dbce165",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "total"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "dc12b1f2de4502ec414d2c97460514b25e517bf5c654ceb708c3148e42d8feae",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [
+        "Special signature requires checking: coalesce"
+      ],
+      "state": "passed"
+    },
+    {
+      "case_id": "c_incoming",
+      "attempt": 2,
+      "stratum": "local_compute",
+      "split": "holdout",
+      "output_sha256": "e313d6e2e2d6ebda4b493e2aba1961c7668a7dcf589b616da89738af76020507",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "70"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "30"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "55"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "fc1b4ab94f7c9246de279b2a50cad038eb22e345527c6900107b1408c04f2091",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "4"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "ff619d3de43911e4c45edc7c798545036406124012033041911688e93dbce165",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "total"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "dc12b1f2de4502ec414d2c97460514b25e517bf5c654ceb708c3148e42d8feae",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [
+        "Special signature requires checking: coalesce"
+      ],
+      "state": "passed"
+    },
+    {
+      "case_id": "c_long_set",
+      "attempt": 1,
+      "stratum": "local_compute",
+      "split": "development",
+      "output_sha256": "d1dd2842a15f6c184a7c8d5dc799a9f89642443a0592e953b449021697173e66",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "UINT64"
+          ],
+          "actual_columns": [
+            "distinct_targets"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "4"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "816602f1e829a24a9fea51e8658b20c46dcd58f1187e097dad461a753733f006",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "UINT64"
+          ],
+          "actual_columns": [
+            "distinct_targets"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "3"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "3bff5905fe805e0490fb1464e6b9cb8962b2af4be390e01d4ad22e0df43c834e",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "UINT64"
+          ],
+          "actual_columns": [
+            "distinct_targets"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "7ef89528d1502f3448feb5333e35cbb7c67cc60800f22fa351c7db7a9d29e3dd",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "c_long_set",
+      "attempt": 2,
+      "stratum": "local_compute",
+      "split": "development",
+      "output_sha256": "f1ec5e00386f8ebe4e077ae39ae56f94d63b398692ed921a597b6737450187d0",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "UINT64"
+          ],
+          "actual_columns": [
+            "distinct_targets"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "4"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "816602f1e829a24a9fea51e8658b20c46dcd58f1187e097dad461a753733f006",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "UINT64"
+          ],
+          "actual_columns": [
+            "distinct_targets"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "3"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "3bff5905fe805e0490fb1464e6b9cb8962b2af4be390e01d4ad22e0df43c834e",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "UINT64"
+          ],
+          "actual_columns": [
+            "distinct_targets"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "7ef89528d1502f3448feb5333e35cbb7c67cc60800f22fa351c7db7a9d29e3dd",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "c_string_concat",
+      "attempt": 1,
+      "stratum": "local_compute",
+      "split": "fresh_holdout",
+      "output_sha256": "e78dcedba0e830e640400a1ee7c62abcef3d39748a040b079faf560d192ba347",
+      "instances": [
+        {
+          "variant": "word_ids",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT32"
+          ],
+          "actual_columns": [
+            "total_chars"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "37"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "b6659bfcbdcc14a0542ec128670d0d6def8e1419322516f268c5e686dce76ff6",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT32"
+          ],
+          "actual_columns": [
+            "total_chars"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "c1dd19481f6ef1f184be938d43d51777aa2798740594ed9c2dfb97403047fb3e",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "c_string_concat",
+      "attempt": 2,
+      "stratum": "local_compute",
+      "split": "fresh_holdout",
+      "output_sha256": "d87997c2c1a886feb325c9f6e398c9806271baef413b7a4f731650930517de74",
+      "instances": [
+        {
+          "variant": "word_ids",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT32"
+          ],
+          "actual_columns": [
+            "total_chars"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "37"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "b6659bfcbdcc14a0542ec128670d0d6def8e1419322516f268c5e686dce76ff6",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT32"
+          ],
+          "actual_columns": [
+            "total_chars"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "c1dd19481f6ef1f184be938d43d51777aa2798740594ed9c2dfb97403047fb3e",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "p_branch",
+      "attempt": 1,
+      "stratum": "database_procedure",
+      "split": "holdout",
+      "output_sha256": "e239882e38493d52125956df120b372c83ad8ff5c62f584f304474bdaf04d734",
+      "instances": [
+        {
+          "variant": "scalar",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "missing"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "1408d7289ad6349deaa14cad10018bba227aa9ed6a7437a3465641e97d6599a6"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "negative"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "86f7311f2d8819723f853ce48f486aba59d2d56139f3cf9239f15a228131380c"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 2,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "zero"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "4bbf09cc7ac4ce8d6d6598e6b46ca2c04b673cd1c24bc75329af5eabecbade70"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 3,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "positive"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "f6a2dd3ca7a20a80d7353941ada6613638ff727523b7606b0f213d99a7f2e5ec"
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "p_branch",
+      "attempt": 2,
+      "stratum": "database_procedure",
+      "split": "holdout",
+      "output_sha256": "987d14c08280337f10a1eb9208db6d33fbeeb3ca16d0584a4ef339e654741917",
+      "instances": [
+        {
+          "variant": "scalar",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "missing"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "1408d7289ad6349deaa14cad10018bba227aa9ed6a7437a3465641e97d6599a6"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "negative"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "86f7311f2d8819723f853ce48f486aba59d2d56139f3cf9239f15a228131380c"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 2,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "zero"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "4bbf09cc7ac4ce8d6d6598e6b46ca2c04b673cd1c24bc75329af5eabecbade70"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 3,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "label"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "positive"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "f6a2dd3ca7a20a80d7353941ada6613638ff727523b7606b0f213d99a7f2e5ec"
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "p_contributions",
+      "attempt": 1,
+      "stratum": "database_procedure",
+      "split": "development",
+      "output_sha256": "20dc9f147de9e6e29395b47a79c55b402ccebcbfad7d4623a8beb7dec7c618f2",
+      "instances": [
+        {
+          "variant": "scalar",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "4"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "310315f952ac8eb935db1dc5e858ccd90f30922a841c8af15efcf741a45d41ea"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 2,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "p_contributions",
+      "attempt": 2,
+      "stratum": "database_procedure",
+      "split": "development",
+      "output_sha256": "dbc3a69d07938036cdf80a313c4a824c463143e7a8a9840d6a36d451cbc944e5",
+      "instances": [
+        {
+          "variant": "scalar",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "4"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "310315f952ac8eb935db1dc5e858ccd90f30922a841c8af15efcf741a45d41ea"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 2,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "629b5206a055d0bcb3d2687a4c5de006df3a281462600f0d6629b8b0f646a2de"
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "p_sum",
+      "attempt": 1,
+      "stratum": "database_procedure",
+      "split": "development",
+      "output_sha256": "1fe60e021939644b77843ca7cebc51f1ec88db88c4a12347c3f904e841e6cda8",
+      "instances": [
+        {
+          "variant": "scalar",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 2,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "c19aa3bd49c74dac5f7b31cab935422392baf99f8f1149dd8309c913888633bd"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 3,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "21"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "f160e4e4935854f18317b5f32ba48a7841a71c1aa7cad5a8719b7c0f6c5ae272"
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "p_sum",
+      "attempt": 2,
+      "stratum": "database_procedure",
+      "split": "development",
+      "output_sha256": "5ad25b86ef7a47d8a3e5cb9119f2a73f642207d6e1454873e9fc9bd06ef433ee",
+      "instances": [
+        {
+          "variant": "scalar",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "0"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "1009fe89c6509103573b7e4cf83287aabc8c9b6db080aa578f41718b1eed646a"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 2,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "c19aa3bd49c74dac5f7b31cab935422392baf99f8f1149dd8309c913888633bd"
+        },
+        {
+          "variant": "scalar",
+          "parameters_index": 3,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "INT64"
+          ],
+          "actual_columns": [
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "21"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "f160e4e4935854f18317b5f32ba48a7841a71c1aa7cad5a8719b7c0f6c5ae272"
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_acyclic",
+      "attempt": 1,
+      "stratum": "query",
+      "split": "holdout",
+      "output_sha256": "f5ff80e58404d00b49aa784fc5e61583778b692d41af58147c39ed29f501454b",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 8,
+          "actual_rows": 8,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "9053be459c0d9c64c5a05e1fc1b926edeb653b0cb32264d12e42fc225402e415",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "4990cccba209278b5a393901a853b13292a93d5a50fbd19f607a2c2f42673d25",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_acyclic",
+      "attempt": 2,
+      "stratum": "query",
+      "split": "holdout",
+      "output_sha256": "f56a5770cfb23721879fd694946957f01481599d62af039d0cdadaa43e574e06",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 8,
+          "actual_rows": 8,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "9053be459c0d9c64c5a05e1fc1b926edeb653b0cb32264d12e42fc225402e415",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "4990cccba209278b5a393901a853b13292a93d5a50fbd19f607a2c2f42673d25",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_anti",
+      "attempt": 1,
+      "stratum": "query",
+      "split": "holdout",
+      "output_sha256": "2535e61fed766ea1ba3e4576b508bf31ba13f957c4d8414c66f07e4e046c9214",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "id"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "f7c866e7482097292fbff0cdbc80de018e6621d6c777e5e0dd0029f524037781",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "id"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "c4d0ed1c8ab364a7bf5a9a6a35d289a1018b7287d2f3651c277e20de48e84b26",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "id"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "efc28590c90aa11b24e3933da691b885ae05e073a2656e0a149ce10684fd1362",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_anti",
+      "attempt": 2,
+      "stratum": "query",
+      "split": "holdout",
+      "output_sha256": "bebfdee396f8a4b182d8cc451e5d05f4d01225c88eb21013c1cbac878dedab4f",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "id"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "f7c866e7482097292fbff0cdbc80de018e6621d6c777e5e0dd0029f524037781",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 1,
+          "actual_rows": 1,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "id"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "c4d0ed1c8ab364a7bf5a9a6a35d289a1018b7287d2f3651c277e20de48e84b26",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING"
+          ],
+          "actual_columns": [
+            "id"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "efc28590c90aa11b24e3933da691b885ae05e073a2656e0a149ce10684fd1362",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_group",
+      "attempt": 1,
+      "stratum": "query",
+      "split": "development",
+      "output_sha256": "843065a22e9697456e68a880e40d348959fee5f69f4e3c17a4b9a483da9d0159",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "INT64",
+            "INT64"
+          ],
+          "actual_columns": [
+            "age",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "50"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "20"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "40"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "null",
+                  null
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "30"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "69e94205615a29d1f544932e1a7304f3f623f29a08d7a4a92f511b4f83618f60",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 4,
+          "actual_rows": 4,
+          "column_types": [
+            "INT64",
+            "INT64"
+          ],
+          "actual_columns": [
+            "age",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "90"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "null",
+                  null
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "-1"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "5"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "89ad4baf6315785729aa244407e8c7e11dc8d8510ffca6809d12853420aa7f33",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "INT64",
+            "INT64"
+          ],
+          "actual_columns": [
+            "age",
+            "total"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "ca2d72ee4b3f763738620c5534652119333563ee6a626d5cba456225b4d58f6c",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_group",
+      "attempt": 2,
+      "stratum": "query",
+      "split": "development",
+      "output_sha256": "c811fa1211dcb8ba1c95a0953b8a2fe4a89ec1e138945017f16e7643b09d87ae",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "INT64",
+            "INT64"
+          ],
+          "actual_columns": [
+            "age",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "50"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "20"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "40"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "null",
+                  null
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "30"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "69e94205615a29d1f544932e1a7304f3f623f29a08d7a4a92f511b4f83618f60",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 4,
+          "actual_rows": 4,
+          "column_types": [
+            "INT64",
+            "INT64"
+          ],
+          "actual_columns": [
+            "age",
+            "total"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "90"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "null",
+                  null
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "-1"
+                ],
+                [
+                  "int",
+                  "1"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "int",
+                  "5"
+                ],
+                [
+                  "int",
+                  "2"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "89ad4baf6315785729aa244407e8c7e11dc8d8510ffca6809d12853420aa7f33",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "INT64",
+            "INT64"
+          ],
+          "actual_columns": [
+            "age",
+            "total"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "ca2d72ee4b3f763738620c5534652119333563ee6a626d5cba456225b4d58f6c",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_optional",
+      "attempt": 1,
+      "stratum": "query",
+      "split": "development",
+      "output_sha256": "4821f23b6b69f86bd51b17d166c0b4ac7b1b6c2a721ed04f438fb3a6d3f8d8bd",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 8,
+          "actual_rows": 8,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "string",
+                  "c"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "string",
+                  "b"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "string",
+                  "b"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "string",
+                  "c"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "d24fb1c4a5fb7920be9dfedea937c910448a268a6595c24339d49a53689d501b",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "branching",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "135d18931eed7d2fc22112c861b02cf87674dd76d01c9a32ba3c92e9cf05aa12",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_optional",
+      "attempt": 2,
+      "stratum": "query",
+      "split": "development",
+      "output_sha256": "467f6b7139dc88bb8e47a5836dd29d649ac0293ed9afbbbd4c32166d4c4ea12e",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 8,
+          "actual_rows": 8,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "string",
+                  "c"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "string",
+                  "b"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "string",
+                  "b"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "string",
+                  "c"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "d24fb1c4a5fb7920be9dfedea937c910448a268a6595c24339d49a53689d501b",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "branching",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "e"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "135d18931eed7d2fc22112c861b02cf87674dd76d01c9a32ba3c92e9cf05aa12",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 5,
+          "actual_rows": 5,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "z"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "null",
+                  null
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "285a97106bdb1d1b951d78d64dd700b295febb4900518e8f4995e5f4583aebe2",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "STRING"
+          ],
+          "actual_columns": [
+            "src",
+            "dst"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "e369515732f945f11f56cbd1384ae57844377f6a2f007fe1f027e001873928e7",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_page",
+      "attempt": 1,
+      "stratum": "query",
+      "split": "holdout",
+      "output_sha256": "2e02489fd3486f810d781a2a1040b64f3cf561da9953683640dbfddaf4dc505c",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "age"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "40"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "40"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "ae1c143e5db4a6516bdfbbb4e01609c4c01ea0314d778e2084e1b45087961843",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "age"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "5540562bdb925dae6d4bd63709bc954defc45d8d3bf0aebf6441e17b59c7b023",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "age"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "70812f9c2535f03c486eb6f7d451be21b8d98078ac2894d72b830e7367345ea3",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_page",
+      "attempt": 2,
+      "stratum": "query",
+      "split": "holdout",
+      "output_sha256": "9e199516028656eb449a7ce531e63f439500634b0966240cc32b540cf4067a74",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "age"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "b"
+                ],
+                [
+                  "int",
+                  "40"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "c"
+                ],
+                [
+                  "int",
+                  "40"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "ae1c143e5db4a6516bdfbbb4e01609c4c01ea0314d778e2084e1b45087961843",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 2,
+          "actual_rows": 2,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "age"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "a"
+                ],
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "string",
+                  "d"
+                ],
+                [
+                  "int",
+                  "5"
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "5540562bdb925dae6d4bd63709bc954defc45d8d3bf0aebf6441e17b59c7b023",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "STRING",
+            "INT64"
+          ],
+          "actual_columns": [
+            "id",
+            "age"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "70812f9c2535f03c486eb6f7d451be21b8d98078ac2894d72b830e7367345ea3",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_trail",
+      "attempt": 1,
+      "stratum": "query",
+      "split": "development",
+      "output_sha256": "0d55468e11203186e29bb1e184a99f6faf02e58d4c81cddbfb4643329326770a",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 13,
+          "actual_rows": 13,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "983470d2dade5c35d0432af8ff5194f0b0e958fe390573a5cfe0342248ced0d0",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "branching",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "20f3bc0a1b9bc1f8ddd5526250e0a3a18153f2469834e338db84e787a78b20a0",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    },
+    {
+      "case_id": "q_trail",
+      "attempt": 2,
+      "stratum": "query",
+      "split": "development",
+      "output_sha256": "d04ceb368758711ca1d1bf2d3ba62d420c0a4308c1cf9a143e48ddd3c87e1eb6",
+      "instances": [
+        {
+          "variant": "branching",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 13,
+          "actual_rows": 13,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "983470d2dade5c35d0432af8ff5194f0b0e958fe390573a5cfe0342248ced0d0",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "branching",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 6,
+          "actual_rows": 6,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "list",
+              [
+                [
+                  "list",
+                  [
+                    [
+                      "string",
+                      "a"
+                    ],
+                    [
+                      "string",
+                      "c"
+                    ],
+                    [
+                      "string",
+                      "d"
+                    ],
+                    [
+                      "string",
+                      "a"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "result_sha256": "20f3bc0a1b9bc1f8ddd5526250e0a3a18153f2469834e338db84e787a78b20a0",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "reversed",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 0,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        },
+        {
+          "variant": "empty",
+          "parameters_index": 1,
+          "state": "passed",
+          "stage": "oracle",
+          "status": "00000",
+          "expected_rows": 0,
+          "actual_rows": 0,
+          "column_types": [
+            "LIST"
+          ],
+          "actual_columns": [
+            "node_ids"
+          ],
+          "actual_typed_rows": [],
+          "result_sha256": "fbb8c4d307434c5e7cef5c5b8ec74895515d7889284def9e19a28fa1266e2e4d",
+          "cleanup_ok": true
+        }
+      ],
+      "cleanup_ok": true,
+      "generation_package_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+      "generation_scope": "entire referenced skill tree must be identical",
+      "static_review_notices": [],
+      "state": "passed"
+    }
+  ],
+  "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
+  "schema_sha256": "1ef0de86d6da240351cc96871b6baab65f00ac6f432ae584f1454c07eb6181bd",
+  "elapsed_seconds": 2.4521757198963314,
+  "judgement": {
+    "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+    "suite_sha256": "1ef49b157eee45c0e05f1225f1b6a399f0b10d2c2dbf95fe0a7e8255571ba564",
+    "oracle_calibrated": true,
+    "overall": "insufficient_evidence",
+    "scope_note": "Scoped passes do not establish all GQL/Procedure capabilities or general accuracy.",
+    "strata": {
+      "query": {
+        "cases": [
+          {
+            "id": "q_optional",
+            "split": "development",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "q_group",
+            "split": "development",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "q_trail",
+            "split": "development",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "q_anti",
+            "split": "holdout",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "q_page",
+            "split": "holdout",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "q_acyclic",
+            "split": "holdout",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          }
+        ],
+        "verdict": "meets_scoped_benchmark",
+        "first_attempt_successes": 6,
+        "case_count": 6,
+        "first_attempt_verified": 6,
+        "first_attempt_wilson95": [
+          0.6096569663469354,
+          0.9999999999999999
+        ],
+        "interval_caveat": "Descriptive only: curated cases are not a random population sample; repeats are not additional independent cases.",
+        "two_attempt_pass_cases": 6,
+        "disagreement_cases": []
+      },
+      "database_procedure": {
+        "cases": [
+          {
+            "id": "p_sum",
+            "split": "development",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "p_contributions",
+            "split": "development",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "p_branch",
+            "split": "holdout",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          }
+        ],
+        "verdict": "meets_scoped_benchmark",
+        "first_attempt_successes": 3,
+        "case_count": 3,
+        "first_attempt_verified": 3,
+        "first_attempt_wilson95": [
+          0.43849391955098227,
+          1.0
+        ],
+        "interval_caveat": "Descriptive only: curated cases are not a random population sample; repeats are not additional independent cases.",
+        "two_attempt_pass_cases": 3,
+        "disagreement_cases": []
+      },
+      "local_compute": {
+        "cases": [
+          {
+            "id": "c_degrees",
+            "split": "development",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "c_long_set",
+            "split": "development",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "c_incoming",
+            "split": "holdout",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          },
+          {
+            "id": "c_string_concat",
+            "split": "fresh_holdout",
+            "state": "passed",
+            "attempts_seen": 2,
+            "successful_attempts": 2
+          }
+        ],
+        "verdict": "meets_scoped_benchmark",
+        "first_attempt_successes": 4,
+        "case_count": 4,
+        "first_attempt_verified": 4,
+        "first_attempt_wilson95": [
+          0.5100999795960008,
+          1.0
+        ],
+        "interval_caveat": "Descriptive only: curated cases are not a random population sample; repeats are not additional independent cases.",
+        "two_attempt_pass_cases": 4,
+        "disagreement_cases": []
+      },
+      "named_procedure_lifecycle": {
+        "verdict": "insufficient_evidence",
+        "reason": "no_authorized_supported_runtime_receipts"
+      },
+      "distributed_analytics": {
+        "verdict": "insufficient_evidence",
+        "reason": "no_authorized_supported_runtime_receipts"
+      }
+    }
+  }
+}

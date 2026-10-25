@@ -116,8 +116,8 @@ with full-suite fallback for unknown impact. This is an impact aid, not semantic
 authorization. Review the diff against the pinned version; update curated
 references and feature evidence selectively while retaining human edits.
 
-Refresh without `--check` writes only the six **generated** catalogs (four function/syntax files and two reserved-keyword lists) whose
-content changed. Other references, SKILL.md, cases and helper code remain intact. Reserved keywords govern identifier quoting only; they never authorize syntax capabilities.
+Refresh without `--check` writes only the six **generated** catalogs (four function/syntax files and two reserved/non-reserved keyword catalogs) whose
+content changed. Other references, SKILL.md, cases and helper code remain intact. Both keyword categories govern identifier quoting only; they never authorize syntax capabilities. Generated identifier names matching either category use backticks; ordinary names may remain unquoted. The manuals permit bare non-reserved identifiers, but generation follows this stricter policy.
 Run the offline gate, relevant model/live cases and then explicitly accept the
 new source snapshot using `track_sources.py ... --update`. A source-manifest
 update alone does not certify coverage. Original local directories are optional
@@ -127,3 +127,16 @@ The canonical helper is `scripts/skill_tools.py`; copy it into both skill script
 directories after edits. A parity regression prevents drift between the copies.
 Generated catalogs remain complete; bounded `lookup` retrieval reports its
 continuation offset and never silently discards remaining evidence.
+
+## Keyword catalog consistency
+
+Check both manuals against the parser at the pinned baseline before accepting a keyword refresh:
+
+```sh
+python3 scripts/refresh_documented_capabilities.py --docs-root "$DOCS_ROOT" \
+  --code-root "$CODE_ROOT" --check
+```
+
+The code check reads `v5.3.0:src/parser/Keywords.h`, ignores commented-out macros and compares reserved/non-reserved categories separately. Database/Analytics disagreement or code/manual drift fails the check. Both packages include `references/identifiers.md`, the complete catalog and `quote-identifiers` for raw individual names; lint remains a partial static check.
+
+External query parameters such as `$left` are standalone lexical tokens and retain their original spelling. The keyword policy applies to ordinary identifiers, including procedure formal parameter names; do not concatenate `$` with a backtick-quoted name.

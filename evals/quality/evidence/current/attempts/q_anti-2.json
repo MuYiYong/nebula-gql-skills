@@ -2,6 +2,6 @@
   "case_id": "q_anti",
   "attempt": 2,
   "query": "MATCH (p:player)\nWHERE NOT EXISTS {\n  MATCH (p)-[:follow]->()\n}\nRETURN p.id AS id;",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Uses a correlated NOT EXISTS pattern capturing outer p and testing only outgoing follow edges. Parallel edges do not multiply the outer result; incoming edges do not exclude a player. Checked against current skill documented EXISTS syntax and applicable checklist. No database execution performed."
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": "Uses the evaluator-selected graph and supplied player/follow labels. NOT EXISTS captures the outer player p and checks outgoing follow edges only; incoming edges do not exclude a player, and parallel edges do not multiply rows. References: SKILL.md; references/expressions.md Subquery Expressions; references/patterns.md bound-variable anchor placement; references/documented-syntax.md EXISTS predicate; references/identifiers.md; references/checklist.md; applicable references/validation.md checks. Bundled quote-identifiers confirmed p/player/follow/id are ordinary identifiers. Bundled static lint reported no issues; no database execution was performed."
 }

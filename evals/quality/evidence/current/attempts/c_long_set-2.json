@@ -1,7 +1,13 @@
 {
   "case_id": "c_long_set",
   "attempt": 2,
-  "query": "VALUE collected_destination_ids SetAgg<STRING>\nMATCH (source:player)-[:follow]->(destination:player)\nPER PATH {\n  SET @collected_destination_ids += destination.id\n}\nRETURN @collected_destination_ids.size() AS distinct_targets",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Independently generated from the c_long_set public prompt and current procedure skill references. Preserves the required long aggregator name; the uninitialized SetAgg starts empty and deduplicates destination primary keys, including parallel edges. Uses the documented SetAgg.size() member. No database execution performed."
+  "query": "VALUE collected_destination_ids SetAgg<STRING>\nMATCH (`source`:player)-[:follow]->(`destination`:player)\nPER PATH {\n  SET @collected_destination_ids += `destination`.id\n}\nRETURN @collected_destination_ids.size() AS distinct_targets",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": [
+    "Assumes the caller has selected the Database local temporary graph described by the public prompt; no graph selection, DDL, or data writes are included.",
+    "src/gql-procedure-generator/references/procedure-language.md: top-level SetAgg<STRING> without declaration-time initializer; one-hop PER PATH uses += with the @ global-aggregator prefix; SetAgg deduplicates repeated target IDs, including parallel follow edges.",
+    "src/gql-procedure-generator/references/documented-functions.md: SetAgg.size() is documented for Database and returns UINT64; an untouched empty set returns zero.",
+    "src/gql-procedure-generator/references/identifiers.md and scripts/skill_tools.py quote-identifiers: source and destination are quoted keywords; collected_destination_ids and distinct_targets remain unchanged.",
+    "Checked applicable rules in src/gql-procedure-generator/references/checklist.md, references/validation.md, and references/documented-syntax.md. Not executed against a database."
+  ]
 }

@@ -1,7 +1,7 @@
 {
   "case_id": "q_trail",
   "attempt": 1,
-  "query": "MATCH p = ALL TRAIL (s:player {id: $seed})-[:follow]->{1,3}(:player)\nRETURN transform(nodes(p), n -> n.id) AS node_ids;",
-  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
-  "notes": "Generated independently from the public q_trail prompt and current query skill references. ALL TRAIL preserves all edge-distinct paths with repeated nodes allowed; projection retains duplicate lists and path order. Statically reviewed; no database execution."
+  "query": "MATCH p = TRAIL (:player {id: $seed})-[:follow]->{1,3}(:player)\nRETURN transform(nodes(p), n -> n.id) AS node_ids;",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": "Uses the already selected temporary graph and the supplied player/follow schema. TRAIL permits repeated nodes while excluding repeated edges; the directed quantifier covers 1 through 3 hops. nodes(p) with transform preserves path node order and business id values; RETURN omits DISTINCT to preserve duplicate id lists from parallel edges. References: SKILL.md; references/documented-syntax.md MATCH; references/patterns.md; references/documented-functions.md nodes() and transform(); references/functions.md Lambda Expressions; references/identifiers.md; references/checklist.md; relevant references/validation.md checks. Identifier helper found no keyword collisions in generated identifiers; $seed remains an external parameter. No database execution performed."
 }

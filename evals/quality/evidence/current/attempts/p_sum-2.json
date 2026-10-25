@@ -2,10 +2,10 @@
   "case_id": "p_sum",
   "attempt": 2,
   "query": "VALUE total INT64 = 0\nVALUE i INT64 = 1\nWHILE i <= $n THEN {\n  SET total = total + i\n  SET i = i + 1\n}\nRETURN total AS total",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
   "notes": [
-    "依据公开提示和当前 Procedure 技能及相关语法参考独立生成。",
-    "total 和 i 显式声明为 INT64；n <= 0 时循环不执行，total 保持 0。",
-    "未执行数据库验证。"
+    "Assumes the evaluator binds external parameter $n as INT64 in the public range -2 through 6. The zero initializer remains the result when n <= 0.",
+    "Uses the Database 5.3.0 VALUE declaration and WHILE ... THEN grammar from documented-syntax.md, and the variable assignment/control-flow guidance in procedure-language.md. All declarations precede executable statements; the only loop ends each iteration with SET i = i + 1; RETURN exposes total as total.",
+    "Checked checklist.md, applicable validation.md checks, and identifiers.md. The bundled quote-identifiers helper confirmed i and total are ordinary identifiers; $n is preserved as an external parameter token. Candidate was not executed against a database."
   ]
 }

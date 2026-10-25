@@ -2,8 +2,6 @@
   "case_id": "p_contributions",
   "attempt": 2,
   "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN SUM(contribution) AS total;",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": [
-    "Independent generation using the specified public prompt and current procedure skill references. UNION ALL preserves both contributions when equal; NEXT aggregates their combined result. Documentation reviewed; no database execution."
-  ]
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": "Database procedure body; caller supplies non-null INT64 parameters $left and $right. UNION ALL preserves both equal-valued contributions; NEXT supplies the merged rows to SUM. References: SKILL.md; references/documented-syntax.md (composite query, Database statement block); references/documented-functions.md (sum, Database); references/procedure-language.md (procedure body and NEXT); references/checklist.md; references/identifiers.md. The bundled quote-identifiers helper confirms contribution and total are ordinary identifiers. No database execution performed."
 }

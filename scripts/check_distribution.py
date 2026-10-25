@@ -26,8 +26,13 @@ def main():
             result=subprocess.run([sys.executable,'-I',str(root/'scripts/skill_tools.py'),'lint',str(candidate)],
                                   cwd=td,text=True,capture_output=True,check=True)
             if json.loads(result.stdout)['issues']:raise SystemExit('Standalone lint failed')
+            result=subprocess.run([sys.executable,'-I',str(root/'scripts/skill_tools.py'),
+                                   'quote-identifiers','values','version','person_id'],
+                                  cwd=td,text=True,capture_output=True,check=True)
+            if json.loads(result.stdout)!={'values':'`values`','version':'`version`','person_id':'person_id'}:
+                raise SystemExit('Standalone keyword quoting failed')
             # Query routing to the sibling is optional handoff, never a link required at runtime.
             if not (root/'references/repair.md').is_file():raise SystemExit('Missing packaged repair contract')
-            print(f'{name}: extracted lookup and lint passed without source/manual/build dependencies')
+            print(f'{name}: extracted lookup, lint and keyword quoting passed without source/manual/build dependencies')
 
 if __name__=='__main__':main()

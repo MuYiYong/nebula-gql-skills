@@ -1,0 +1,7 @@
+{
+  "case_id": "q_acyclic",
+  "attempt": 1,
+  "query": "MATCH p = ACYCLIC (src:player {id: $seed})-[:follow]->{1,3}(dst:player)\nRETURN transform(nodes(p), n -> n.id) AS node_ids;",
+  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
+  "notes": "Uses the caller-selected graph, documented ACYCLIC path mode, post-edge hop quantifier, nodes() and transform(). No DISTINCT or list sorting; parallel-edge path multiplicity is retained. Documentation checked only; not database-executed."
+}

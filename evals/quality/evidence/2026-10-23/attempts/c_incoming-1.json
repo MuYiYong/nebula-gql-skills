@@ -1,0 +1,7 @@
+{
+  "case_id": "c_incoming",
+  "attempt": 1,
+  "query": "NODE VALUE incoming_sum SumAgg<INT64> = 0\nTABLE result {id STRING, total INT64}\n\nMATCH (src:player)-[e:follow]->(dst:player)\nPER PATH {\n  SET dst.@incoming_sum += coalesce(e.degree, 0)\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@incoming_sum AS total INTO result\n}\n\nFOR row IN result\nRETURN row.id AS id, row.total AS total",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": "Independent generation from the c_incoming public prompt and current procedure skill references only. Destination-bound SumAgg counts each incoming edge; coalesce treats NULL degree as 0. A separate zero-hop scan exports every player, including nodes retaining the initial 0, to a local table. Reviewed against documented syntax and the skill checklist; not executed against a database."
+}

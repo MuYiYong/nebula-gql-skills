@@ -1,11 +1,13 @@
 {
   "case_id": "c_degrees",
   "attempt": 2,
-  "query": "NODE VALUE out_count SumAgg<INT64> = 0\nTABLE degrees {id STRING, degree INT64}\n\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET s.@out_count += 1\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@out_count AS degree INTO degrees\n}\n\nFOR row IN degrees\nRETURN row.id AS id, row.degree AS degree",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "query": "NODE VALUE out_degree SumAgg<INT64> = 0\nTABLE degrees {id STRING, degree INT64}\n\nMATCH (p:player)-[e:follow]->(q:player)\nPER PATH {\n  SET p.@out_degree += 1\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@out_degree AS degree INTO degrees\n}\n\nFOR r IN degrees\nRETURN r.id AS id, r.degree AS degree",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
   "notes": [
-    "Fresh generation using only the assigned public case and current procedure skill references.",
-    "Single-hop PER PATH counts every follow edge; a separate all-player export includes initialized zero counts.",
-    "Reference-reviewed only; no database execution."
+    "Assumes the evaluator-selected Database local temporary graph and the exact player/follow schema in the public prompt; no USE, DDL, graph data writes, or Analytics partition constructs.",
+    "NODE VALUE out_degree starts at zero per node. The single-hop PER PATH adds one per directed follow edge, including parallel edges independently. A separate zero-hop PER NODE exports every player, retaining zero-outdegree players; id comes from p.id, not an internal node ID.",
+    "Returns only id STRING and degree INT64 through a declared local TABLE and an outer FOR/RETURN, with no RETURN inside PER NODE. No ordering was requested.",
+    "References: bundled SKILL.md; references/procedure-language.md sections Match Compute Model, Variable and Mutation Rules, Table variable, Import/export; references/documented-syntax.md Database match-compute, SumAgg, table-variable, EXPORT and statement-block, plus FOR/RETURN and pattern forms; references/examples.md node-bound aggregate and table FOR/RETURN patterns; references/identifiers.md, checklist.md and relevant validation.md checks.",
+    "All generated identifiers were checked with the bundled quote-identifiers helper and are ordinary legal non-keyword names. Bundled Database lint returned no issues or needs_review entries; no server parsing, database execution, or result comparison was performed."
   ]
 }

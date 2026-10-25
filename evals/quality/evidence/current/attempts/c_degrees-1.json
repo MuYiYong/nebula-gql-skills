@@ -1,11 +1,11 @@
 {
   "case_id": "c_degrees",
   "attempt": 1,
-  "query": "NODE VALUE out_degree SumAgg<INT64> = 0\nTABLE degree_rows {id STRING, degree INT64}\n\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET s.@out_degree += 1\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@out_degree AS degree INTO degree_rows\n}\n\nFOR row IN degree_rows\nRETURN row.id AS id, row.degree AS degree",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "query": "NODE VALUE out_degree SumAgg<INT64> = 0\nTABLE result_table {id STRING, degree INT64}\n\nMATCH (p:player)-[e:follow]->(:player)\nPER PATH {\n  SET p.@out_degree += 1\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@out_degree AS degree INTO result_table\n}\n\nFOR r IN result_table\nRETURN r.id AS id, r.degree AS degree",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
   "notes": [
-    "Single-hop PER PATH increments the source node once per follow edge, including parallel edges.",
-    "A separate zero-hop player scan exports every player, including initialized zero-degree nodes, to a local typed TABLE.",
-    "Generated from the public prompt and current procedure skill references; reviewed against the checklist, not executed against a database."
+    "继承评测器已选择的 Database 本地内存临时图；所有 player 节点以默认零值的 NODE VALUE SumAgg<INT64> 计数。",
+    "单跳 PER PATH 按每条 follow 边加一；独立零跳 PER NODE 将包括零出度节点的结果导出到本地表，随后 FOR/RETURN 输出 id,degree。",
+    "依据 bundled procedure-language.md、documented-syntax.md 的 Database match-compute、SumAgg、表变量、EXPORT 章节，以及 FOR、identifiers.md、checklist.md 和 validation.md；标识符已用 quote-identifiers helper 核对。仅静态检查，未执行数据库。"
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "case_id": "p_contributions",
+  "attempt": 2,
+  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN SUM(contribution) AS total;",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": [
+    "Independent generation using the specified public prompt and current procedure skill references. UNION ALL preserves both contributions when equal; NEXT aggregates their combined result. Documentation reviewed; no database execution."
+  ]
+}

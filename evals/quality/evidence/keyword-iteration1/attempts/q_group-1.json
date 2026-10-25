@@ -1,0 +1,7 @@
+{
+  "case_id": "q_group",
+  "attempt": 1,
+  "query": "MATCH (p:player)\nRETURN p.age AS age, count(*) AS total\nGROUP BY age;",
+  "skills_sha256": "fab58cbcc0fdf3124d218c87a06efc7912f003635d6d5d287edb3389f836bc57",
+  "notes": "Assume the evaluator-selected graph is active. Match every player once, group by the projected age alias, and count all rows including those with NULL age; no name-based distinctness or filtering. References: references/documented-syntax.md GROUP BY; references/documented-functions.md count(); references/query-language.md RETURN and Aggregation & GROUP BY; references/validation.md grouping checks; references/identifiers.md. The package quote-identifiers helper confirmed p, player, age and total are ordinary identifiers. No database execution performed."
+}

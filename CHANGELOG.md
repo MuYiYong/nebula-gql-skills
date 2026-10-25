@@ -2,6 +2,27 @@
 
 Notable changes to the Nebula GQL skills are documented here. Package versions follow the repository's YY.MM.DD convention; release tags also include a build number.
 
+## 26.10.25 - 2026-10-25
+
+### Changed
+
+- Quote reserved and non-reserved keywords consistently when they are used as identifiers; ordinary legal names may remain unquoted. Both skill catalogs contain the 224 reserved and 207 non-reserved words verified against the 5.3.0 parser and both manuals.
+- Apply the identifier policy to declarations, properties, labels, variables, procedure formal parameters and references, while preserving GQL syntax, built-in functions, data types and string values.
+
+### Added
+
+- Standalone `quote-identifiers` command, expanded static identifier checks, and focused regression coverage.
+- Pinned parser/manual keyword consistency checks and keyword-quoting verification of extracted packages.
+
+### Fixed
+
+- Correct identifier delimiters in curated GQL examples. Preserve external `$name` parameter tokens instead of emitting unsupported backtick syntax after `$`.
+
+### Validation
+
+- Freshly generated all 26 semantic candidates for the current source and matched 92 input executions against independent oracles; 13 calibration pairs and the full offline release gate passed. These are scoped regressions, with named-procedure lifecycle and distributed Analytics still unverified.
+- Executed 862 uppercase/lowercase keyword alias spellings and checked quoted variables, record fields and top-level aggregation.
+
 ## 26.10.23 - 2026-10-23
 
 ### Added

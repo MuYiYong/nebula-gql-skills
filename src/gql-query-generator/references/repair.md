@@ -10,3 +10,5 @@
 Procedure repair also preserves signature/defaults, declaration order, zero/one-hop match-compute, aggregation receiver types and Database/Analytics boundaries. Do not claim a skeleton is executable.
 
 Performance repair first proves row/error equivalence. Keep unbounded paths, duplicate semantics and optional NULL preservation unless the user changes the contract; reduced rows or a syntactic rewrite is not evidence of a speedup.
+
+Keyword-identifier repair follows [identifiers.md](identifiers.md): add backticks to reserved or non-reserved names and every corresponding reference. Preserve spelling, case, schema and result column names; do not rename a field or turn a string value or syntax token into an identifier.

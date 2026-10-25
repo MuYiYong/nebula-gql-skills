@@ -1,0 +1,19 @@
+{
+  "version": "5.3.0",
+  "parser_ref": "v5.3.0",
+  "parser_path": "src/parser/Keywords.h",
+  "parser_sha256": "ba478526bd24f5053637e99bd4bb12083498655dfa0fc26e73af3883696864d4",
+  "reserved_count": 224,
+  "non_reserved_count": 207,
+  "code_and_both_manuals_match": true,
+  "docs": [
+    {
+      "key": "database-gql-reference/overview/keywords-identifiers/index.html",
+      "sha256": "2269c174322e7de2c3ba932387fa88224e2d89587ffe2df49063b941214bbf06"
+    },
+    {
+      "key": "analytics-gql-reference/overview/keywords-identifiers/index.html",
+      "sha256": "e5d457695bb2f0baaa74022f09717bc798f4caa7179f3178584ee9313dc04a14"
+    }
+  ]
+}

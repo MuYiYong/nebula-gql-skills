@@ -1,7 +1,11 @@
 {
   "case_id": "p_branch",
   "attempt": 2,
-  "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS label\n} ELSEIF $x < 0 THEN {\n  RETURN 'negative' AS label\n} ELSEIF $x = 0 THEN {\n  RETURN 'zero' AS label\n} ELSE {\n  RETURN 'positive' AS label\n}",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Independent generation from the allowed public prompt and current procedure skill references. Final IF branches each return one STRING column named label; NULL is tested first. Documentation-reviewed only; no database execution."
+  "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS `label`\n} ELSEIF $x < 0 THEN {\n  RETURN 'negative' AS `label`\n} ELSEIF $x = 0 THEN {\n  RETURN 'zero' AS `label`\n} ELSE {\n  RETURN 'positive' AS `label`\n}",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": [
+    "Assumes the evaluator binds nullable INT64 external parameter $x as stated in the public prompt.",
+    "References: SKILL.md; references/procedure-language.md Control Flow Rules permit RETURN in branches of a final IF; references/documented-syntax.md control-flow, comparison and NULL predicates; references/checklist.md.",
+    "Identifier policy from references/identifiers.md and bundled quote-identifiers helper requires `label`; external parameter $x remains unchanged. Each exhaustive branch returns one STRING row. No database execution performed."
+  ]
 }

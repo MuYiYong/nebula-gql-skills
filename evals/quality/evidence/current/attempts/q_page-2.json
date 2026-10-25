@@ -2,6 +2,6 @@
   "case_id": "q_page",
   "attempt": 2,
   "query": "MATCH (p:player)\nRETURN p.id AS id, p.age AS age\nORDER BY age DESC NULLS LAST, id ASC\nOFFSET 1\nLIMIT 2;",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Independent generation from the q_page public prompt and current query skill references. Uses documented RETURN-tail ordering and pagination; preserves nullable ages without filtering. Not executed against a database."
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": "Assumes the evaluator-selected graph and the supplied player label/schema. Returns the requested id and age column names, preserves nullable ages without a filter, orders age descending with NULLS LAST and unique id ascending before OFFSET 1 LIMIT 2. References: SKILL.md; references/documented-syntax.md ORDER BY; references/query-language.md RETURN and ORDER BY / OFFSET / LIMIT; references/identifiers.md; references/checklist.md; applicable references/validation.md checks. Bundled quote-identifiers confirmed player, id and age are ordinary identifiers. No database execution."
 }

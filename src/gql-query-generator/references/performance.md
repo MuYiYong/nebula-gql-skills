@@ -36,7 +36,7 @@ Never call a structure-only or empty-graph result “optimal”, “production-r
 `enable_reorder` defaults to `false`. For ordinary, executable MATCH paths, prefer an already-bound or highly selective anchor on the left:
 
 ```gql
-MATCH (u:User{node_id: <id>})-[:FOLLOWS]->(v:User)
+MATCH (u:`User`{node_id: <id>})-[:FOLLOWS]->(v:`User`)
 RETURN v.node_id
 ```
 
@@ -109,7 +109,7 @@ The optimizer can attach many same-MATCH predicates to scans and expands even if
 Use a deterministic tie-breaker when repeatable pages or Top K order matters:
 
 ```gql
-MATCH (u:User{node_id: <id>})-[e:FOLLOWS]->(v:User)
+MATCH (u:`User`{node_id: <id>})-[e:FOLLOWS]->(v:`User`)
 RETURN v.node_id AS candidate_id, e.weight AS weight
 ORDER BY weight DESC, candidate_id ASC
 LIMIT 20

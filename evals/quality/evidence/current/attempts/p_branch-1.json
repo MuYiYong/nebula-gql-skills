@@ -2,6 +2,10 @@
   "case_id": "p_branch",
   "attempt": 1,
   "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS `label`\n}\nELSEIF $x < 0 THEN {\n  RETURN 'negative' AS `label`\n}\nELSEIF $x = 0 THEN {\n  RETURN 'zero' AS `label`\n}\nELSE {\n  RETURN 'positive' AS `label`\n}",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Generated from the p_branch public prompt and current procedure skill references. Terminal IF branches each return exactly one STRING column named label. NULL is handled before numeric comparisons. Static documentation review only; no database execution."
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": [
+    "Database procedure body only; caller supplies nullable external parameter $x INT64.",
+    "Uses documented IF/ELSEIF/ELSE grammar and terminal branch RETURN; checks NULL before numeric comparisons and returns one STRING column in each exhaustive branch.",
+    "References: SKILL.md, references/procedure-language.md (Control Flow Rules), references/documented-syntax.md (control-flow and NULL predicate), references/identifiers.md and checklist.md; bundled quote-identifiers helper confirms label requires backticks. No database execution performed."
+  ]
 }

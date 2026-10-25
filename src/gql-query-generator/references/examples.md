@@ -836,7 +836,7 @@ ORDER BY cnt DESC
 
 Output (GQL):
 ```gql
-MATCH (u:User)-[:BOUGHT]->(p:Product)
+MATCH (u:`User`)-[:BOUGHT]->(p:`Product`)
 RETURN u, count(p) AS cnt
 GROUP BY u
 NEXT
@@ -858,7 +858,7 @@ RETURN n
 Output (GQL):
 ```gql
 FOR x IN LIST[1, 2, 3]
-MATCH (n:Node{id: x})
+MATCH (n:`Node`{id: x})
 RETURN n
 ```
 
@@ -904,7 +904,7 @@ RETURN [x IN u.tags WHERE x STARTS WITH 'vip' | upper(x)] AS vip_tags
 
 Output (GQL):
 ```gql
-MATCH (u:User)
+MATCH (u:`User`)
 RETURN transform(filter(u.tags, x -> like(x, 'vip%')), x -> upper(x)) AS vip_tags
 ```
 
@@ -923,10 +923,10 @@ LIMIT 5
 
 Output (GQL):
 ```gql
-MATCH path = TRAIL (n1:Corporation)-[:股权出资]->{1,10}(n2:Corporation {eid: $eid})
-LET pathNodes = nodes(path), pathLength = length(path)
+MATCH `path` = TRAIL (n1:Corporation)-[:股权出资]->{1,10}(n2:Corporation {eid: $eid})
+LET pathNodes = nodes(`path`), pathLength = length(`path`)
 FILTER WHERE length(pathNodes) <> length(list_distinct(pathNodes))
-RETURN transform(pathNodes, node -> node.name) AS companyPath, pathLength
+RETURN transform(pathNodes, `node` -> `node`.name) AS companyPath, pathLength
 ORDER BY pathLength ASC
 LIMIT 5
 ```
@@ -1005,7 +1005,7 @@ RETURN u.name AS name, collect(p.name) AS products
 
 Output (GQL):
 ```gql
-MATCH (u:User)-[:BOUGHT]->(p:Product)
+MATCH (u:`User`)-[:BOUGHT]->(p:`Product`)
 RETURN u.name AS name, collect_list(p.name) AS products
 GROUP BY name
 ```
@@ -1320,7 +1320,7 @@ YIELD $-.id AS player, dst(edge) AS team, properties(edge).start_year AS year
 Output (GQL):
 ```gql
 MATCH (v{id: "player100"})-[e1:follow WHERE e1.degree > 90]->(p)-[e2:serve]->(t)
-RETURN element_id(p) AS player, element_id(t) AS team, e2.start_year AS year
+RETURN element_id(p) AS player, element_id(t) AS team, e2.start_year AS `year`
 ```
 
 改写要点：两段 `GO` + `|` + `$-.id` → 单条多跳 MATCH pattern；`properties(edge).prop` → `e.prop`。
@@ -1334,8 +1334,8 @@ RETURN n.name, n.value ^ 2 AS squared
 
 Output (GQL):
 ```gql
-MATCH (n:Metric)
-RETURN n.name, power(n.value, 2) AS squared
+MATCH (n:`Metric`)
+RETURN n.name, power(n.`value`, 2) AS squared
 ```
 
 改写要点：Cypher `^` 求幂运算符 → GQL `power(x, y)` 函数。
@@ -1382,7 +1382,7 @@ RETURN u
 
 Output (GQL):
 ```gql
-MATCH (u:User)
+MATCH (u:`User`)
 WHERE like(u.name, 'A%') AND contains(u.email, '@gmail')
 RETURN u
 ```
@@ -1420,21 +1420,21 @@ Output policy:
 用户明确接受逐字段分数相加后，可使用以下候选；尚未证明与 Neo4j 排名相等：
 ```gql
 CALL {
-  MATCH (node:WebAPI)
-  LET score = ftscore(node.summary, 'get equipment')
+  MATCH (`node`:WebAPI)
+  LET score = ftscore(`node`.summary, 'get equipment')
   FILTER WHERE score > 0
-  RETURN node, score
+  RETURN `node`, score
   UNION ALL
-  MATCH (node:WebAPI)
-  LET score = ftscore(node.description, 'get equipment')
+  MATCH (`node`:WebAPI)
+  LET score = ftscore(`node`.description, 'get equipment')
   FILTER WHERE score > 0
-  RETURN node, score
+  RETURN `node`, score
 }
-RETURN node, sum(score) AS score
+RETURN `node`, sum(score) AS score
 NEXT
-MATCH (a:Application)-[]-(s:Service{technology: 'kongapig'})-[]-(node)
-RETURN a.project_code, s.service_name, s.technology, node.path,
-       score, node.summary, node.description
+MATCH (a:Application)-[]-(s:`Service`{technology: 'kongapig'})-[]-(`node`)
+RETURN a.project_code, s.service_name, s.technology, `node`.`path`,
+       score, `node`.summary, `node`.description
 ORDER BY score DESC
 ```
 

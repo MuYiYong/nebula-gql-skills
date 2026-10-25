@@ -78,7 +78,7 @@ RETURN v.node_id, shared_count
 ```
 
 ```gql
-MATCH (u:User {node_id: $id})-[:FOLLOWS]->(shared)<-[:FOLLOWS]-(v:User)
+MATCH (u:`User` {node_id: $id})-[:FOLLOWS]->(shared)<-[:FOLLOWS]-(v:`User`)
 WHERE v <> u
 RETURN v, count(DISTINCT shared) AS shared_count
 GROUP BY v
@@ -91,7 +91,7 @@ RETURN v.node_id, shared_count
 若最终只做标量投影，可在确认输出列不变后合并查询段；仍按节点绑定 `v` 分组，不能改成属性表达式分组：
 
 ```gql
-MATCH (u:User {node_id: $id})-[:FOLLOWS]->(shared)<-[:FOLLOWS]-(v:User)
+MATCH (u:`User` {node_id: $id})-[:FOLLOWS]->(shared)<-[:FOLLOWS]-(v:`User`)
 WHERE v <> u
 RETURN v.node_id, count(DISTINCT shared) AS shared_count
 GROUP BY v

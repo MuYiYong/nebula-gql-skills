@@ -2,6 +2,12 @@
   "case_id": "q_optional",
   "attempt": 2,
   "query": "MATCH (s:player)\nOPTIONAL MATCH (s)-[:follow]->(d:player WHERE d.age > $min_age)\nRETURN s.id AS src, d.id AS dst;",
-  "skills_sha256": "f3aefed64b51f88dacea356b67a71449a950a0baa904edf658e6514998f89662",
-  "notes": "依据当前查询技能及 OPTIONAL MATCH、pattern WHERE 和结果契约参考生成；年龄条件位于可选模式内部，保留无合格目标的 NULL 行及平行边重复。未执行数据库验证。"
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": [
+    "Interprets the age predicate as applying to each outgoing target player; source players are unfiltered.",
+    "Uses the already selected temporary graph and externally bound INT64 parameter $min_age. Returns only the requested src and dst business-id columns.",
+    "The target-age predicate remains inside OPTIONAL MATCH so sources with no qualifying target produce dst=NULL. No DISTINCT or aggregation is used, preserving parallel-edge duplicate rows.",
+    "References: src/gql-query-generator/SKILL.md; references/query-language.md (MATCH and WHERE / Filter Placement); references/patterns.md (Node Pattern Filler, predicate scope, OPTIONAL MATCH); references/identifiers.md; references/checklist.md; references/validation.md (paths, optional scope, business identifiers, duplicates).",
+    "The bundled quote-identifiers helper confirmed s, d, player, follow, id, age, src and dst are ordinary identifiers. No database execution was performed."
+  ]
 }

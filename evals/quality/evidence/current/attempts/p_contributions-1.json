@@ -1,7 +1,7 @@
 {
   "case_id": "p_contributions",
   "attempt": 1,
-  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN sum(contribution) AS total;",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Uses UNION ALL to retain both contribution rows even when values are equal, then NEXT to aggregate the merged result. Checked against the current procedure skill syntax/function references; not executed against a database."
+  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN sum(contribution) AS total",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": "Database procedure body using the supplied non-null INT64 external parameters exactly as $left and $right. UNION ALL preserves both contributions even when equal; NEXT passes the combined rows to the documented numeric aggregate sum(). References: SKILL.md; references/documented-syntax.md (composite query, RETURN, Database statement block); references/documented-functions.md (sum, Database and Analytics); references/procedure-language.md (query-result NEXT pipeline); references/identifiers.md and checklist.md. The bundled quote-identifiers helper confirmed contribution and total are ordinary identifiers. No database execution performed."
 }

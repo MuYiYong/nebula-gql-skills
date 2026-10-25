@@ -121,7 +121,8 @@ class MegaBundleLayoutTest(unittest.TestCase):
             (skill_root / "scripts/skill_tools.py").write_text("# fixture\n")
             (skill_root / "references/checklist.md").write_text("# Checklist\n")
             (skill_root / "references/repair.md").write_text("# Repair\n")
-            (skill_root / "references/documented-keywords.json").write_text('{"reserved": ["VALUES", "BIG"]}')
+            (skill_root / "references/documented-keywords.json").write_text('{"reserved": ["VALUES", "BIG"], "non_reserved": ["VERSION"]}')
+            (skill_root / "references/identifiers.md").write_text("# Identifier quoting\n")
             (skill_root / "tests" / "features").mkdir(parents=True)
             (skill_root / "SKILL.md").write_text(
                 "# Skill\n\n[Syntax](references/documented-syntax.md)\n",

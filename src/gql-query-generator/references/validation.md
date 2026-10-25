@@ -217,3 +217,8 @@
 - `42016`: 去掉 `SAMPLE` 与 ANN 的混用，保留其中一种语义。
 
 - APOC NODE_GLOBAL 不能按 ACYCLIC 的路径内唯一性处理；确认共享 visited 与遍历顺序。多字段分数相加不是默认的跨数据库排名等价。
+
+## Keyword identifiers
+
+- 对照 [完整关键字清单](documented-keywords.json) 的 reserved 与 non_reserved 两类：关键字用作图/过程/类型/标签/属性/字段/变量/参数/别名时，声明和引用是否都用反引号包围？忽略关键字大小写，保留实际名称与大小写。普通合法标识符可以不加。
+- 按 [identifiers.md](identifiers.md) 区分名称与语法角色；MATCH、RETURN、数据类型、内置函数和字符串值不能机械加反引号。非保留词的引号要求是生成策略，不要误报为数据库必然报错。

@@ -1,0 +1,7 @@
+{
+  "case_id": "q_optional",
+  "attempt": 2,
+  "query": "MATCH (a:player)\nOPTIONAL MATCH (a)-[:follow]->(b:player WHERE b.age > $min_age)\nRETURN a.id AS src, b.id AS dst;",
+  "skills_sha256": "fab58cbcc0fdf3124d218c87a06efc7912f003635d6d5d287edb3389f836bc57",
+  "notes": "Assumes the evaluator binds $min_age as INT64 and supplies the current graph as stated. The initial MATCH enumerates every player; the target age predicate remains inside OPTIONAL MATCH so no qualifying outgoing edge yields dst=NULL. RETURN without DISTINCT retains one row per matching follow edge, including parallel-edge duplicates. src/dst use the business id property. References: SKILL.md Core Generation Rules; references/patterns.md Node Pattern Filler, Filter Placement, OPTIONAL MATCH; references/query-language.md MATCH and WHERE / Filter Placement; references/checklist.md and applicable references/validation.md checks. Identifier names a, b, player, follow, age, id, src, dst, min_age were checked with the bundled quote-identifiers helper and are ordinary identifiers. No database execution was performed."
+}

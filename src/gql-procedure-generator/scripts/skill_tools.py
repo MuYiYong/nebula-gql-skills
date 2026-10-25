@@ -48,7 +48,7 @@ def lookup(root, term, kind='function', offset=0, limit=6000, all_matches=False)
             'text': content[offset:offset + limit]}
 
 
-TOKEN = re.compile(r'''(?P<space>\s+)|(?P<comment>--[^\n]*|//[^\n]*|/\*[\s\S]*?\*/)|(?P<string>'(?:''|\\.|[^'\\])*'|"(?:""|\\.|[^"\\])*")|(?P<quoted>`(?:``|[^`])*`)|(?P<param>\$[\w]+)|(?P<word>[^\W\d]\w*)|(?P<number>\d+(?:\.\d+)?)|(?P<symbol>.)''', re.UNICODE)
+TOKEN = re.compile(r'''(?P<space>\s+)|(?P<comment>--[^\n]*|//[^\n]*|/\*[\s\S]*?\*/)|(?P<string>'(?:''|\\.|[^'\\])*'|"(?:""|\\.|[^"\\])*")|(?P<quoted>`(?:``|[^`])*`)|(?P<param>\$(?:`(?:``|[^`])*`|[\w]+))|(?P<word>[^\W\d]\w*)|(?P<number>\d+(?:\.\d+)?)|(?P<symbol>.)''', re.UNICODE)
 
 
 def tokens(code):
@@ -110,11 +110,127 @@ STRUCTURAL = {'MATCH', 'OPTIONAL', 'IF', 'WHILE', 'FOR', 'IN', 'EXISTS', 'NOT',
               'THEN', 'ELSE', 'NEXT', 'UNION', 'INSERT', 'UPDATE', 'CAST', 'RETURNS', 'PARTITION'}
 
 
+def quote_identifier(name, root):
+    """Format one raw identifier, not an expression or an already quoted name."""
+    if not name or len(name) > 127 or '`' in name or any(ord(c) < 32 for c in name):
+        raise ValueError('Expected one raw identifier of 1..127 characters without backticks/control characters')
+    data = json.loads((root / 'references/documented-keywords.json').read_text())
+    keywords = set(data['reserved']) | set(data['non_reserved'])
+    if name.upper() in keywords or not re.fullmatch(r'[^\W\d]\w*', name, re.UNICODE):
+        return '`' + name + '`'
+    return name
+
+
+def identifier_positions(ts):
+    """Recognize clear identifier positions; this is not a complete GQL parser."""
+    values = [v.upper() if k == 'word' else v for k, v in ts]
+    found, stack = {}, []
+    pattern = False
+    expression_forms = {'ALL', 'DISTINCT', 'CASE', 'NOT', 'EXISTS', 'TRUE', 'FALSE', 'NULL',
+                        'UNKNOWN', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+                        'CURRENT_GRAPH', 'CURRENT_PROPERTY_GRAPH', 'CURRENT_SCHEMA',
+                        'CURRENT_USER', 'CURRENT_ROLE', 'CURRENT_SESSION', 'SESSION_USER',
+                        'SYSTEM_USER', 'LOCAL_TIME', 'LOCAL_TIMESTAMP', 'LOCAL_DATETIME'}
+    constructors = {'LIST': '[', 'RECORD': '{', 'TABLE': '{', 'MAP': '{', 'VECTOR': '<',
+                    'VALUE': '{', 'GRAPH': '{'}
+    def mark(index, role):
+        if 0 <= index < len(ts) and ts[index][0] in {'word', 'quoted', 'string'}:
+            found[index] = role
+    for i, (kind, value) in enumerate(ts):
+        word = values[i]
+        prev = values[i-1] if i else ''
+        after = values[i+1] if i+1 < len(ts) else ''
+        if kind == 'word' and word in {'MATCH', 'INSERT'}:
+            pattern = True
+            if i+2 < len(ts) and values[i+2] == '=':
+                mark(i+1, 'path binding')
+        if kind == 'word' and word in {'RETURN', 'PER', 'SET', 'NEXT'}:
+            pattern = False
+        if kind == 'word' and word == 'WHERE' and not any(s[1] == 'pattern' for s in stack):
+            pattern = False
+        if kind == 'symbol' and value in {'(', '[', '{'}:
+            context = 'expression'
+            if value == '{' and prev in {'OPTIONS', 'DATAFILE'}:
+                context = 'options'
+            if value == '(':
+                if i >= 2 and values[i-2] == 'PROCEDURE':
+                    context = 'parameters'
+                elif pattern and (prev in {'MATCH', '=', ',', '>', '-', '~', 'OPTIONAL'}
+                                  or (stack and stack[-1][1] == 'pattern' and prev == '(')):
+                    context = 'pattern'
+                elif (i+2 < len(ts) and values[i+2] in {':', '@', 'IS', '{', 'WHERE'}
+                      and (i == 0 or ts[i-1][0] != 'word' or prev in STRUCTURAL)):
+                    context = 'pattern'
+            elif value == '[' and prev in {'-', '~', '<'}:
+                context = 'pattern'
+            elif value == '[' and prev == '@':
+                context = 'types'
+            stack.append((value, context, prev))
+            if context == 'pattern' and after not in {'WHERE', 'IS'}:
+                mark(i+1, 'pattern binding')
+        elif kind == 'symbol' and value in {')', ']', '}'}:
+            if stack:
+                stack.pop()
+        if kind not in {'word', 'quoted', 'string'}:
+            continue
+        if prev == 'AS' and not any(s[2] == 'CAST' for s in stack):
+            mark(i, 'alias')
+        if prev == '.' and (i < 2 or values[i-2] != '.') and after != '(':
+            mark(i, 'qualified name or property')
+        if after == ':' and not any(s[1] == 'options' for s in stack):
+            mark(i, 'field or pattern binding')
+        if prev in {':', '|', '&'} and stack and stack[-1][1] == 'pattern':
+            mark(i, 'label or type')
+        if (prev == 'IS' and stack and stack[-1][1] == 'pattern'
+                and word not in {'NOT', 'TYPED', 'DIRECTED', 'SOURCE', 'DESTINATION', 'NULL'}):
+            mark(i, 'label')
+        if stack and stack[-1][1] == 'types' and prev in {'[', ','}:
+            mark(i, 'type')
+        if prev == '@':
+            mark(i, 'type or aggregator name')
+        if values[i+1:i+3] == ['-', '>']:
+            mark(i, 'lambda binding')
+        if (prev in {'LET', 'VALUE', 'FOR', 'YIELD', 'PROCEDURE', 'CALL', 'USE'} and i-1 not in found
+                and not (prev == 'PROCEDURE' and word == 'IF')):
+            mark(i, 'name or binding')
+        if (prev in {'GRAPH', 'SCHEMA', 'INDEX'} and i-1 not in found
+                and word not in {'TYPE', 'IF', 'ON'}):
+            mark(i, 'catalog object')
+        if prev == 'TYPE' and i >= 2 and values[i-2] == 'GRAPH':
+            mark(i, 'graph type')
+        # Parameter/column declarations and multi-variable LET declarations.
+        scalar = r'(?:U?INT\d*|INTEGER\d*|STRING|BOOLEAN|DOUBLE|FLOAT\d*|DECIMAL|NODE|EDGE|PATH|TABLE)'
+        if re.fullmatch(scalar, after) or (after.endswith('AGG') and i+2 < len(ts) and values[i+2] == '<'):
+            if prev in {'(', ',', 'VALUE', 'PARAMETER'}:
+                mark(i, 'declaration')
+        if prev == ',' and after == '=':
+            mark(i, 'binding')
+        # A bare projection/predicate name need not have a declaration in this snippet.
+        if (kind in {'word', 'quoted'} and prev in {'RETURN', 'DISTINCT', 'BY', 'WHERE', 'FILTER'} and after != '('
+                and word not in expression_forms and constructors.get(word) != after
+                and not (prev == 'FILTER' and word == 'WHERE')
+                and not (prev == 'BY' and i >= 2 and values[i-2] == 'PARTITION' and word == 'DEFAULT')
+                and not (i+1 < len(ts) and ts[i+1][0] == 'string')):
+            mark(i, 'expression name')
+    # Follow bound names in expression positions, retaining keyword clauses.
+    names = {ts[i][1].strip('`"').upper() for i in found}
+    expression_prefixes = {'RETURN', 'BY', 'WHERE', 'FILTER', 'WHEN', 'IN', 'AND', 'OR',
+                           '(', ',', '=', '+', '-', '*', '/', '%', '<', '>'}
+    for i, (kind, value) in enumerate(ts):
+        if (kind == 'word' and value.upper() in names and i and values[i-1] in expression_prefixes
+                and value.upper() not in expression_forms
+                and not (values[i-1] == 'FILTER' and value.upper() == 'WHERE')
+                and not (values[i-1] == 'BY' and i >= 2 and values[i-2] == 'PARTITION' and value.upper() == 'DEFAULT')
+                and not (i+1 < len(ts) and (values[i+1] == '(' or constructors.get(value.upper()) == values[i+1]))):
+            mark(i, 'bound reference')
+    return found
+
+
 def lint(code, root, scope='database'):
     issues, unknown = [], []
     ts = tokens(code)
     values = [v.upper() if k == 'word' else v for k, v in ts]
-    clean = ' '.join(v if k not in {'string', 'quoted'} else '?' for k, v in ts)
+    clean = ' '.join(v if k not in {'string', 'quoted', 'param'} else '?' for k, v in ts)
     def add(rule, message):
         item = {'rule': rule, 'message': message}
         if item not in issues: issues.append(item)
@@ -145,14 +261,21 @@ def lint(code, root, scope='database'):
             add('compute-hop', 'Match-compute accepts only zero or one hop')
     if re.search(r'\bNODE\s+VALUE\s+@?\w+\s+(?:INT\d*|STRING|DOUBLE|BOOLEAN)\b', clean, re.I):
         add('node-value-type', 'NODE VALUE requires a documented aggregator type')
-    reserved=set(json.loads((root/'references/documented-keywords.json').read_text())['reserved'])
-    contexts=[]
-    for i,(kind,value) in enumerate(ts):
-        if value=='(': contexts.append(values[i-1] if i else '')
-        elif value==')' and contexts: contexts.pop()
-        if value.upper()=='AS' and 'CAST' not in contexts and i+1 < len(ts):
-            if ts[i+1][0]=='word' and values[i+1] in reserved:
-                add('reserved-alias', f'Quote reserved {values[i+1]} when used as an alias')
+    keyword_data = json.loads((root / 'references/documented-keywords.json').read_text())
+    reserved = set(keyword_data['reserved'])
+    keywords = reserved | set(keyword_data['non_reserved'])
+    for i, role in identifier_positions(ts).items():
+        kind, value = ts[i]
+        if kind == 'quoted' or (kind == 'string' and not value.startswith('"')):
+            continue
+        name = value.strip('"') if kind == 'string' else value
+        if name.upper() in keywords:
+            category = 'reserved' if name.upper() in reserved else 'non-reserved'
+            rule = 'reserved-alias' if role == 'alias' and category == 'reserved' else 'keyword-identifier'
+            add(rule, f'Quote {category} identifier {name} as `{name}` ({role})')
+    for kind, value in ts:
+        if kind == 'param' and value.startswith('$`'):
+            add('parameter-quoting', 'External $name parameters are lexical tokens; backticks after $ are unsupported')
     for i in range(len(values)-1):
         if values[i:i+2] not in (['PER','NODE'], ['PER','PATH']): continue
         start = next((j for j in range(i+2,len(values)) if values[j]=='{'),None)
@@ -243,10 +366,17 @@ def main():
     q.add_argument('--offset', type=int, default=0); q.add_argument('--limit', type=int, default=6000)
     l = sub.add_parser('lint'); l.add_argument('file', type=Path)
     l.add_argument('--scope', choices=['database','analytics'], default='database')
+    qn = sub.add_parser('quote-identifiers', help='Format raw schema/binding names, not whole GQL')
+    qn.add_argument('names', nargs='+')
     a = p.parse_args()
     if a.command == 'lookup':
         if a.offset < 0 or not 200 <= a.limit <= 12000: p.error('offset >= 0; limit 200..12000')
         result = lookup(a.root, a.term, a.kind, a.offset, a.limit, a.all_matches)
+    elif a.command == 'quote-identifiers':
+        try:
+            result = {name: quote_identifier(name, a.root) for name in a.names}
+        except ValueError as exc:
+            p.error(str(exc))
     else: result = lint(a.file.read_text(encoding='utf-8'), a.root, a.scope)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if a.command == 'lint' and result['issues']: raise SystemExit(1)

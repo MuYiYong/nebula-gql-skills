@@ -1,7 +1,12 @@
 {
   "case_id": "c_incoming",
   "attempt": 2,
-  "query": "NODE VALUE incoming_total SumAgg<INT64> = 0\nTABLE incoming_rows {id STRING, total INT64}\n\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET target.@incoming_total += coalesce(edge.degree, 0)\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@incoming_total AS total INTO incoming_rows\n}\n\nFOR row IN incoming_rows\nRETURN row.id AS id, row.total AS total",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
-  "notes": "Generated independently from the selected public prompt and current procedure skill references. Accumulates every follow edge into its target, treats NULL degree as zero, then exports all player nodes including zero-incoming nodes. Not executed against a database."
+  "query": "NODE VALUE incoming_sum SumAgg<INT64> = 0\nTABLE rows {id STRING, total INT64}\n\nMATCH (src@player)-[e@follow]->(dst@player)\nPER PATH {\n  SET dst.@incoming_sum += coalesce(e.degree, 0)\n}\n\nMATCH (p@player)\nPER NODE (p) {\n  EXPORT p.id, p.@incoming_sum INTO rows\n}\n\nFOR r IN rows\nRETURN r.id AS id, r.total AS total",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "notes": [
+    "Assumes the evaluator-selected Database local temporary graph with the public player/follow schema; no USE, graph creation, persistent writes, or named procedure DDL.",
+    "Single-hop PER PATH adds each parallel follow edge to dst.@incoming_sum with coalesce(degree, 0); a separate zero-hop PER NODE exports every player, including nodes without incoming edges, to a local typed TABLE with id STRING and total INT64.",
+    "References: src/gql-procedure-generator/SKILL.md; src/gql-procedure-generator/references/procedure-language.md (Match Compute Model, node-bound aggregates, Table variable, EXPORT); src/gql-procedure-generator/references/documented-syntax.md (Database match-compute, SumAgg, table-variable, node/edge patterns, FOR); src/gql-procedure-generator/references/documented-functions.md (coalesce); src/gql-procedure-generator/references/identifiers.md; src/gql-procedure-generator/references/checklist.md; src/gql-procedure-generator/references/validation.md; src/gql-procedure-generator/scripts/skill_tools.py.",
+    "All emitted identifiers checked with bundled quote-identifiers helper. Bundled Database static lint reported issues=[] and requested special-signature review for coalesce; its documented Database signature was checked in references/documented-functions.md. No database execution or result comparison was performed."
+  ]
 }

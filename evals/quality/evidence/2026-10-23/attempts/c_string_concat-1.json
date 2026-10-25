@@ -1,0 +1,11 @@
+{
+  "case_id": "c_string_concat",
+  "attempt": 1,
+  "query": "VALUE target_ids SumAgg<STRING> = \"\"\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET @target_ids += target.id\n}\nRETURN length(CAST(@target_ids AS STRING)) AS total_chars",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": [
+    "Uses a global SumAgg<STRING> initialized to the empty string; each directed follow edge contributes target.id once, including parallel edges.",
+    "Returns documented length(STRING) as INT32; the empty concatenation has length zero.",
+    "Generated from the allowed public prompt and current procedure skill references; no database execution performed."
+  ]
+}

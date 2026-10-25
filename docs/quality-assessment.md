@@ -1,4 +1,6 @@
-# 当前 GQL Skills 的质量判断
+# 26.10.23 发布源的 GQL Skills 质量记录
+
+本报告与保存的语义收据对应 26.10.23 发布源。26.10.25 的[关键字标识符更新](keyword-identifiers.md)改变了源摘要，以下历史执行结果不能作为修改后源的语义验收；完整门禁仍会拒绝旧收据。修改后源的重新生成与执行结果见 [26.10.25 发布验证](quality-assessment-2026-10-25.md)。
 
 结论：**在本套明确覆盖的范围内，查询、Database 过程体及本地临时图匹配计算已达到验收标准；不能据此笼统保证所有 GQL/Procedures 都能很好生成。** 命名过程生命周期与分布式 Analytics 仍缺乏执行证据。
 
@@ -16,11 +18,11 @@
 | 命名过程默认参数、重载、权限和创建/变更/删除生命周期 | 未执行 | — | 证据不足 |
 | 分布式 Analytics | 端点不支持 | — | 证据不足 |
 
-共 **26/26 次独立生成、92/92 组输入比对通过**。在此前首轮实测中，本地匹配计算有一次错误使用 `NEXT`，整体为 23/24；原始失败没有被修改或删掉。[首轮记录](../evals/quality/evidence/iteration1/model-run.json)与[最终完整记录](../evals/quality/evidence/current/model-run.json)可逐项对照。
+共 **26/26 次独立生成、92/92 组输入比对通过**。在此前首轮实测中，本地匹配计算有一次错误使用 `NEXT`，整体为 23/24；原始失败没有被修改或删掉。[首轮记录](../evals/quality/evidence/iteration1/model-run.json)与[最终完整记录](../evals/quality/evidence/2026-10-23/model-run.json)可逐项对照。
 
 最终题集新增了此前未使用的字符串聚合留出题。过程参考中还发现两处遗漏的旧规则，清除后全部过程结果重新生成。查询 Skill 未发生对应变化的 8 份结果，仅在完整目录逐文件摘要相同的证明下复用；原版本字段保留。不是把旧结果改标为新版本。
 
-在评测模型之前，13 个参照程序全部正确，13 个故意写错的语义变体均被真实结果区分。校准和实际结果均保存了可离线重算的类型标记行数据。[校准记录](../evals/quality/evidence/current/calibration.json)、[独立 oracle](../scripts/quality/oracles.py)和[证据重算器](../scripts/quality/verify.py)可用于检查结论。
+在评测模型之前，13 个参照程序全部正确，13 个故意写错的语义变体均被真实结果区分。校准和实际结果均保存了可离线重算的类型标记行数据。[校准记录](../evals/quality/evidence/2026-10-23/calibration.json)、[独立 oracle](../scripts/quality/oracles.py)和[证据重算器](../scripts/quality/verify.py)可用于检查结论。
 
 ## 已优化的具体问题
 

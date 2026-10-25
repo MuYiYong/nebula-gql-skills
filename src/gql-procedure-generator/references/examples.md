@@ -262,11 +262,11 @@ CREATE OR REPLACE PROCEDURE <procedure_name>(t TABLE) AS {
 Caller skeleton:
 ```gql
 USE #<analytic_graph> {
-  TABLE t TYPED TABLE {id INT, value STRING} PARTITION BY DEFAULT
+  TABLE t TYPED TABLE {id INT, `value` STRING} PARTITION BY DEFAULT
   CALL <procedure_name>(t) FINISH
   PER PARTITION (part) OF t {
     FOR r IN part
-    RETURN r.id, r.value
+    RETURN r.id, r.`value`
   }
 }
 ```
@@ -294,7 +294,7 @@ Key rule:
 - 不要把 TigerGraph GSQL 的多跳 `SELECT` 链直接照搬成下面这种过程体：
 
 ```gql
-MATCH (u:unit)-[e1:connected_Unit_CN]-(cn1:CN)-[e2:connected_Breaker_CN]-(b1:Breaker)-[e3:connected_Breaker_CN]-(cn2:CN)-[e4:connected_Bus_CN]-(bus:BUS)
+MATCH (u:`unit`)-[e1:connected_Unit_CN]-(cn1:CN)-[e2:connected_Breaker_CN]-(b1:Breaker)-[e3:connected_Breaker_CN]-(cn2:CN)-[e4:connected_Bus_CN]-(bus:BUS)
 PER PATH {
   ...
 }

@@ -1,11 +1,11 @@
 {
   "case_id": "c_string_concat",
   "attempt": 1,
-  "query": "VALUE target_ids SumAgg<STRING> = \"\"\nMATCH (source:player)-[edge:follow]->(target:player)\nPER PATH {\n  SET @target_ids += target.id\n}\nRETURN length(CAST(@target_ids AS STRING)) AS total_chars",
-  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "query": "VALUE concatenated SumAgg<STRING> = ''\nMATCH (src:player)-[e:follow]->(dst:player)\nPER PATH {\n  SET @concatenated += dst.id\n}\nRETURN length(@concatenated) AS total_chars",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
   "notes": [
-    "Uses a global SumAgg<STRING> initialized to the empty string; each directed follow edge contributes target.id once, including parallel edges.",
-    "Returns documented length(STRING) as INT32; the empty concatenation has length zero.",
-    "Generated from the allowed public prompt and current procedure skill references; no database execution performed."
+    "Uses the evaluator-selected Database local temporary graph and the supplied player/follow schema; player.id is the target business identifier and is non-null as a primary key.",
+    "Each one-hop directed follow path contributes dst.id to the global SumAgg<STRING>; parallel edges remain distinct and the empty-string initializer yields total_chars = 0 when no paths match. Concatenation order is unrestricted.",
+    "References: src/gql-procedure-generator/SKILL.md; src/gql-procedure-generator/references/procedure-language.md (Match Compute Model, Variable and Mutation Rules); src/gql-procedure-generator/references/documented-functions.md (length(str: STRING)); src/gql-procedure-generator/references/identifiers.md; src/gql-procedure-generator/references/checklist.md. src/gql-procedure-generator/scripts/skill_tools.py quote-identifiers confirmed generated names are ordinary identifiers; Database lint reported no issues. No database execution was performed."
   ]
 }

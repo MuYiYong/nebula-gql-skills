@@ -1,0 +1,11 @@
+{
+  "case_id": "c_degrees",
+  "attempt": 1,
+  "query": "NODE VALUE out_degree SumAgg<INT64> = 0\nTABLE degree_rows {id STRING, degree INT64}\n\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET s.@out_degree += 1\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@out_degree AS degree INTO degree_rows\n}\n\nFOR row IN degree_rows\nRETURN row.id AS id, row.degree AS degree",
+  "skills_sha256": "15b879934283858b65dcd0893d2401add96e3164534515f57be4454fd361c29b",
+  "notes": [
+    "Single-hop PER PATH increments the source node once per follow edge, including parallel edges.",
+    "A separate zero-hop player scan exports every player, including initialized zero-degree nodes, to a local typed TABLE.",
+    "Generated from the public prompt and current procedure skill references; reviewed against the checklist, not executed against a database."
+  ]
+}
