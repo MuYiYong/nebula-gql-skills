@@ -48,6 +48,7 @@ NOT <expr>
 ## Membership and Pattern Predicates
 - `<expr> IN <list_or_set>` / `<expr> NOT IN <list_or_set>`
 - `<expr> LIKE <pattern>` — `%` 任意序列，`_` 单字符
+- 正则谓词使用 `regexp_like(str, pattern[, options])`，按整串匹配，不生成 `=~`；转义和迁移规则见 [regular-expressions.md](regular-expressions.md)。
 - `<string> || <string>` — 字符串拼接
 
 ## IS Predicates（二值布尔，不服从三值逻辑）

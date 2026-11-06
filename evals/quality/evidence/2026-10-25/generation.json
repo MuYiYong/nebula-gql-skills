@@ -1,0 +1,167 @@
+{
+  "kind": "fresh_isolated_generation",
+  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "model_snapshot": "not exposed by the subagent tool; inherited session model",
+  "sampling_parameters": "not exposed",
+  "context_policy": "one fresh context per case and attempt, only public prompt and the relevant bundled skill; no oracles, hidden fixtures or prior outputs",
+  "constraint_limit": "read restrictions were instructions, not an operating-system sandbox",
+  "suite_use": "rerun of existing curated cases, not a newly held-out generalization test",
+  "outputs": [
+    {
+      "case_id": "c_degrees",
+      "attempt": 1,
+      "file": "attempts/c_degrees-1.json",
+      "sha256": "6f6051cefa7983a34e54f225e24a8288fe75ebcf741704d185d8e67bf8334e99"
+    },
+    {
+      "case_id": "c_degrees",
+      "attempt": 2,
+      "file": "attempts/c_degrees-2.json",
+      "sha256": "0b99a2c31741f474f417df75e02ce1bd6425d63cbf27553b536c11a950fc8f31"
+    },
+    {
+      "case_id": "c_incoming",
+      "attempt": 1,
+      "file": "attempts/c_incoming-1.json",
+      "sha256": "b6e0a831381fb38fda70180620e8421f75a8b115099ca83ed4c635ba62953f15"
+    },
+    {
+      "case_id": "c_incoming",
+      "attempt": 2,
+      "file": "attempts/c_incoming-2.json",
+      "sha256": "60c7ebe33ca10b3d4a1db600546a63f6a979f03bffb15fba33ae27b0dba627d7"
+    },
+    {
+      "case_id": "c_long_set",
+      "attempt": 1,
+      "file": "attempts/c_long_set-1.json",
+      "sha256": "3a5e14e04df966fff57e9fccf9ff5ca17f9e0c7089402ea22b193a7e0a1e5b87"
+    },
+    {
+      "case_id": "c_long_set",
+      "attempt": 2,
+      "file": "attempts/c_long_set-2.json",
+      "sha256": "eb05d95cfe88cb8d5d22173e90e17c8a45e625874ae79f81a83279138a9f18ce"
+    },
+    {
+      "case_id": "c_string_concat",
+      "attempt": 1,
+      "file": "attempts/c_string_concat-1.json",
+      "sha256": "c4c8c186040e6b446fc2cca927d7fbb4df483c7a5a8cf3245f2787a885895064"
+    },
+    {
+      "case_id": "c_string_concat",
+      "attempt": 2,
+      "file": "attempts/c_string_concat-2.json",
+      "sha256": "87ffdb7a04538ea087a15cb3bad6509b65c1cfa74f2c4e1a228f9986a7bf4190"
+    },
+    {
+      "case_id": "p_branch",
+      "attempt": 1,
+      "file": "attempts/p_branch-1.json",
+      "sha256": "579a1eb32d2b1ab72e559dac0150a07be85c9f5af40bed9d1d0b84b3d7ad48e1"
+    },
+    {
+      "case_id": "p_branch",
+      "attempt": 2,
+      "file": "attempts/p_branch-2.json",
+      "sha256": "b446f37f8d944d2ea52be462d915ab5cdeeb37f741049e1d26ed8a7da03d7b71"
+    },
+    {
+      "case_id": "p_contributions",
+      "attempt": 1,
+      "file": "attempts/p_contributions-1.json",
+      "sha256": "e4c90b580d9e63276a8ef155b25831cb14b07496436ac2a0b8e453024f3e83ec"
+    },
+    {
+      "case_id": "p_contributions",
+      "attempt": 2,
+      "file": "attempts/p_contributions-2.json",
+      "sha256": "8da2d7b2bbbac6cbd90adebf2ca13d21de88273abc251e7b8ac495849bf4182b"
+    },
+    {
+      "case_id": "p_sum",
+      "attempt": 1,
+      "file": "attempts/p_sum-1.json",
+      "sha256": "358943a72672adff1827265c8d793fdaa16547ff4dadbe8f9f56c8848167759a"
+    },
+    {
+      "case_id": "p_sum",
+      "attempt": 2,
+      "file": "attempts/p_sum-2.json",
+      "sha256": "9c81d6c1d180544aabf8398938a249207c57af3241b579e38583695b6dc4c1a0"
+    },
+    {
+      "case_id": "q_acyclic",
+      "attempt": 1,
+      "file": "attempts/q_acyclic-1.json",
+      "sha256": "3712a73d25b35ce1a3cce5f84eb4192ea2a7ec4378806e13c350675eefac3b4b"
+    },
+    {
+      "case_id": "q_acyclic",
+      "attempt": 2,
+      "file": "attempts/q_acyclic-2.json",
+      "sha256": "109aa01ef80b475a3ef8f3634d3994f34b8b44059277662068ad1d0a2449a855"
+    },
+    {
+      "case_id": "q_anti",
+      "attempt": 1,
+      "file": "attempts/q_anti-1.json",
+      "sha256": "16520e7e8d1cbdff317158d2c13634e1a7f9f6f6082f18e69e835bc3a6bb91d7"
+    },
+    {
+      "case_id": "q_anti",
+      "attempt": 2,
+      "file": "attempts/q_anti-2.json",
+      "sha256": "0f92ae6ff82c2de66ffd24577692f4963b655c8194cec39b4ee1aff4328f8df6"
+    },
+    {
+      "case_id": "q_group",
+      "attempt": 1,
+      "file": "attempts/q_group-1.json",
+      "sha256": "d786704d98c9a65762c1b00fe3ef09fb42f4b00abb4cb9e6176d35f795b68914"
+    },
+    {
+      "case_id": "q_group",
+      "attempt": 2,
+      "file": "attempts/q_group-2.json",
+      "sha256": "a299444ecc4982451635232408a6e390267ecd6a9ae83ab97237f377ae95da9c"
+    },
+    {
+      "case_id": "q_optional",
+      "attempt": 1,
+      "file": "attempts/q_optional-1.json",
+      "sha256": "2eb169e3dc49ef9ee160d0329068e40771aece741f5922b3bd347d666e66af3b"
+    },
+    {
+      "case_id": "q_optional",
+      "attempt": 2,
+      "file": "attempts/q_optional-2.json",
+      "sha256": "c372a8a9c0a4a7cb832c9fec8c4cc9a5bc34d7664fbd143b3ebfcbcf5fe2c2e1"
+    },
+    {
+      "case_id": "q_page",
+      "attempt": 1,
+      "file": "attempts/q_page-1.json",
+      "sha256": "84fa89a4a0d19355da63cf74b589127b34596135c925d787d357ed5dda25b2c7"
+    },
+    {
+      "case_id": "q_page",
+      "attempt": 2,
+      "file": "attempts/q_page-2.json",
+      "sha256": "1c82e9a033411069338f37946457efadb17f655ebe890979a7f86a17a2e7f1b9"
+    },
+    {
+      "case_id": "q_trail",
+      "attempt": 1,
+      "file": "attempts/q_trail-1.json",
+      "sha256": "1199dd5362e3a285dc72a46f2e77ee90da180b956c12391690566cbcce570f52"
+    },
+    {
+      "case_id": "q_trail",
+      "attempt": 2,
+      "file": "attempts/q_trail-2.json",
+      "sha256": "198d90a58995c3ff6724d0d49a526bdba4a4f0175ac905035807201ad06f35a9"
+    }
+  ]
+}

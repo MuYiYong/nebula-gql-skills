@@ -11,6 +11,7 @@ def main():
         ['scripts/audit_skill_capabilities.py'],
         ['-m','unittest','discover','-s','tests','-v'],
         ['scripts/evaluate.py','--fixtures','--report','dist/eval-fixtures.json'],
+        ['scripts/evaluate.py','--cases','evals/regex-cases.json','--fixtures','--report','dist/regex-fixtures.json'],
         ['scripts/evaluate.py','--outputs','evals/observations/current.json','--report','dist/model-current.json'],
         ['scripts/evaluate.py','--trigger-outputs','evals/observations/current-routes.json','--report','dist/routes-current.json'],
         ['scripts/quality/verify.py','--report','evals/quality/evidence/current/model-run.json','--calibration','evals/quality/evidence/current/calibration.json','--outputs','evals/quality/evidence/current/attempts'],

@@ -1,6 +1,6 @@
 {
   "kind": "fresh_isolated_generation",
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
   "model_snapshot": "not exposed by the subagent tool; inherited session model",
   "sampling_parameters": "not exposed",
   "context_policy": "one fresh context per case and attempt, only public prompt and the relevant bundled skill; no oracles, hidden fixtures or prior outputs",
@@ -11,157 +11,183 @@
       "case_id": "c_degrees",
       "attempt": 1,
       "file": "attempts/c_degrees-1.json",
-      "sha256": "6f6051cefa7983a34e54f225e24a8288fe75ebcf741704d185d8e67bf8334e99"
+      "sha256": "6813225490023073cfe221d528a035e53e157e92c55e989f4eb18c84c9b32113",
+      "worker_task": "/root/semantic_generation_one/isolated_c_degrees_1"
     },
     {
       "case_id": "c_degrees",
       "attempt": 2,
       "file": "attempts/c_degrees-2.json",
-      "sha256": "0b99a2c31741f474f417df75e02ce1bd6425d63cbf27553b536c11a950fc8f31"
+      "sha256": "520a3c47a12a2da4cb362629ea20d252e46a1aab7e3da709ac63f896efe7fcbc",
+      "worker_task": "/root/semantic_generation_one/isolated_c_degrees_2"
     },
     {
       "case_id": "c_incoming",
       "attempt": 1,
       "file": "attempts/c_incoming-1.json",
-      "sha256": "b6e0a831381fb38fda70180620e8421f75a8b115099ca83ed4c635ba62953f15"
+      "sha256": "b32072aaffb7775d5b3af4ea32933e1b65c7d7c42428f454a962256e219e075d",
+      "worker_task": "/root/semantic_generation_one/isolated_c_incoming_1"
     },
     {
       "case_id": "c_incoming",
       "attempt": 2,
       "file": "attempts/c_incoming-2.json",
-      "sha256": "60c7ebe33ca10b3d4a1db600546a63f6a979f03bffb15fba33ae27b0dba627d7"
+      "sha256": "dca606de5e3dd2d06effca4a09dc4fff1c137556dd033e3b81f63685838ec1da",
+      "worker_task": "/root/semantic_generation_one/isolated_c_incoming_2"
     },
     {
       "case_id": "c_long_set",
       "attempt": 1,
       "file": "attempts/c_long_set-1.json",
-      "sha256": "3a5e14e04df966fff57e9fccf9ff5ca17f9e0c7089402ea22b193a7e0a1e5b87"
+      "sha256": "16b7b366b8daaa10328b2b9fd2618ee15ccd3fcd6f584b2f7ed34da4a7de5a32",
+      "worker_task": "/root/semantic_generation_one/isolated_c_long_set_1"
     },
     {
       "case_id": "c_long_set",
       "attempt": 2,
       "file": "attempts/c_long_set-2.json",
-      "sha256": "eb05d95cfe88cb8d5d22173e90e17c8a45e625874ae79f81a83279138a9f18ce"
+      "sha256": "6846eca5e3dc94ce286b8b11b5bf97dd1faea7cb7adee788a8832f85533db4db",
+      "worker_task": "/root/semantic_generation_one/isolated_c_long_set_2"
     },
     {
       "case_id": "c_string_concat",
       "attempt": 1,
       "file": "attempts/c_string_concat-1.json",
-      "sha256": "c4c8c186040e6b446fc2cca927d7fbb4df483c7a5a8cf3245f2787a885895064"
+      "sha256": "a3ebad0e08385dc53fb3f0203528e105a6a865a7082b735d993eb69707dfd9bf",
+      "worker_task": "/root/semantic_generation_one/isolated_c_string_concat_1"
     },
     {
       "case_id": "c_string_concat",
       "attempt": 2,
       "file": "attempts/c_string_concat-2.json",
-      "sha256": "87ffdb7a04538ea087a15cb3bad6509b65c1cfa74f2c4e1a228f9986a7bf4190"
+      "sha256": "1fbc7254da6470170b55c6b05a34b82d9a65ddaba89fd84cf7f08e65f4c8123b",
+      "worker_task": "/root/semantic_generation_one/isolated_c_string_concat_2"
     },
     {
       "case_id": "p_branch",
       "attempt": 1,
       "file": "attempts/p_branch-1.json",
-      "sha256": "579a1eb32d2b1ab72e559dac0150a07be85c9f5af40bed9d1d0b84b3d7ad48e1"
+      "sha256": "1cd830b37dddd1c2ed655865590ff86f0ce2c4a989f96a896d3ed5653f703725",
+      "worker_task": "/root/semantic_generation_one/isolated_p_branch_1"
     },
     {
       "case_id": "p_branch",
       "attempt": 2,
       "file": "attempts/p_branch-2.json",
-      "sha256": "b446f37f8d944d2ea52be462d915ab5cdeeb37f741049e1d26ed8a7da03d7b71"
+      "sha256": "339254b2a6db5efe20934bbded2a883dc660623599ef01f4936f6b5d440b42b6",
+      "worker_task": "/root/semantic_generation_one/isolated_p_branch_2"
     },
     {
       "case_id": "p_contributions",
       "attempt": 1,
       "file": "attempts/p_contributions-1.json",
-      "sha256": "e4c90b580d9e63276a8ef155b25831cb14b07496436ac2a0b8e453024f3e83ec"
+      "sha256": "5cbe6f322593479d7e4c7a7dcc2f9352d7267ccabd14ff9fcc523e11e23447fb",
+      "worker_task": "/root/semantic_generation_one/isolated_p_contributions_1"
     },
     {
       "case_id": "p_contributions",
       "attempt": 2,
       "file": "attempts/p_contributions-2.json",
-      "sha256": "8da2d7b2bbbac6cbd90adebf2ca13d21de88273abc251e7b8ac495849bf4182b"
+      "sha256": "806684f3623f096d5dbce2346fc04818ceb47f3cc65a113bd4d27861d5d51b41",
+      "worker_task": "/root/semantic_generation_one/isolated_p_contributions_2"
     },
     {
       "case_id": "p_sum",
       "attempt": 1,
       "file": "attempts/p_sum-1.json",
-      "sha256": "358943a72672adff1827265c8d793fdaa16547ff4dadbe8f9f56c8848167759a"
+      "sha256": "669ceea952920bd5ac9899989eccf6a478c7b74e9602b3e520b3e63cb98ed9c5",
+      "worker_task": "/root/semantic_generation_one/isolated_p_sum_1"
     },
     {
       "case_id": "p_sum",
       "attempt": 2,
       "file": "attempts/p_sum-2.json",
-      "sha256": "9c81d6c1d180544aabf8398938a249207c57af3241b579e38583695b6dc4c1a0"
+      "sha256": "65f5ec94c2832547319c4b258ff5ea1478fa42df4ae5183c1c59e2472cd8957a",
+      "worker_task": "/root/semantic_generation_one/isolated_p_sum_2"
     },
     {
       "case_id": "q_acyclic",
       "attempt": 1,
       "file": "attempts/q_acyclic-1.json",
-      "sha256": "3712a73d25b35ce1a3cce5f84eb4192ea2a7ec4378806e13c350675eefac3b4b"
+      "sha256": "013a68a6d74fbe2ed15f8401f59f07dcd20a79d6fa14f422b9cee0740b1c3901",
+      "worker_task": "/root/semantic_generation_one/isolated_q_acyclic_1"
     },
     {
       "case_id": "q_acyclic",
       "attempt": 2,
       "file": "attempts/q_acyclic-2.json",
-      "sha256": "109aa01ef80b475a3ef8f3634d3994f34b8b44059277662068ad1d0a2449a855"
+      "sha256": "41eba1d1a2e0b87b4f37bd1c0917155c1bbfad9dc621d7d4d576653d69f211ec",
+      "worker_task": "/root/semantic_generation_one/isolated_q_acyclic_2"
     },
     {
       "case_id": "q_anti",
       "attempt": 1,
       "file": "attempts/q_anti-1.json",
-      "sha256": "16520e7e8d1cbdff317158d2c13634e1a7f9f6f6082f18e69e835bc3a6bb91d7"
+      "sha256": "f5241dbd87ee55e337efaa5856e8ea50d7071fde39b5500fc38e3355b0d7a242",
+      "worker_task": "/root/semantic_generation_one/isolated_q_anti_1"
     },
     {
       "case_id": "q_anti",
       "attempt": 2,
       "file": "attempts/q_anti-2.json",
-      "sha256": "0f92ae6ff82c2de66ffd24577692f4963b655c8194cec39b4ee1aff4328f8df6"
+      "sha256": "021f5346ad9db97c4f924bd24b1edcc21e60535ad398fbc56a49eb603a126811",
+      "worker_task": "/root/semantic_generation_one/isolated_q_anti_2"
     },
     {
       "case_id": "q_group",
       "attempt": 1,
       "file": "attempts/q_group-1.json",
-      "sha256": "d786704d98c9a65762c1b00fe3ef09fb42f4b00abb4cb9e6176d35f795b68914"
+      "sha256": "e51b4c164ed647fb5a43b036f15d621ec574db2a725b113d9d82f4a12aa2eaad",
+      "worker_task": "/root/semantic_generation_one/isolated_q_group_1"
     },
     {
       "case_id": "q_group",
       "attempt": 2,
       "file": "attempts/q_group-2.json",
-      "sha256": "a299444ecc4982451635232408a6e390267ecd6a9ae83ab97237f377ae95da9c"
+      "sha256": "2fec90da26b377ee23b1d31a7ea009c84e0639d1236703e6c6b26f5a14d60496",
+      "worker_task": "/root/semantic_generation_one/isolated_q_group_2"
     },
     {
       "case_id": "q_optional",
       "attempt": 1,
       "file": "attempts/q_optional-1.json",
-      "sha256": "2eb169e3dc49ef9ee160d0329068e40771aece741f5922b3bd347d666e66af3b"
+      "sha256": "49a954944c0fa797f3e1f610a5626ae257ce3266a4f31abb583fa1f5f4cc5092",
+      "worker_task": "/root/semantic_generation_one/isolated_q_optional_1"
     },
     {
       "case_id": "q_optional",
       "attempt": 2,
       "file": "attempts/q_optional-2.json",
-      "sha256": "c372a8a9c0a4a7cb832c9fec8c4cc9a5bc34d7664fbd143b3ebfcbcf5fe2c2e1"
+      "sha256": "b7fb2ca74914f6cd2c02b77718f4bf169d0b4bc38d6cd622a745b4288d66e560",
+      "worker_task": "/root/semantic_generation_one/isolated_q_optional_2"
     },
     {
       "case_id": "q_page",
       "attempt": 1,
       "file": "attempts/q_page-1.json",
-      "sha256": "84fa89a4a0d19355da63cf74b589127b34596135c925d787d357ed5dda25b2c7"
+      "sha256": "e6177148c45d15d0ec2e8a1e3cf63fe209af24de5fcc7a42ef8fb357ed220d42",
+      "worker_task": "/root/semantic_generation_one/isolated_q_page_1"
     },
     {
       "case_id": "q_page",
       "attempt": 2,
       "file": "attempts/q_page-2.json",
-      "sha256": "1c82e9a033411069338f37946457efadb17f655ebe890979a7f86a17a2e7f1b9"
+      "sha256": "f434d82485d7609280870e03de1efc22e2376e13ed3b3d002937ce17dfc2797f",
+      "worker_task": "/root/semantic_generation_one/isolated_q_page_2"
     },
     {
       "case_id": "q_trail",
       "attempt": 1,
       "file": "attempts/q_trail-1.json",
-      "sha256": "1199dd5362e3a285dc72a46f2e77ee90da180b956c12391690566cbcce570f52"
+      "sha256": "a4e1b70e2686e1951d89f293c9687a9bfcd9a08b2252996beda36a0229a70340",
+      "worker_task": "/root/semantic_generation_one/isolated_q_trail_1"
     },
     {
       "case_id": "q_trail",
       "attempt": 2,
       "file": "attempts/q_trail-2.json",
-      "sha256": "198d90a58995c3ff6724d0d49a526bdba4a4f0175ac905035807201ad06f35a9"
+      "sha256": "888de6943ca7fb89ff993c594a04075b5b6e95ff208cb66749941b62a780cef3",
+      "worker_task": "/root/semantic_generation_one/isolated_q_trail_2"
     }
   ]
 }

@@ -128,6 +128,30 @@ directories after edits. A parity regression prevents drift between the copies.
 Generated catalogs remain complete; bounded `lookup` retrieval reports its
 continuation offset and never silently discards remaining evidence.
 
+## Regular-expression regression cases
+
+Both skills include `references/regular-expressions.md`. It covers `=~` migration
+to `regexp_like`, whole-string matching, options, escaping and NULL/error behavior.
+The helper rejects the unsupported operator outside literals/comments; it does
+not compile regex patterns or certify semantic equivalence.
+
+`evals/regex-cases.json` is separate from the historical model-output suite so
+new reference fixtures are not presented as independently generated answers.
+The offline gate runs its eight static contracts. Export prompts or evaluate
+fresh model outputs with `scripts/evaluate.py --cases evals/regex-cases.json`
+and the usual mode flags. Five graph-free cases have expected typed results:
+
+```sh
+python3 scripts/evaluate.py --cases evals/regex-cases.json --fixtures --report dist/regex-fixtures.json
+python3 scripts/validate_database.py --cases evals/regex-cases.json --report dist/regex-database.json
+```
+
+The second command requires the same private environment credentials and SDK as
+other read-only validation. It never executes the graph query or procedure case.
+Static fixture success is not a fresh model or live database result. Source edits
+also invalidate the source-bound semantic receipts: retain the freshness gate and
+regenerate independent generation/calibration/runtime evidence before release.
+
 ## Keyword catalog consistency
 
 Check both manuals against the parser at the pinned baseline before accepting a keyword refresh:

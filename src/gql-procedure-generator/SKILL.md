@@ -37,6 +37,7 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 
 - 过程 DDL、参数/返回、变量、控制流、`match_compute_statement`、聚合器与迁移规则：读取 [procedure-language.md](references/procedure-language.md) 的相关章节。
 - 保留或生成任意函数、聚合器成员方法，或使用函数页记录的非调用形态：先在 [documented-functions.md](references/documented-functions.md) 中精确搜索名称、接收者、签名、运算符或关键字形式零参函数。
+- 正则表达式、`=~` 迁移、`regexp_like()`、大小写/换行选项和 pattern 转义：读取 [regular-expressions.md](references/regular-expressions.md)。
 - 不常见的过程语句、子句、变量类型、谓词、表达式或数据类型：先在 [documented-syntax.md](references/documented-syntax.md) 中精确搜索关键字，再读取对应专题参考。
 - `PARTITION BY DEFAULT`、`PER PARTITION`、`TABLE` 过程参数或本地表导入分布式临时图：读取 [distributed-tables.md](references/distributed-tables.md)。
 - `IMPORT INTO GRAPH` 与后续 `match_compute_statement`：读取 [import-match-compute.md](references/import-match-compute.md)。
@@ -50,6 +51,7 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 
 ## Hard Guardrails
 
+- 过程条件中的正则用 `regexp_like(value, pattern[, options])`，不生成 `=~`。它按整个字符串匹配；迁移时保留原 pattern、转义、大小写、否定和 NULL 语义，不擅自补删 `.*` 或改写属性路径。
 - Database 文档允许过程体中的 `USE graph`。默认继承调用方的图；用户明确指定已知图时保留合法 USE，不臆造或强行删除图上下文。
 - 算法/遍历场景使用 `match_compute_statement`，不要退化成普通查询式 `MATCH ... RETURN`。
 - 匹配计算、局部表导出和后续 FOR 是顺序过程语句；不要在 MATCH ... PER PATH/PER NODE/FINALLY 与下一过程阶段之间插入 NEXT。NEXT 只连接文档允许的查询结果管线，不是通用阶段分隔符。

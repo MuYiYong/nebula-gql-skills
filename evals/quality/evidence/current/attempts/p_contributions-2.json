@@ -1,7 +1,7 @@
 {
   "case_id": "p_contributions",
   "attempt": 2,
-  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN SUM(contribution) AS total;",
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
-  "notes": "Database procedure body; caller supplies non-null INT64 parameters $left and $right. UNION ALL preserves both equal-valued contributions; NEXT supplies the merged rows to SUM. References: SKILL.md; references/documented-syntax.md (composite query, Database statement block); references/documented-functions.md (sum, Database); references/procedure-language.md (procedure body and NEXT); references/checklist.md; references/identifiers.md. The bundled quote-identifiers helper confirms contribution and total are ordinary identifiers. No database execution performed."
+  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN sum(contribution) AS total;",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "假设评测器绑定非空 INT64 参数 $left 与 $right；UNION ALL 保留相同数值的两次贡献，NEXT 后聚合并返回 total。依据技能内 5.3.0 公开语法和 sum 签名生成；未执行数据库。"
 }

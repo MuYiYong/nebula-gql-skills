@@ -1,7 +1,7 @@
 {
   "case_id": "q_acyclic",
   "attempt": 2,
-  "query": "MATCH p = ACYCLIC (s:player {id: $seed})-[:follow]->{1,3}(:player)\nRETURN transform(nodes(p), n -> n.id) AS node_ids;",
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
-  "notes": "Uses the evaluator-selected Database graph and supplied STRING parameter $seed. ACYCLIC excludes repeated nodes; the outgoing follow quantifier admits 1 through 3 hops. nodes(p) plus transform preserves path node order and projects business id values. RETURN has no DISTINCT, so parallel-edge paths retain duplicate node_ids rows. References: SKILL.md; references/patterns.md path variable, quantifier and path type sections; references/documented-syntax.md path pattern grammar; references/documented-functions.md nodes() and transform(); references/functions.md lambda mapping; references/identifiers.md, checklist.md and applicable validation.md checks. Bundled quote-identifiers helper confirmed the generated identifiers are ordinary names. No database execution performed."
+  "query": "MATCH p = ALL ACYCLIC (s:player {id: $seed})-[:follow]->{1,3}(:player)\nRETURN transform(nodes(p), n -> n.id) AS node_ids;",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "按题设使用已选临时图及外部 STRING 参数 $seed；ACYCLIC 约束路径内节点不重复，保留不同平行边产生的重复 node_ids 行，列表按路径节点顺序映射且不排序。未连接或执行数据库。"
 }

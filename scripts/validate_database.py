@@ -110,6 +110,7 @@ def measure_pair(client, baseline, candidate, metadata, pairs=6, graph=None):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--cases',type=Path,default=ROOT/'evals/cases.json',help='Explicit case suite; only graph-free execution fixtures are run')
     p.add_argument('--outputs',type=Path)
     p.add_argument('--report',type=Path,required=True)
     p.add_argument('--performance',action='store_true')
@@ -121,7 +122,7 @@ def main():
     required=['NEBULA_ADDRESS','NEBULA_USER','NEBULA_PASSWORD']
     if any(not os.environ.get(k) for k in required): p.error('Set NEBULA_ADDRESS, NEBULA_USER and NEBULA_PASSWORD privately')
     from nebulagraph_python.client import NebulaClient
-    cases=json.loads((ROOT/'evals/cases.json').read_text())['cases']
+    cases=json.loads(a.cases.read_text())['cases']
     outputs=None
     if a.outputs:
         data=json.loads(a.outputs.read_text());outputs={o['id']:o for o in data['outputs']}

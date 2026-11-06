@@ -1,11 +1,7 @@
 {
   "case_id": "c_string_concat",
   "attempt": 1,
-  "query": "VALUE concatenated SumAgg<STRING> = ''\nMATCH (src:player)-[e:follow]->(dst:player)\nPER PATH {\n  SET @concatenated += dst.id\n}\nRETURN length(@concatenated) AS total_chars",
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
-  "notes": [
-    "Uses the evaluator-selected Database local temporary graph and the supplied player/follow schema; player.id is the target business identifier and is non-null as a primary key.",
-    "Each one-hop directed follow path contributes dst.id to the global SumAgg<STRING>; parallel edges remain distinct and the empty-string initializer yields total_chars = 0 when no paths match. Concatenation order is unrestricted.",
-    "References: src/gql-procedure-generator/SKILL.md; src/gql-procedure-generator/references/procedure-language.md (Match Compute Model, Variable and Mutation Rules); src/gql-procedure-generator/references/documented-functions.md (length(str: STRING)); src/gql-procedure-generator/references/identifiers.md; src/gql-procedure-generator/references/checklist.md. src/gql-procedure-generator/scripts/skill_tools.py quote-identifiers confirmed generated names are ordinary identifiers; Database lint reported no issues. No database execution was performed."
-  ]
+  "query": "VALUE concat_ids SumAgg<STRING> = \"\"\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET @concat_ids += t.id\n}\nRETURN length(@concat_ids) AS total_chars",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "继承评测器已选择的 Database 本地内存临时图；id 为非空 STRING 主键。每个单跳路径对应一条 follow 边，平行边分别拼接目标业务 id；空字符串初值使空图字符长度为 0，拼接顺序不作保证。已按技能参考检查；未执行数据库。"
 }

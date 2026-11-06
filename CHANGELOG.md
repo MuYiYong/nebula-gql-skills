@@ -2,6 +2,24 @@
 
 Notable changes to the Nebula GQL skills are documented here. Package versions follow the repository's YY.MM.DD convention; release tags also include a build number.
 
+## 26.11.06 - 2026-11-06
+
+### Fixed
+
+- Generate `regexp_like(value, pattern[, options])` instead of the removed `=~` operator in both query and procedure skills. Preserve whole-string matching, case handling, pattern escaping, negation, NULL behavior and schema-dependent property paths.
+- Detect unsupported regex operators in standalone lint while ignoring strings, quoted identifiers and comments.
+
+### Added
+
+- Self-contained regular-expression guidance covering documented options, newline handling, parameter values and regex-versus-GQL escaping.
+- Eight targeted regex generation contracts and five graph-free typed-result fixtures, with explicit case selection in the read-only database validator.
+- A file-by-file evidence mismatch audit explaining source/runner fingerprint changes and the unchanged semantic suite.
+
+### Validation
+
+- All five regex execution fixtures and the original twelve graph-free fixtures passed server parsing and typed-result comparison on the compatible 5.3.2 runtime. Thirteen independent oracle calibration pairs passed with owned-fixture cleanup.
+- Freshly generated all 26 semantic candidates in separate contexts and matched all 92 input executions against independent oracles, with owned-fixture cleanup. Previous source-bound evidence is retained in dated archives; see the release evidence audit.
+
 ## 26.10.25 - 2026-10-25
 
 ### Changed

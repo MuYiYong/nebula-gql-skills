@@ -2817,8 +2817,8 @@
   ],
   "passed": true,
   "keyword_spelling_checks": 862,
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "keyword_catalog_sha256": "0ec9068633cfb6bdf0b54e6fbdf1e8cedb9ced7954ff1262172610fdb937df18",
   "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
-  "client_sdk": "nebula5-python 5.3.0",
-  "keyword_catalog_sha256": "0ec9068633cfb6bdf0b54e6fbdf1e8cedb9ced7954ff1262172610fdb937df18"
+  "client_sdk": "nebula5-python 5.3.0"
 }

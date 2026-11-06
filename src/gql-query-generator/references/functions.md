@@ -36,6 +36,7 @@
 - 两侧应是相同时间类型。
 
 ## String Functions
+- 正则使用 `regexp_like(str, pattern[, options])`，按整串匹配；不使用 `=~`。生成或迁移时读取 [regular-expressions.md](regular-expressions.md)，核对大小写、NULL、选项与字符串转义。
 - `NORMALIZE(<str>)` — Unicode 规范化（仅单参数形态）；`NORMALIZE(str, form)` 不支持。
 - 只在用户明确要求时谨慎尝试。
 

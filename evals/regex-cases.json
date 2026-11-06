@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "compatibility": "5.3.0",
+  "cases": [
+    {
+      "id": "regex-job-migration",
+      "category": "regex",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "迁移到5.3 GQL。已选图中Job节点直接有job_name STRING属性。保留小写转换和正则的整串匹配语义：MATCH (n:Job) WHERE lower(n.job_name) =~ '.+\\\\.[psv]_.+' RETURN n.job_name AS job_name。不要改变属性路径或正则。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "regexp_like\\s*\\(\\s*lower\\s*\\(\\s*n\\.job_name\\s*\\)\\s*,\\s*'\\.\\+\\\\\\\\\\.\\[psv\\]_\\.\\+'\\s*\\)"
+        ],
+        "forbids": [
+          "=\\s*~",
+          "n\\.job\\.job_name"
+        ]
+      },
+      "reference": {
+        "query": "MATCH (n:`Job`) WHERE regexp_like(lower(n.job_name), '.+\\\\.[psv]_.+') RETURN n.job_name AS job_name",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "regex-job-values",
+      "category": "regex",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "5.3 GQL中逐项返回LIST['etl.p_load','etlXs_load','etl.v_run','etl.s_','etl.q_run']的小写值是否整串匹配正则 .+\\.[psv]_.+。返回job_name和matched，必须把点号作为字面量，_保持正则普通字符。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "\\bregexp_like\\s*\\(",
+          "\\\\\\\\\\.\\[psv\\]_"
+        ],
+        "forbids": [
+          "=\\s*~"
+        ]
+      },
+      "reference": {
+        "query": "FOR job_name IN LIST['etl.p_load','etlXs_load','etl.v_run','etl.s_','etl.q_run'] RETURN job_name, regexp_like(lower(job_name), '.+\\\\.[psv]_.+') AS matched",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "job_name",
+          "matched"
+        ],
+        "rows": [
+          [
+            "etl.p_load",
+            true
+          ],
+          [
+            "etlXs_load",
+            false
+          ],
+          [
+            "etl.v_run",
+            true
+          ],
+          [
+            "etl.s_",
+            false
+          ],
+          [
+            "etl.q_run",
+            false
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "regex-full-match",
+      "category": "regex",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "用5.3 GQL返回两个布尔列：whole表示hello, world是否整串匹配正则hello；contained表示是否匹配正则.*hello.*。保留两种语义。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "\\bregexp_like\\s*\\("
+        ],
+        "forbids": [
+          "=\\s*~"
+        ]
+      },
+      "reference": {
+        "query": "RETURN regexp_like(\"hello, world\", \"hello\") AS whole, regexp_like(\"hello, world\", \".*hello.*\") AS contained",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "whole",
+          "contained"
+        ],
+        "rows": [
+          [
+            false,
+            true
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "regex-options",
+      "category": "regex",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "5.3 GQL返回默认大小写敏感和显式忽略大小写的两个布尔列：分别用regexp_like匹配HELLO与hello，列名sensitive和insensitive。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "regexp_like\\s*\\(\\s*\"HELLO\"\\s*,\\s*\"hello\"\\s*,\\s*\"i\"\\s*\\)"
+        ],
+        "forbids": [
+          "=\\s*~"
+        ]
+      },
+      "reference": {
+        "query": "RETURN regexp_like(\"HELLO\", \"hello\") AS sensitive, regexp_like(\"HELLO\", \"hello\", \"i\") AS insensitive",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "sensitive",
+          "insensitive"
+        ],
+        "rows": [
+          [
+            false,
+            true
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "regex-newline",
+      "category": "regex",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "5.3 GQL字符串a换行b是否整串匹配a.b：分别使用默认、n、m选项，返回plain、with_n、with_m。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "\\bregexp_like\\s*\\("
+        ],
+        "forbids": [
+          "=\\s*~"
+        ]
+      },
+      "reference": {
+        "query": "RETURN regexp_like(\"a\\nb\", \"a.b\") AS plain, regexp_like(\"a\\nb\", \"a.b\", \"n\") AS with_n, regexp_like(\"a\\nb\", \"a.b\", \"m\") AS with_m",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "plain",
+          "with_n",
+          "with_m"
+        ],
+        "rows": [
+          [
+            false,
+            true,
+            true
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "regex-parameter",
+      "category": "regex",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "5.3 GQL：输入$text和$pattern均为STRING参数，忽略大小写整串匹配，返回matched。保留参数，不把参数名写为字符串，不额外转义参数值。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "regexp_like\\s*\\(\\s*\\$text\\s*,\\s*\\$pattern\\s*,\\s*[\\'\\\"]i[\\'\\\"]\\s*\\)"
+        ],
+        "forbids": [
+          "=\\s*~"
+        ]
+      },
+      "reference": {
+        "query": "RETURN regexp_like($text, $pattern, \"i\") AS matched",
+        "explanation": ""
+      }
+    },
+    {
+      "id": "regex-negation-null",
+      "category": "regex",
+      "skill": "gql-query-generator",
+      "scope": "database",
+      "prompt": "5.3 GQL将NOT (NULL =~ \".*\")改为公开函数写法，返回matched；保留NULL语义，不能补COALESCE。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "NOT\\s+regexp_like\\s*\\(\\s*NULL\\s*,\\s*\"\\.\\*\"\\s*\\)"
+        ],
+        "forbids": [
+          "=\\s*~",
+          "\\bcoalesce\\s*\\("
+        ]
+      },
+      "reference": {
+        "query": "RETURN NOT regexp_like(NULL, \".*\") AS matched",
+        "explanation": ""
+      },
+      "execution": {
+        "columns": [
+          "matched"
+        ],
+        "rows": [
+          [
+            null
+          ]
+        ],
+        "ordered": false
+      }
+    },
+    {
+      "id": "regex-procedure",
+      "category": "regex",
+      "skill": "gql-procedure-generator",
+      "scope": "database",
+      "prompt": "在5.3 Database定义过程matches_job(job_name STRING)，返回matched BOOL。用regexp_like判断小写job_name是否整串匹配正则 .+\\.[psv]_.+。不固定图，不调用过程。",
+      "documentation": [
+        "database-gql-reference/fe/functions/string/"
+      ],
+      "contract": {
+        "requires": [
+          "CREATE\\s+PROCEDURE",
+          "regexp_like\\s*\\(\\s*lower\\s*\\(\\s*job_name\\s*\\)",
+          "\\\\\\\\\\.\\[psv\\]_"
+        ],
+        "forbids": [
+          "=\\s*~"
+        ]
+      },
+      "reference": {
+        "query": "CREATE PROCEDURE matches_job(job_name STRING) RETURNS matched BOOL AS { RETURN regexp_like(lower(job_name), '.+\\\\.[psv]_.+') AS matched }",
+        "explanation": ""
+      }
+    }
+  ]
+}

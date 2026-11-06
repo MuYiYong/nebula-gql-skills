@@ -1,7 +1,7 @@
 {
   "case_id": "q_optional",
   "attempt": 1,
-  "query": "MATCH (s:player)\nOPTIONAL MATCH (s)-[e:follow]->(d:player WHERE d.age > $min_age)\nRETURN s.id AS src, d.id AS dst;",
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
-  "notes": "Assumptions: The evaluator has already selected the owned temporary graph and binds $min_age as INT64. Return src/dst from the business id properties. The destination age predicate stays inside OPTIONAL MATCH; NULL ages do not qualify, unmatched sources retain dst=NULL, and RETURN without DISTINCT preserves one row per parallel matching edge. References: SKILL.md; references/documented-syntax.md MATCH and WHERE; references/patterns.md Node Pattern Filler, Edge Pattern Filler, Filter Placement Priority, and OPTIONAL MATCH; references/identifiers.md; references/checklist.md; relevant pattern/result checks in references/validation.md. Identifier helper reports all chosen schema names, properties, variables, and aliases as ordinary identifiers. Static helper lint passed; no database execution performed."
+  "query": "MATCH (p:player)\nOPTIONAL MATCH (p)-[:follow]->(t:player WHERE t.age > $min_age)\nRETURN p.id AS src, t.id AS dst;",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "假设评测器已选择所述临时图并绑定 INT64 参数 $min_age。年龄过滤位于 OPTIONAL MATCH 的目标节点 pattern，保留无合格目标的 player 对应 NULL 行；不去重以保留平行边重复。仅根据技能包公开文档生成，未执行数据库。"
 }

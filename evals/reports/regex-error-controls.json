@@ -1,0 +1,24 @@
+{
+  "scope": "two fixed graph-free negative controls",
+  "results": [
+    {
+      "id": "removed-operator",
+      "status": "42001",
+      "expected_status": "42001",
+      "passed": true
+    },
+    {
+      "id": "invalid-pattern",
+      "status": "NR003",
+      "expected_status": "NR003",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "validation_source": {
+    "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+    "runner_sha256": "abac1c6b4128d3639a17838a6bc72aa40a865ffeba36b9ff1871ef05baa42e4c",
+    "suite_sha256": "3b85b3a342631cb0537be3e3d39d8af04b4ec5cb152c947413102dddd71a3f47",
+    "binding": "fresh execution while source/runner remained equal to the frozen prompt/calibration snapshots"
+  }
+}

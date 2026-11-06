@@ -1,0 +1,149 @@
+{
+  "compatibility": "5.3.0",
+  "scope": "graph-free read-only fixtures",
+  "producer": {
+    "kind": "reference-fixture"
+  },
+  "results": [
+    {
+      "id": "scalar",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "ed21d81f18106ab8f0b0dc4593a64a757cc2e6a525fb63d05d09f42441a781c0",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "duplicates",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 4,
+      "query_sha256": "0dd247467f3fb617e71f40675d02d7f3db9c76f3634651f7760660980f9eccaf",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "aggregate",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "5ed91a5634f47ffbbed071581621be0c80cf51b581fc85bbeb0f3d9bc4f2b008",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "pagination",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 2,
+      "query_sha256": "ccf98009f80ae2bd230a9009326f053ffce967a88f2449ef438996dc484a34aa",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "cypher-dedup",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "22361b10c09868835df62c8ad361859f387bb3925497e38cebbae52b6949ac32",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "cypher-unwind",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 3,
+      "query_sha256": "f97e37247b01d76d2fea7d0dd9b2f24e64770441e343436ee64544a411e999fd",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "repair-arity",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "22361b10c09868835df62c8ad361859f387bb3925497e38cebbae52b6949ac32",
+      "original_status": "NR002",
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "repair-page",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 2,
+      "query_sha256": "c64851fc1eabcd1ad2e70da94d24d9883d07e1a3268559d3e80ad378b34c9cf7",
+      "original_status": "42N47",
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "repair-reserved",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "77570331e934bbda17b7ecd0c819909b8108147ed0d0e2d69112ef44133688b4",
+      "original_status": "42001",
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "empty",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 0,
+      "query_sha256": "33ab2bcb9bcf7ebb443e937683a8f9e3d10ff6b0ad7699bb5eb5d3c6a8dbac4b",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "null-duplicate",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 3,
+      "query_sha256": "03cc175799eccdf3d12481e2e1c8a997d4d5fe6e6e15aed3867313093db1ecf4",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "typed-values",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "c407031f928c9a96e9eb613b1b61e3ac009305b01ede11bb17b27a38f7d5137c",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    }
+  ],
+  "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
+  "passed": true,
+  "validation_source": {
+    "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+    "runner_sha256": "abac1c6b4128d3639a17838a6bc72aa40a865ffeba36b9ff1871ef05baa42e4c",
+    "suite_sha256": "d9cb57a62e508b873c4a4e402d150bef4749968c90df3635b57b0d596ae72966",
+    "binding": "fresh execution while source/runner remained equal to the frozen prompt/calibration snapshots"
+  }
+}

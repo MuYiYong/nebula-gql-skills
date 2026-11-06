@@ -1,7 +1,7 @@
 {
   "case_id": "q_page",
   "attempt": 2,
-  "query": "MATCH (p:player)\nRETURN p.id AS id, p.age AS age\nORDER BY age DESC NULLS LAST, id ASC\nOFFSET 1\nLIMIT 2;",
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
-  "notes": "Assumes the evaluator-selected graph and the supplied player label/schema. Returns the requested id and age column names, preserves nullable ages without a filter, orders age descending with NULLS LAST and unique id ascending before OFFSET 1 LIMIT 2. References: SKILL.md; references/documented-syntax.md ORDER BY; references/query-language.md RETURN and ORDER BY / OFFSET / LIMIT; references/identifiers.md; references/checklist.md; applicable references/validation.md checks. Bundled quote-identifiers confirmed player, id and age are ordinary identifiers. No database execution."
+  "query": "MATCH (p:player)\nRETURN p.id AS id, p.age AS age\nORDER BY age DESC NULLS LAST, id ASC\nOFFSET 1\nLIMIT 2",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "使用评测器已选择的临时图，按给定 player 标签读取。保留年龄为 NULL 的节点，以唯一 id 升序稳定处理年龄相同的行；未添加年龄过滤。仅参考技能包内公开语法资料生成，未执行数据库。"
 }

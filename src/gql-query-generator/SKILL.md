@@ -39,6 +39,7 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 - 动态标签、动态元素类型、K-hop 和 5.3.0 新边界：读取 [v5.3.md](references/v5.3.md)。
 - 表达式、谓词、标签表达式或优先级：读取 [expressions.md](references/expressions.md)。
 - 保留或生成任意函数，或使用函数页记录的非调用形态：先在 [documented-functions.md](references/documented-functions.md) 中精确搜索函数名、签名、运算符或关键字形式零参函数；再按需读取 [functions.md](references/functions.md) 的常用选型与组合约束。
+- 正则表达式、`=~` 迁移、`regexp_like()`、大小写/换行选项和 pattern 转义：读取 [regular-expressions.md](references/regular-expressions.md)。
 - 不常见的子句、谓词、表达式、数据类型或 DML：先在 [documented-syntax.md](references/documented-syntax.md) 中精确搜索关键字，再读取对应专题参考。
 - KNN/ANN：读取 [nearest-neighbor.md](references/nearest-neighbor.md)。
 - Cypher/openCypher 或 nGQL 迁移：读取 [migration.md](references/migration.md)。
@@ -50,6 +51,7 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 ## Core Generation Rules
 
 - 使用 GQL 语法，不混入 Cypher 的 `*1..3`、`WITH`、`UNWIND`、`MERGE` 或 nGQL 的 `GO`、管道、`==`。
+- 正则条件用 `regexp_like(value, pattern[, options])`，不生成 `=~`。它按整个字符串匹配；迁移时保留原 pattern、转义、大小写、否定和 NULL 语义，不擅自补删 `.*` 或改写属性路径。
 - 对生成、改写或迁移任务逐项盘点输入中的函数和源方言表达式，即使语句主体已经混用 GQL 语法。只有在 v5.3.0 用户文档中能确认**同名且同签名**时才原样保留；feature 和代码只能验证实现边界，不能单独授权默认生成未文档化函数。没有文档证据时必须映射为公开构造或明确说明不支持。
 - 完整函数与语法目录中存在的能力，只要目标环境、签名、输入类型、前置条件和文档限制匹配，就允许生成；不得因为 [functions.md](references/functions.md)、feature 或示例未单独收录而判为不支持。
 - Cypher `toSet(list)` 改写为文档公开的 `list_distinct(list)`；Cypher 列表推导式改写为 `transform()`/`filter()`。不要生成未文档化的 `array_distinct()`，也不要把单个 LIST 传给 `all_different()`。

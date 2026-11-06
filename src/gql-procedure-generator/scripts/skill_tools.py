@@ -246,6 +246,8 @@ def lint(code, root, scope='database'):
         add('literal', 'Unterminated string literal')
     if re.search(r'\b(?:UNWIND|MERGE|GO)\b|==|\[\s*[^\]]*\*\s*\d', clean, re.I):
         add('dialect', 'Source dialect syntax requires a documented GQL mapping')
+    if re.search(r'=\s*~', clean):
+        add('regex-operator', 'GQL 5.3 uses regexp_like(value, pattern[, options]), not =~; preserve full-string matching and pattern escaping')
     if re.search(r'\bWITH\b', clean, re.I):
         add('dialect', 'Check WITH against GQL statement context; Cypher WITH requires NEXT')
     if re.search(r'\bLIMIT\s+[^;{}]+\bORDER\s+BY\b', clean, re.I):

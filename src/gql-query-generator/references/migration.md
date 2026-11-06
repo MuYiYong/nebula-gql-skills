@@ -249,7 +249,7 @@ ORDER BY score DESC
 | `x STARTS WITH 'a'` | `like(x, 'a%')` | GQL 无 `starts_with` 函数，用 `like()` 替代 |
 | `x ENDS WITH 'a'` | `like(x, '%a')` | GQL 无 `ends_with` 函数，用 `like()` 替代 |
 | `x CONTAINS 'a'` | `contains(x, 'a')` | GQL 用小写 `contains()` 函数 |
-| `x =~ 'regex'` | `regexp_like(x, 'regex')` | GQL 用 `regexp_like()` 函数 |
+| `x =~ 'regex'` | `regexp_like(x, 'regex')` | 整串匹配；保留 pattern、转义、大小写与 NULL 语义，见 [regular-expressions.md](regular-expressions.md) |
 | `x ^ y` (求幂) | `power(x, y)` | Cypher 用 `^`，GQL 用 `power()` 函数 |
 | `=` (等值比较) | `=` | Cypher 和 GQL 相同 |
 | `[x IN list WHERE p \| expr]` | `transform(filter(list, x -> p), x -> expr)` | 列表推导 |

@@ -1,7 +1,7 @@
 {
   "case_id": "q_group",
   "attempt": 2,
-  "query": "MATCH (p:player)\nRETURN p.age AS age, count(*) AS total\nGROUP BY age;",
-  "skills_sha256": "e4354fe75c3f7fd08b86668b8747e39fbf169e634f5299471cc45d4625e1de51",
-  "notes": "The evaluator has selected the graph. Count each matched player row with count(*), including nullable age values, and group by the returned age alias. No DISTINCT or name-based deduplication is used. References: SKILL.md; references/documented-functions.md count(); references/documented-syntax.md GROUP BY; references/query-language.md MATCH, RETURN, Aggregation & GROUP BY; references/identifiers.md; references/checklist.md; references/validation.md. The identifier helper confirms p, player, age and total are ordinary identifiers. No database execution was performed."
+  "query": "MATCH (p:player)\nRETURN p.age AS age, count(p) AS total\nGROUP BY age;",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "假设评测器已选择目标临时图，player 标签及 age 属性与题设一致。按 age 返回别名分组，NULL 保留为独立组，以非空匹配节点 p 计数，不按 name 去重。未执行数据库。"
 }
