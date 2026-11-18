@@ -128,7 +128,7 @@
 - 如果外层 `WHERE` 同时混有“可下沉单变量条件 + 必须保留的跨变量条件”，优先把单变量部分下沉到 pattern，外层只保留跨变量部分。
 - 如果 shortest path / quantified path 的 src/dst 过滤仍写在外层 `WHERE`，优先下沉到起点或终点 pattern。
 - 如果生成了 `length(filter(edges(p), r -> pred(r))) = length(edges(p))`，且 `p` 由单一量化边段组成、`pred` 只引用当前边和常量/参数，改为 `-[r:T WHERE pred(r)]->{m,n}` 并删除后置检查；跨元素、位置、聚合、`ANY`、`NONE`、`SINGLE` 语义不得套用。
-- 如果生成了 `length(nodes(p)) = length(list_distinct(nodes(p)))` 或等价的 APOC 零重复检查，改为 `ACYCLIC` 并删除后置检查；不等式或“存在重复”条件必须保留原语义。
+- 如果生成了 `length(nodes(p)) = length(list_distinct(nodes(p)))` 或等价的 APOC 零重复检查，确认目标计划的 `ACYCLIC` 结果正确再删除后置检查；反向量化段见 [重排边界](patterns.md#反向量化路径与重排)；不等式或“存在重复”条件必须保留原语义。
 - 如果生成了 `WHERE NOT (a)-[:T]-(b)`、`AND NOT (a)-[:T]-(b)` 或类似裸 pattern 排除条件，改写为 `NOT EXISTS { MATCH (a)-[:T]-(b) }`。
 - 如果生成了 `WHERE (a)-[:T]-(b)`、`AND (a)-[:T]-(b)` 或类似裸 pattern 包含条件，改写为 `EXISTS { MATCH (a)-[:T]-(b) }`。
 - 如果自然语言本身在表达“主模式成立，但排除另一个关系/模式”，先保留主模式，再把被排除部分单独抽成 `NOT EXISTS { MATCH ... }`，不要把整个否定关系塞成 `NOT (pattern)`。

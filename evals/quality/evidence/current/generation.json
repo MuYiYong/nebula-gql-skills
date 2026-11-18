@@ -1,11 +1,11 @@
 {
-  "kind": "fresh_isolated_generation",
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "kind": "source_compatible_generation",
+  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
   "model_snapshot": "not exposed by the subagent tool; inherited session model",
   "sampling_parameters": "not exposed",
   "context_policy": "one fresh context per case and attempt, only public prompt and the relevant bundled skill; no oracles, hidden fixtures or prior outputs",
   "constraint_limit": "read restrictions were instructions, not an operating-system sandbox",
-  "suite_use": "rerun of existing curated cases, not a newly held-out generalization test",
+  "suite_use": "Two fresh isolated attempts for each query. Procedure generations reused from the identical procedure skill snapshot. Existing curated cases are regression evidence.",
   "outputs": [
     {
       "case_id": "c_degrees",
@@ -109,85 +109,85 @@
       "case_id": "q_acyclic",
       "attempt": 1,
       "file": "attempts/q_acyclic-1.json",
-      "sha256": "013a68a6d74fbe2ed15f8401f59f07dcd20a79d6fa14f422b9cee0740b1c3901",
-      "worker_task": "/root/semantic_generation_one/isolated_q_acyclic_1"
+      "sha256": "aeaebb8cec306f4c4f00cf881acd0e608cf8b8896aa2cf656c8dcca776fe3ce1",
+      "worker_task": "/root/final_acyclic_1"
     },
     {
       "case_id": "q_acyclic",
       "attempt": 2,
       "file": "attempts/q_acyclic-2.json",
-      "sha256": "41eba1d1a2e0b87b4f37bd1c0917155c1bbfad9dc621d7d4d576653d69f211ec",
-      "worker_task": "/root/semantic_generation_one/isolated_q_acyclic_2"
+      "sha256": "2dc6b446c3fe7481e912d222c91553fd6237a085d4a72716aa661115fd95d937",
+      "worker_task": "/root/final_acyclic_2"
     },
     {
       "case_id": "q_anti",
       "attempt": 1,
       "file": "attempts/q_anti-1.json",
-      "sha256": "f5241dbd87ee55e337efaa5856e8ea50d7071fde39b5500fc38e3355b0d7a242",
-      "worker_task": "/root/semantic_generation_one/isolated_q_anti_1"
+      "sha256": "c809bf931befc8893a20d07c0b50ec338934ed92ed3a1c8b1ca4c19d96f5fb0c",
+      "worker_task": "/root/final_anti_1"
     },
     {
       "case_id": "q_anti",
       "attempt": 2,
       "file": "attempts/q_anti-2.json",
-      "sha256": "021f5346ad9db97c4f924bd24b1edcc21e60535ad398fbc56a49eb603a126811",
-      "worker_task": "/root/semantic_generation_one/isolated_q_anti_2"
+      "sha256": "6f5cd490b8003e86758b96aef73681cba83eea75fd80af0bc6fa3621095896d3",
+      "worker_task": "/root/final_anti_2"
     },
     {
       "case_id": "q_group",
       "attempt": 1,
       "file": "attempts/q_group-1.json",
-      "sha256": "e51b4c164ed647fb5a43b036f15d621ec574db2a725b113d9d82f4a12aa2eaad",
-      "worker_task": "/root/semantic_generation_one/isolated_q_group_1"
+      "sha256": "7dbae6eb849952c04356e6d505de8973f902c3b2e212c060145e1ad48c71e709",
+      "worker_task": "/root/final_group_1"
     },
     {
       "case_id": "q_group",
       "attempt": 2,
       "file": "attempts/q_group-2.json",
-      "sha256": "2fec90da26b377ee23b1d31a7ea009c84e0639d1236703e6c6b26f5a14d60496",
-      "worker_task": "/root/semantic_generation_one/isolated_q_group_2"
+      "sha256": "dae2c5359474147b64f9ef5eaaa8205a05b505609e7b88797f04f861aec0eaab",
+      "worker_task": "/root/final_group_2"
     },
     {
       "case_id": "q_optional",
       "attempt": 1,
       "file": "attempts/q_optional-1.json",
-      "sha256": "49a954944c0fa797f3e1f610a5626ae257ce3266a4f31abb583fa1f5f4cc5092",
-      "worker_task": "/root/semantic_generation_one/isolated_q_optional_1"
+      "sha256": "0ff406319d196dfe3f5239a3ffb67e6c452cdc9de031fc38806035f942f3b767",
+      "worker_task": "/root/final_optional_1"
     },
     {
       "case_id": "q_optional",
       "attempt": 2,
       "file": "attempts/q_optional-2.json",
-      "sha256": "b7fb2ca74914f6cd2c02b77718f4bf169d0b4bc38d6cd622a745b4288d66e560",
-      "worker_task": "/root/semantic_generation_one/isolated_q_optional_2"
+      "sha256": "d89d4ad31616fd348085cabb9b63298797a716726ba7d6ef9706afdd10af680d",
+      "worker_task": "/root/final_optional_2"
     },
     {
       "case_id": "q_page",
       "attempt": 1,
       "file": "attempts/q_page-1.json",
-      "sha256": "e6177148c45d15d0ec2e8a1e3cf63fe209af24de5fcc7a42ef8fb357ed220d42",
-      "worker_task": "/root/semantic_generation_one/isolated_q_page_1"
+      "sha256": "735b8a009fe8a6b701b866fb2dbb96bfa19d9d0b340b45435f5f752caab7aa75",
+      "worker_task": "/root/final_page_1"
     },
     {
       "case_id": "q_page",
       "attempt": 2,
       "file": "attempts/q_page-2.json",
-      "sha256": "f434d82485d7609280870e03de1efc22e2376e13ed3b3d002937ce17dfc2797f",
-      "worker_task": "/root/semantic_generation_one/isolated_q_page_2"
+      "sha256": "ab33913b12a56af25ee327893ab8b029bd731d53586cd9cf0a47c7a79e5db1b9",
+      "worker_task": "/root/final_page_2"
     },
     {
       "case_id": "q_trail",
       "attempt": 1,
       "file": "attempts/q_trail-1.json",
-      "sha256": "a4e1b70e2686e1951d89f293c9687a9bfcd9a08b2252996beda36a0229a70340",
-      "worker_task": "/root/semantic_generation_one/isolated_q_trail_1"
+      "sha256": "47d3959eba3f8f89832c9a3d396a28ac306f057b58cff21fe458c37ce9fc1b10",
+      "worker_task": "/root/final_trail_1"
     },
     {
       "case_id": "q_trail",
       "attempt": 2,
       "file": "attempts/q_trail-2.json",
-      "sha256": "888de6943ca7fb89ff993c594a04075b5b6e95ff208cb66749941b62a780cef3",
-      "worker_task": "/root/semantic_generation_one/isolated_q_trail_2"
+      "sha256": "6b5eae04a571583e05efdf8e0fed90862f40fafe318118078d31dacdd0858d06",
+      "worker_task": "/root/final_trail_2"
     }
   ]
 }

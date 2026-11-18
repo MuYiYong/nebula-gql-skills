@@ -15,6 +15,8 @@
 
 当查询级、会话级或部署级显式开启 `enable_reorder` 时，CBO 可依据统计信息改选起点、方向和 join 顺序。此时文本顺序不是执行顺序保证；只有路径级 `/*+ NO_REORDER */` 会锁定该路径。ANN、全文、selective path、相关变量和部分复杂形状还有专用或不可重排计划，必须以 `EXPLAIN CBO`/`PROFILE` 为准。
 
+若交换端点，保持边的业务方向。返回路径、`nodes(p)`、有序边列表或涉及起点的选择器时，还要保留遍历顺序与所选路径。
+
 ### 规则 1：默认计划把锚点放左侧
 
 Preferred:
@@ -49,7 +51,7 @@ ORDER BY L DESC
 LIMIT 1
 ```
 
-Anti-pattern（已绑定变量 `n` 放右，性能差）:
+对照写法（已绑定变量 `n` 放右，可用 PROFILE 比较实际展开行数）
 ```gql
 MATCH p = ACYCLIC (n:DataPlatformTable)-[:DEPENDS_ON]->+(m:DataPlatformTable)
 WHERE NOT EXISTS {
@@ -71,7 +73,7 @@ MATCH (src)-[:KNOWS]->(friend:Person)
 RETURN friend
 ```
 
-Anti-pattern（第一段返回的 `src` 放右，性能差）:
+对照写法（已绑定变量 `src` 放右，可用 PROFILE 比较实际展开行数）
 ```gql
 MATCH (src:Person{id: 123})
 RETURN src
@@ -85,6 +87,10 @@ RETURN friend
 - 受支持的 shortest-path 形状可改写为 `BiBFS`，但端点是否已绑定、端点过滤是否先执行、索引可用性和量词边界仍会改变代价；不要写成“方向必然不影响性能”。
 - 不默认添加 `SET_VAR(enable_reorder=true)`、`NO_REORDER`、`INDEX` 或 `IGNORE_INDEX`。只在用户要求、稳定性需求或等价 PROFILE 对比证明有益时保留，并说明适用 schema。
 - 详细决策与验证见 [performance.md](performance.md)。
+
+### 反向量化路径与重排
+
+在测试过的 5.3.2 构建中，`enable_reorder=true` 时，`ACYCLIC (a)<-[]-{1,2}(x)<-[e]-(b)` 可能返回内部节点重复的路径。先用含环和合法路径的样本核对有序节点 ID 列表及其重复次数。对复现该问题的查询，在语句开头加 `/*+ SET_VAR(enable_reorder=false) */` 并重验结果。该写法在同一测试构建上保留了两条合法路径，排除了多出的一条。新构建可用同一反例复核后采用默认计划。普通正向遍历和已验证正确的计划继续使用原会话配置。
 
 ## Node Pattern Filler
 组件顺序（稳定）：点变量 → 标签表达式或点类型 → 点属性 → `WHERE`

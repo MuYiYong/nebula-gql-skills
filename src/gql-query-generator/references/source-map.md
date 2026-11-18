@@ -9,6 +9,10 @@
 
 Refresh corpora: `v5.3.0_zh_html` and `v5.3.0_features`. The packaged skill is self-contained and does not require the original source directories.
 
+### Query access-path audit
+
+The `release-5.3` checkout at `8d9901209` adds implementation evidence for [query performance](performance.md). `src/common/plan/ConstraintExtractor.h` checks raw property references. Under `src/gql/optimizer/rule/trans/`, `IndexOrderSatisfiesTopNRule.hpp` checks key order and pushes a scan budget while retaining global TopN. `IndexOrderSatisfiesTopNWithVcRule.hpp` checks the single-node lookup for the VC join shape. The upstream `tests/features/optimizer/IndexOrderSatisfiesTopNRule.feature` exercises direction, NULL ordering and hint mismatches. Direct comparison with the upstream `release-5.3` tip `a4c0c9f1c` found the same ordinary/VC TopN and property constraint implementations. That revision also contains the reverse-expansion path fix in `VarLenToRecursiveRule.hpp` and multi-key endpoint filtering in `SrcPushedDownByHashJoinRule.hpp`. The regression scenarios are in `tests/features/bug/Match.feature` and `tests/features/optimizer/SrcPushedDownByHashJoinRule.feature`. Check the actual target build before relying on either change.
+
 ## Documentation Mapping
 
 The generated [documented-functions.md](documented-functions.md) is the complete callable allowlist: 146 Database names, 143 Analytics names, 143 shared names, and three non-call forms documented beside the functions. The generated [documented-syntax.md](documented-syntax.md) indexes all 64 documentation pages in the query skill's declared scope. Regenerate both files instead of maintaining a hand-picked allowlist.

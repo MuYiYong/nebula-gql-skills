@@ -1,6 +1,6 @@
 # Query Performance Reference
 
-Use this reference only when the user asks for performance, supplies a slow query/PROFILE, or the query shape can obviously multiply work. Correct results and error behavior are the first gate; an optimization that changes rows, duplicates, NULL preservation, path sets, ordering, or write effects is invalid.
+Use these decisions when selecting among access paths or comparing a slow query. Keep the same columns, types, row multiplicities, NULL rows, path sets, ordering, error behavior and write effects.
 
 ## Contents
 
@@ -68,11 +68,14 @@ Classify each predicate by dependencies:
 | Outer variable in a correlated query | keep correlated scope | may require Apply/decorrelation |
 | Subquery predicate | `EXISTS`/`NOT EXISTS` or correct subquery scope | cannot be treated as a scalar local filter |
 
+For an inner join on both endpoint identity and business properties, keep every equality in scope. On builds with the multi-key hash-join change, the first physical endpoint key can feed a dynamic filter while the other equalities still participate in the join. Check the join keys and the scan's `DF:/_id` in verbose EXPLAIN. A plan with fewer join keys may return extra rows.
+
 The optimizer can attach many same-MATCH predicates to scans and expands even if written in a MATCH-level `WHERE`. Do not promise a speedup from syntax movement alone. Never move a condition across `OPTIONAL MATCH`, `NEXT`, aggregation, or NULL-producing boundaries without proving row equivalence.
 
 ### Index prerequisites
 
-- Prefer equality on the primary/business key when that is the actual selection intent.
+- For an exact key lookup with a correctly typed parameter, generate a comparison on the stored key, e.g. `MATCH (p@player {id: $seed}) RETURN p.name AS name` for a STRING primary key. The constraint extractor matches a direct property reference. A function around the stored key can leave a residual filter over a broad scan. Check the scan method and constraint. Preserve intentional normalization, collation, NULL and conversion errors. For instance, converting string IDs to integers can merge `"01"` and `"1"`.
+- Match all supplied components of a composite key. Treat a partial key as a potentially multirow lookup. A label can span multiple element types with different keys or indexes.
 - For a composite normal index, useful constraints normally begin with its leading properties; ORDER elimination additionally requires compatible property order, direction, NULL ordering, and equality-fixed prefixes.
 - An index that exists but has no usable constraint is not automatically faster; a non-covering unconstrained index can lose to a table scan.
 - A covering/index-only plan can avoid fetching non-indexed properties. Return only required fields so the optimizer can prune columns/properties.
@@ -120,7 +123,16 @@ LIMIT 20
 - `ORDER BY + LIMIT` is eligible for a TopN rewrite. Preserve both at the final candidate-set boundary.
 - A no-sort LIMIT may be pushed toward a single planned unit, but a final LIMIT is not independently valid for every component/UNION arm.
 - Large OFFSET still requires producing/skipping earlier rows. Prefer a stable keyset predicate only when the API contract allows changing from offset pagination and the relevant ordered key is known.
-- An index can satisfy ordering only when its key order, direction, NULL ordering, and fixed leading prefix match. Confirm the missing Sort/TopN and the chosen index in the plan; do not infer it from DDL alone.
+- For ordinary index TopN, use the requested sort properties directly. For example, with a readable index on `player(age ASC, id ASC)`, an exact page ordered by age then unique ID can use the following form when the requested NULL ordering matches the index.
+
+  ```gql
+  MATCH (p@player)
+  RETURN p.age AS age, p.id AS id
+  ORDER BY age ASC, id ASC OFFSET 10 LIMIT 20
+  ```
+
+  Inspect the scan details for the chosen index and a per-partition limit of 30. The global TopN can remain to merge partitions and apply the page. An equality prefix fixed to one value across all spans may be skipped. A range or multiple prefix values, a computed sort expression, an extra tie-breaker outside the key order, or mismatched direction/NULL placement can prevent this pushdown. Preserve the complete requested ordering in each case.
+- For TopN over a vertex-centric edge index joined to a node lookup, check that the plan identifies a single anchor by point lookup and matches the edge sort keys. A multi-anchor query still needs its requested global or per-anchor result boundary.
 
 ## Correlated Subqueries and OPTIONAL Branches
 
@@ -171,7 +183,7 @@ An operator labeled `NodesScan`/`EdgesScan` can still show an index method in `d
 
 - Use the same graph snapshot, parameters, result consumption, session settings, Hint set, and client.
 - Warm both candidates, then alternate their order across multiple runs to reduce cache/order bias.
-- Report sample count and at least median; include tail/spread when it materially differs.
+- Record the sample count, median and spread. Check selective, common and absent parameter values when they can change the winning access path. Prefer the quickest equivalent candidate supported by repeatable measurements for the target workload. When timings overlap or plans converge, keep the simpler equivalent query and report the observed uncertainty.
 - Compare PROFILE rows/memory as diagnostics, not substitutes for elapsed time.
 - State graph scale and whether it is isolated or representative. Clean only objects created for the validation.
 

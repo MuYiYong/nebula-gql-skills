@@ -1,0 +1,1622 @@
+{
+  "server_version": "5.3.2, Build Time: 2026-10-26T10:27:58Z",
+  "engine_source": "a4c0c9f1cb86c99b54b8d9ddeb7bbe87b59f8d51",
+  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+  "fixture": {
+    "nodes": 16384,
+    "edges": 4098,
+    "id": "decimal string of i from 0 through 16383",
+    "name": "test",
+    "age": "NULL when i % 103 = 0, otherwise i % 80",
+    "follow": "0..4095 to 7777, one additional 3 to 7777, and 33 to 1",
+    "indexes": [
+      "PRIMARY KEY(id)",
+      "ix_age_id(age ASC, id ASC)"
+    ],
+    "ddl": "NODE player (LABEL player {id STRING PRIMARY KEY, name STRING, age INT64}), EDGE follow (player)-[LABEL follow {degree INT64, MULTIEDGE KEY()}]->(player)",
+    "index_ddl": "CREATE INDEX ix_age_id ON NODE player(age ASC, id ASC)",
+    "settings": "Default session; no hints, parameters bound with PARAMETERS $seed."
+  },
+  "results": [
+    {
+      "case": "point",
+      "seed": "7777",
+      "baseline_gql": "MATCH (p@player) WHERE (p.id || '') = $seed RETURN p.name AS name",
+      "generated_gql": "MATCH (p@player {id: $seed})\nRETURN p.name AS name",
+      "oracle_rows": 1,
+      "column_types": [
+        "STRING"
+      ],
+      "compared": "both variants passed independent row oracle; each timed run and PROFILE matched warmup",
+      "ordered": false,
+      "samples_ms": [
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 3.041692078113556,
+          "candidate": 1.9983579404652119
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.8935040570795536,
+          "baseline": 2.541034948080778
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.7760351076722145,
+          "candidate": 2.068847883492708
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.6885541155934334,
+          "baseline": 2.808975987136364
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.763161901384592,
+          "candidate": 2.2064070217311382
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.0974050275981426,
+          "baseline": 2.935097087174654
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.9412941075861454,
+          "candidate": 2.0668068900704384
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.386435866355896,
+          "baseline": 3.177143633365631
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.8404821641743183,
+          "candidate": 2.002147026360035
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.81278632953763,
+          "baseline": 2.8085908852517605
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 3.1729647889733315,
+          "candidate": 2.0664711482822895
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.927634235471487,
+          "baseline": 3.1991908326745033
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.9861819930374622,
+          "candidate": 1.9779657013714314
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.40590563043952,
+          "baseline": 3.0188006348907948
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.7580498717725277,
+          "candidate": 2.0461599342525005
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.9003651104867458,
+          "baseline": 2.875169273465872
+        }
+      ],
+      "baseline": {
+        "median_ms": 2.905133180320263,
+        "min_ms": 2.541034948080778,
+        "max_ms": 3.1991908326745033,
+        "p95_ms": 3.1991908326745033
+      },
+      "generated": {
+        "median_ms": 2.056315541267395,
+        "min_ms": 1.81278632953763,
+        "max_ms": 2.6885541155934334,
+        "p95_ms": 2.6885541155934334
+      },
+      "profiles": {
+        "baseline": [
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 1,
+            "details": "scanStrategy: SortedSeek, varName: p, TableScan: {player: {id, name}}, filter: p.id || \"\" = \"7777\", graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ],
+        "generated": [
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 1,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id, name}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"7777\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ]
+      },
+      "pairs": 16,
+      "generated_faster_pairs": 16
+    },
+    {
+      "case": "point",
+      "seed": "absent",
+      "baseline_gql": "MATCH (p@player) WHERE (p.id || '') = $seed RETURN p.name AS name",
+      "generated_gql": "MATCH (p@player {id: $seed})\nRETURN p.name AS name",
+      "oracle_rows": 0,
+      "column_types": [
+        "STRING"
+      ],
+      "compared": "both variants passed independent row oracle; each timed run and PROFILE matched warmup",
+      "ordered": false,
+      "samples_ms": [
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.7118567377328873,
+          "candidate": 1.7456263303756714
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.7431480810046196,
+          "baseline": 2.9768520034849644
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.9365518130362034,
+          "candidate": 1.9343742169439793
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.7885016277432442,
+          "baseline": 2.8779893182218075
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.9888921417295933,
+          "candidate": 2.0138383843004704
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.188874874264002,
+          "baseline": 2.93719582259655
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 3.351462073624134,
+          "candidate": 1.6948836855590343
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.9636820070445538,
+          "baseline": 2.952661830931902
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.532022073864937,
+          "candidate": 1.8818252719938755
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.754756085574627,
+          "baseline": 2.9593100771307945
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.7858479879796505,
+          "candidate": 1.8412340432405472
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.0216270349919796,
+          "baseline": 3.370773047208786
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.941136248409748,
+          "candidate": 1.8484639003872871
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.7131362110376358,
+          "baseline": 2.660292200744152
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 2.68468726426363,
+          "candidate": 2.153540961444378
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 1.9005932845175266,
+          "baseline": 2.8183781541883945
+        }
+      ],
+      "baseline": {
+        "median_ms": 2.9368738178163767,
+        "min_ms": 2.532022073864937,
+        "max_ms": 3.370773047208786,
+        "p95_ms": 3.370773047208786
+      },
+      "generated": {
+        "median_ms": 1.8651445861905813,
+        "min_ms": 1.6948836855590343,
+        "max_ms": 2.188874874264002,
+        "p95_ms": 2.188874874264002
+      },
+      "profiles": {
+        "baseline": [
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 0,
+            "details": "scanStrategy: SortedSeek, varName: p, TableScan: {player: {id, name}}, filter: p.id || \"\" = \"absent\", graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ],
+        "generated": [
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 0,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id, name}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"absent\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ]
+      },
+      "pairs": 16,
+      "generated_faster_pairs": 16
+    },
+    {
+      "case": "page",
+      "seed": null,
+      "baseline_gql": "MATCH (p@player) RETURN p.age AS age, p.id AS id ORDER BY age + 0 ASC, id ASC OFFSET 10 LIMIT 20",
+      "generated_gql": "MATCH (p@player)\nRETURN p.age AS age, p.id AS id\nORDER BY age ASC, id ASC\nOFFSET 10 LIMIT 20",
+      "oracle_rows": 20,
+      "column_types": [
+        "INT64",
+        "STRING"
+      ],
+      "compared": "both variants passed independent row oracle; each timed run and PROFILE matched warmup",
+      "ordered": true,
+      "samples_ms": [
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 4.132749978452921,
+          "candidate": 3.4260028041899204
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.2970518805086613,
+          "baseline": 3.940706141293049
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 3.8978601805865765,
+          "candidate": 3.314969129860401
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.181174863129854,
+          "baseline": 4.046952351927757
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 3.800352104008198,
+          "candidate": 3.1558070331811905
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.093449864536524,
+          "baseline": 4.186809062957764
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 4.095904994755983,
+          "candidate": 3.082436043769121
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.305261954665184,
+          "baseline": 4.218960180878639
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 3.947407938539982,
+          "candidate": 3.158310428261757
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.198681864887476,
+          "baseline": 4.283938091248274
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 4.018262028694153,
+          "candidate": 3.3279061317443848
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.129935823380947,
+          "baseline": 4.170645959675312
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 3.957894630730152,
+          "candidate": 3.4623127430677414
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.2863919623196125,
+          "baseline": 4.062405321747065
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 4.009755793958902,
+          "candidate": 3.27117508277297
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.6334418691694736,
+          "baseline": 3.926857840269804
+        }
+      ],
+      "baseline": {
+        "median_ms": 4.032607190310955,
+        "min_ms": 3.800352104008198,
+        "max_ms": 4.283938091248274,
+        "p95_ms": 4.283938091248274
+      },
+      "generated": {
+        "median_ms": 3.2787835225462914,
+        "min_ms": 3.082436043769121,
+        "max_ms": 3.6334418691694736,
+        "p95_ms": 3.6334418691694736
+      },
+      "profiles": {
+        "baseline": [
+          {
+            "name": "[P0]TopN",
+            "rows": 20,
+            "details": "Order By:p.age + 0 ASC, p.id ASC, Offset:10, Limit:20, Partial:false, Approx:false"
+          },
+          {
+            "name": "[SP0]TopN",
+            "rows": 300,
+            "details": "Order By:p.age + 0 ASC, p.id ASC, Offset:0, Limit:30, Partial:true, Approx:false"
+          },
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 16384,
+            "details": "scanStrategy: SortedSeek, varName: p, TableScan: {player: {id, age}}, filter: None, graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ],
+        "generated": [
+          {
+            "name": "[P0]TopN",
+            "rows": 20,
+            "details": "Order By:p.age ASC, p.id ASC, Offset:10, Limit:20, Partial:false, Approx:false"
+          },
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 300,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id, age}}, filter: None, limit: 30, index: ix_age_id, constraint: [/age/id]:[ - ], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ]
+      },
+      "pairs": 16,
+      "generated_faster_pairs": 16
+    },
+    {
+      "case": "incoming",
+      "seed": "1",
+      "baseline_gql": "MATCH (s@player)-[@follow]->(p@player {id: $seed}) RETURN s.id AS src",
+      "generated_gql": "MATCH (p@player {id: $seed})<-[@follow]-(s@player)\nRETURN s.id AS src",
+      "oracle_rows": 1,
+      "column_types": [
+        "STRING"
+      ],
+      "compared": "both variants passed independent row oracle; each timed run and PROFILE matched warmup",
+      "ordered": false,
+      "samples_ms": [
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.867830943316221,
+          "candidate": 3.1144306994974613
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.1350189819931984,
+          "baseline": 6.004482973366976
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.814547184854746,
+          "candidate": 3.2167169265449047
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.2181870192289352,
+          "baseline": 5.804642103612423
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.355571862310171,
+          "candidate": 3.1947260722517967
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.941438928246498,
+          "baseline": 5.823529325425625
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.561059806495905,
+          "candidate": 2.892669290304184
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.995547838509083,
+          "baseline": 6.464436650276184
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.479631945490837,
+          "candidate": 3.026051912456751
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.947002649307251,
+          "baseline": 5.901342257857323
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.721733905375004,
+          "candidate": 3.248118795454502
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.8281696140766144,
+          "baseline": 5.720258690416813
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.651354789733887,
+          "candidate": 3.1981319189071655
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.167484886944294,
+          "baseline": 5.352654028683901
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.373896565288305,
+          "candidate": 3.1174886971712112
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 3.2567637972533703,
+          "baseline": 5.3251502104103565
+        }
+      ],
+      "baseline": {
+        "median_ms": 5.720996297895908,
+        "min_ms": 5.3251502104103565,
+        "max_ms": 6.464436650276184,
+        "p95_ms": 6.464436650276184
+      },
+      "generated": {
+        "median_ms": 3.126253839582205,
+        "min_ms": 2.8281696140766144,
+        "max_ms": 3.2567637972533703,
+        "p95_ms": 3.2567637972533703
+      },
+      "profiles": {
+        "baseline": [
+          {
+            "name": "[P0]NEHashJoinProbe",
+            "rows": 1,
+            "details": " Project: s, element_id(p)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 1,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"1\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[P1]NEHashJoinBuild",
+            "rows": 2,
+            "details": " Project: s, element_id(p)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NEHashJoinProbe",
+            "rows": 4098,
+            "details": "_left_node_id(@anon0)=element_id(s)"
+          },
+          {
+            "name": "[SP0]EdgesScan",
+            "rows": 4098,
+            "details": "direction: {outgoing}, scanStrategy: SortedSeek, varName: @anon0, TableScan: {follow: {}}, filter: None, (DF:/_id), graph: <fixture>, schema: /default_schema, @anon0{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[SP1]NEHashJoinBuild",
+            "rows": 16384,
+            "details": "_left_node_id(@anon0)=element_id(s)"
+          },
+          {
+            "name": "[SP1]NodesScan",
+            "rows": 16384,
+            "details": "scanStrategy: SortedSeek, varName: s, TableScan: {player: {id}}, filter: None, graph: <fixture>, schema: /default_schema, s{}, GraphId: <fixture>"
+          }
+        ],
+        "generated": [
+          {
+            "name": "[P0]NEHashJoinProbe",
+            "rows": 1,
+            "details": " Project: s, element_id(s)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 1,
+            "details": "scanStrategy: SortedSeek, varName: s, TableScan: {player: {id}}, filter: None, graph: <fixture>, schema: /default_schema, input: |_id|: |288341190602915841|, s{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[P1]NEHashJoinBuild",
+            "rows": 1,
+            "details": " Project: s, element_id(s)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NEHashJoinProbe",
+            "rows": 1,
+            "details": " Project: @anon0, _left_node_id(@anon0)=element_id(p)"
+          },
+          {
+            "name": "[SP0]EdgesScan",
+            "rows": 1,
+            "details": "direction: {incoming}, scanStrategy: SortedSeek, varName: @anon0, TableScan: {follow: {}}, filter: None, (DF:/_id), graph: <fixture>, schema: /default_schema, @anon0{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[SP1]NEHashJoinBuild",
+            "rows": 1,
+            "details": " Project: @anon0, _left_node_id(@anon0)=element_id(p)"
+          },
+          {
+            "name": "[SP1]NodesScan",
+            "rows": 1,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"1\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ]
+      },
+      "pairs": 16,
+      "generated_faster_pairs": 16
+    },
+    {
+      "case": "incoming",
+      "seed": "7777",
+      "baseline_gql": "MATCH (s@player)-[@follow]->(p@player {id: $seed}) RETURN s.id AS src",
+      "generated_gql": "MATCH (p@player {id: $seed})<-[@follow]-(s@player)\nRETURN s.id AS src",
+      "oracle_rows": 4097,
+      "column_types": [
+        "STRING"
+      ],
+      "compared": "both variants passed independent row oracle; each timed run and PROFILE matched warmup",
+      "ordered": false,
+      "samples_ms": [
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 134.42005077376962,
+          "candidate": 135.69804513826966
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 135.0689739920199,
+          "baseline": 133.885120972991
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 134.7867911681533,
+          "candidate": 135.1902442984283
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 138.65664787590504,
+          "baseline": 135.76732762157917
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 134.487085044384,
+          "candidate": 135.78775292262435
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 135.8525911346078,
+          "baseline": 134.11035481840372
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 134.34039428830147,
+          "candidate": 135.24648640304804
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 148.4255320392549,
+          "baseline": 134.8138409666717
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 134.1222976334393,
+          "candidate": 146.92375110462308
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 135.06987411528826,
+          "baseline": 134.29828733205795
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 145.9124693647027,
+          "candidate": 134.8459175787866
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 134.691690094769,
+          "baseline": 133.94520711153746
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 134.50871407985687,
+          "candidate": 134.86404391005635
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 138.42921843752265,
+          "baseline": 134.13708796724677
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 134.18653793632984,
+          "candidate": 136.22638583183289
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 134.72309289500117,
+          "baseline": 133.39814404025674
+        }
+      ],
+      "baseline": {
+        "median_ms": 134.3193408101797,
+        "min_ms": 133.39814404025674,
+        "max_ms": 145.9124693647027,
+        "p95_ms": 145.9124693647027
+      },
+      "generated": {
+        "median_ms": 135.47226577065885,
+        "min_ms": 134.691690094769,
+        "max_ms": 148.4255320392549,
+        "p95_ms": 148.4255320392549
+      },
+      "profiles": {
+        "baseline": [
+          {
+            "name": "[P0]NEHashJoinProbe",
+            "rows": 4097,
+            "details": " Project: s, element_id(p)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 1,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"7777\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[P1]NEHashJoinBuild",
+            "rows": 2,
+            "details": " Project: s, element_id(p)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NEHashJoinProbe",
+            "rows": 4098,
+            "details": "_left_node_id(@anon0)=element_id(s)"
+          },
+          {
+            "name": "[SP0]EdgesScan",
+            "rows": 4098,
+            "details": "direction: {outgoing}, scanStrategy: SortedSeek, varName: @anon0, TableScan: {follow: {}}, filter: None, (DF:/_id), graph: <fixture>, schema: /default_schema, @anon0{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[SP1]NEHashJoinBuild",
+            "rows": 16384,
+            "details": "_left_node_id(@anon0)=element_id(s)"
+          },
+          {
+            "name": "[SP1]NodesScan",
+            "rows": 16384,
+            "details": "scanStrategy: SortedSeek, varName: s, TableScan: {player: {id}}, filter: None, graph: <fixture>, schema: /default_schema, s{}, GraphId: <fixture>"
+          }
+        ],
+        "generated": [
+          {
+            "name": "[P0]NEHashJoinProbe",
+            "rows": 4097,
+            "details": " Project: s, element_id(s)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 4096,
+            "details": "scanStrategy: SortedSeek, varName: s, TableScan: {player: {id}}, filter: None, graph: <fixture>, schema: /default_schema, input: |_id|: |288511812473716737|,|288511559070646273|,|288511460286398465|..., s{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[P1]NEHashJoinBuild",
+            "rows": 4096,
+            "details": " Project: s, element_id(s)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NEHashJoinProbe",
+            "rows": 4097,
+            "details": " Project: @anon0, _left_node_id(@anon0)=element_id(p)"
+          },
+          {
+            "name": "[SP0]EdgesScan",
+            "rows": 4097,
+            "details": "direction: {incoming}, scanStrategy: SortedSeek, varName: @anon0, TableScan: {follow: {}}, filter: None, (DF:/_id), graph: <fixture>, schema: /default_schema, @anon0{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[SP1]NEHashJoinBuild",
+            "rows": 1,
+            "details": " Project: @anon0, _left_node_id(@anon0)=element_id(p)"
+          },
+          {
+            "name": "[SP1]NodesScan",
+            "rows": 1,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"7777\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ]
+      },
+      "pairs": 16,
+      "generated_faster_pairs": 1
+    },
+    {
+      "case": "incoming",
+      "seed": "absent",
+      "baseline_gql": "MATCH (s@player)-[@follow]->(p@player {id: $seed}) RETURN s.id AS src",
+      "generated_gql": "MATCH (p@player {id: $seed})<-[@follow]-(s@player)\nRETURN s.id AS src",
+      "oracle_rows": 0,
+      "column_types": [
+        "STRING"
+      ],
+      "compared": "both variants passed independent row oracle; each timed run and PROFILE matched warmup",
+      "ordered": false,
+      "samples_ms": [
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.32161770388484,
+          "candidate": 2.3174281232059
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.3546279408037663,
+          "baseline": 5.2973129786551
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.842628888785839,
+          "candidate": 2.312381751835346
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.1894737146794796,
+          "baseline": 5.712883081287146
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.516041070222855,
+          "candidate": 2.283200155943632
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.56820535287261,
+          "baseline": 5.33920805901289
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.387812852859497,
+          "candidate": 2.5502690114080906
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.2267820313572884,
+          "baseline": 5.3426050581038
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.424920003861189,
+          "candidate": 2.223377116024494
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.694120164960623,
+          "baseline": 5.661227274686098
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.430176854133606,
+          "candidate": 2.368769608438015
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.5109611451625824,
+          "baseline": 5.177017766982317
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 4.901731386780739,
+          "candidate": 2.185397781431675
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.37763999029994,
+          "baseline": 5.179765168577433
+        },
+        {
+          "order": [
+            "baseline",
+            "candidate"
+          ],
+          "baseline": 5.232684779912233,
+          "candidate": 2.3751426488161087
+        },
+        {
+          "order": [
+            "candidate",
+            "baseline"
+          ],
+          "candidate": 2.147145103663206,
+          "baseline": 5.323641002178192
+        }
+      ],
+      "baseline": {
+        "median_ms": 5.340906558558345,
+        "min_ms": 4.901731386780739,
+        "max_ms": 5.842628888785839,
+        "p95_ms": 5.842628888785839
+      },
+      "generated": {
+        "median_ms": 2.336028032004833,
+        "min_ms": 2.147145103663206,
+        "max_ms": 2.694120164960623,
+        "p95_ms": 2.694120164960623
+      },
+      "profiles": {
+        "baseline": [
+          {
+            "name": "[P0]NEHashJoinProbe",
+            "rows": 0,
+            "details": " Project: s, element_id(p)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NodesScan",
+            "rows": 0,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"absent\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[P1]NEHashJoinBuild",
+            "rows": 2,
+            "details": " Project: s, element_id(p)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NEHashJoinProbe",
+            "rows": 4098,
+            "details": "_left_node_id(@anon0)=element_id(s)"
+          },
+          {
+            "name": "[SP0]EdgesScan",
+            "rows": 4098,
+            "details": "direction: {outgoing}, scanStrategy: SortedSeek, varName: @anon0, TableScan: {follow: {}}, filter: None, (DF:/_id), graph: <fixture>, schema: /default_schema, @anon0{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[SP1]NEHashJoinBuild",
+            "rows": 16384,
+            "details": "_left_node_id(@anon0)=element_id(s)"
+          },
+          {
+            "name": "[SP1]NodesScan",
+            "rows": 16384,
+            "details": "scanStrategy: SortedSeek, varName: s, TableScan: {player: {id}}, filter: None, graph: <fixture>, schema: /default_schema, s{}, GraphId: <fixture>"
+          }
+        ],
+        "generated": [
+          {
+            "name": "[P0]NEHashJoinProbe",
+            "rows": 0,
+            "details": " Project: s, element_id(s)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[P1]NEHashJoinBuild",
+            "rows": 0,
+            "details": " Project: s, element_id(s)=_right_node_id(@anon0)"
+          },
+          {
+            "name": "[SP0]NEHashJoinProbe",
+            "rows": 0,
+            "details": " Project: @anon0, _left_node_id(@anon0)=element_id(p)"
+          },
+          {
+            "name": "[SP0]EdgesScan",
+            "rows": 0,
+            "details": "direction: {incoming}, scanStrategy: SortedSeek, varName: @anon0, TableScan: {follow: {}}, filter: None, (DF:/_id), graph: <fixture>, schema: /default_schema, @anon0{}, GraphId: <fixture>"
+          },
+          {
+            "name": "[SP1]NEHashJoinBuild",
+            "rows": 0,
+            "details": " Project: @anon0, _left_node_id(@anon0)=element_id(p)"
+          },
+          {
+            "name": "[SP1]NodesScan",
+            "rows": 0,
+            "details": "scanStrategy: SortedSeek, varName: p, IndexScan: {player: {id}}, filter: None, index: pkIndex_player, constraint: [/id]:[/\"absent\"], graph: <fixture>, schema: /default_schema, p{}, GraphId: <fixture>"
+          }
+        ]
+      },
+      "pairs": 16,
+      "generated_faster_pairs": 16
+    }
+  ],
+  "scope": "Synthetic fixture on the supplied YueShu test database. Alternatives selected to exercise access paths; baselines are not attributed to an earlier skill.",
+  "sdk": "nebula5-python 5.3.0",
+  "timing": "Client elapsed ms through full materialization. Same client, no hints, unchanged fixture. Both alternatives warmed, then 16 paired runs in alternating AB/BA order. PROFILE captured separately.",
+  "generation": "Three ordinary requests, independent context reading only the public prompts and query skill.",
+  "prompts": "请用当前查询技能生成三个只读 GQL 查询。已选定图，节点类型 player(id STRING 主键, name STRING, age INT64 可空)，普通索引 ix_age_id(age ASC,id ASC)，边类型 follow(player -> player)，允许平行边。每题只返回要求的数据。\n1. 用字符串参数 $seed 按主键精确查姓名，列名 name。\n2. 按年龄升序，采用默认 NULL 顺序，同龄按 id 升序。跳过 10 人取随后 20 人，返回 age,id。\n3. 查 $seed 球员的所有入边来源，返回 src 列的业务 id，平行边逐行保留。",
+  "source_regressions": {
+    "reverse_quantified_path": {
+      "source_file": "tests/features/bug/Match.feature",
+      "scenario": "ACYCLIC excludes repeated internal nodes after reverse expansion",
+      "setup": "Same five-node graph and edges; no statistics job. Two session settings. An incorrect native result is retained as a negative control.",
+      "scoped_hint": "/*+ SET_VAR(enable_reorder=false) */",
+      "postfilter": "WHERE size(nodes(p0)) = size(list_distinct(transform(nodes(p0), n -> element_id(n))))",
+      "observations": [
+        {
+          "reorder": "false",
+          "mode": "ACYCLIC",
+          "actual": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "passed": true
+        },
+        {
+          "reorder": "false",
+          "mode": "TRAIL",
+          "actual": [
+            [
+              23,
+              33,
+              30,
+              33
+            ],
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ],
+            [
+              33,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              23,
+              33,
+              30,
+              33
+            ],
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ],
+            [
+              33,
+              30,
+              33
+            ]
+          ],
+          "passed": true
+        },
+        {
+          "reorder": "false",
+          "mode": "TRAIL + distinct nodes",
+          "actual": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "passed": true
+        },
+        {
+          "reorder": "false",
+          "mode": "ACYCLIC scoped reorder off",
+          "actual": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "passed": true
+        },
+        {
+          "reorder": "true",
+          "mode": "ACYCLIC",
+          "actual": [
+            [
+              23,
+              33,
+              30,
+              33
+            ],
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "passed": false
+        },
+        {
+          "reorder": "true",
+          "mode": "TRAIL",
+          "actual": [
+            [
+              23,
+              33,
+              30,
+              33
+            ],
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ],
+            [
+              33,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              23,
+              33,
+              30,
+              33
+            ],
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ],
+            [
+              33,
+              30,
+              33
+            ]
+          ],
+          "passed": true
+        },
+        {
+          "reorder": "true",
+          "mode": "TRAIL + distinct nodes",
+          "actual": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "passed": true
+        },
+        {
+          "reorder": "true",
+          "mode": "ACYCLIC scoped reorder off",
+          "actual": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "expected": [
+            [
+              24,
+              30,
+              33
+            ],
+            [
+              25,
+              24,
+              30,
+              33
+            ]
+          ],
+          "passed": true
+        }
+      ],
+      "generated_repair": "/*+ SET_VAR(enable_reorder=false) */\nMATCH p0 = ACYCLIC (v0)<-[e0]-{1,2}(vx:node_01_label_01)<-[e1:edge_02_label_00 {id:13}]-(v1)\nRETURN transform(nodes(p0), n -> n.id) AS ids;"
+    },
+    "composite_hash_join": {
+      "source_file": "tests/features/optimizer/SrcPushedDownByHashJoinRule.feature",
+      "scenario": "Endpoint dynamic filters survive additional equality join keys",
+      "endpoint_df": "Presence of the upstream expected p1 scan detail with DF:/_id in the verbose plan.",
+      "observations": [
+        {
+          "reorder": "false",
+          "key": "job_no",
+          "zero_matches": false,
+          "rows": 3,
+          "correct": true,
+          "endpoint_df": false,
+          "verbose_explain_length": 1720
+        },
+        {
+          "reorder": "false",
+          "key": "code",
+          "zero_matches": false,
+          "rows": 3,
+          "correct": true,
+          "endpoint_df": false,
+          "verbose_explain_length": 1712
+        },
+        {
+          "reorder": "false",
+          "key": "job_no",
+          "zero_matches": true,
+          "rows": 0,
+          "correct": true,
+          "endpoint_df": false,
+          "verbose_explain_length": 1768
+        },
+        {
+          "reorder": "true",
+          "key": "job_no",
+          "zero_matches": false,
+          "rows": 3,
+          "correct": true,
+          "endpoint_df": true,
+          "verbose_explain_length": 2003
+        },
+        {
+          "reorder": "true",
+          "key": "code",
+          "zero_matches": false,
+          "rows": 3,
+          "correct": true,
+          "endpoint_df": true,
+          "verbose_explain_length": 1995
+        },
+        {
+          "reorder": "true",
+          "key": "job_no",
+          "zero_matches": true,
+          "rows": 0,
+          "correct": true,
+          "endpoint_df": false,
+          "verbose_explain_length": 1768
+        }
+      ]
+    }
+  },
+  "owned_fixture_cleanup": "DROP succeeded for the benchmark graph and type and both engine-regression fixtures."
+}

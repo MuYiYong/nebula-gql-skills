@@ -12,7 +12,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 1. 按意图而非 `CALL` 关键字路由：已有签名的调用、YIELD 后过滤/聚合/分页和只读内联子查询由本技能处理；定义/管理过程、设计签名、状态循环和匹配计算由过程技能处理。纯 Neo4j 或 3.x nGQL 任务不触发；用户明确迁移到 5.3 GQL 时才触发。判断目标是查询还是过程。若用户要定义过程、实现图算法或使用 `match_compute_statement`，切换到 `gql-procedure-generator`。
 2. 提取图名、节点/边类型与标签、属性、方向、过滤、聚合、排序、分页和返回列。未知标识符使用 `<graph_name>`、`<node_type>` 等占位符，不臆造 schema。
    标识符若命中保留或非保留关键字（忽略大小写），生成时一律用反引号包围，并同步处理声明和所有引用；普通合法标识符可以不加。按 [identifiers.md](references/identifiers.md) 核对完整清单，不给语法关键字、内置函数、数据类型或字符串值机械加反引号。 过程形参属于标识符；外部查询参数 `$name` 是独立词法 token，保持原语法，不在 `$` 后拼接反引号。
-3. 先生成保持语义的最小基线查询。用户要求性能优化、查询形状可能放大中间结果或提供了 schema/索引/PROFILE 时，再按 [performance.md](references/performance.md) 生成候选；不要把依赖数据分布的猜测直接写进基线。
+3. 每次生成都先确定结果契约，再选访问路径。点查用与参数同类型的原始键属性，遍历从符合语义的选择性端点展开，只携带结果所需的列。需要计数或判断存在时直接表达该意图。遇到多个可行起点、相关子查询、排序分页或性能调优请求时，按 [performance.md](references/performance.md) 比较等价候选，再输出所选查询。
 4. 按下方路由只加载与请求相关的参考。函数先在完整函数目录中按名称精确检索；其它语法先在完整语法目录中按关键字精确检索，再按需读取专题参考。
 5. 生成后执行短清单 [checklist.md](references/checklist.md)，再按当前语法定位完整 validation 的相关章节；文档目录内的能力不因缺少 feature 或常用示例而拒绝，只有文档限制或已确认的实现冲突才触发降级。性能结论还必须标明是结构推断、静态计划、隔离 PROFILE 还是业务数据验证。
 
@@ -56,9 +56,9 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 - 完整函数与语法目录中存在的能力，只要目标环境、签名、输入类型、前置条件和文档限制匹配，就允许生成；不得因为 [functions.md](references/functions.md)、feature 或示例未单独收录而判为不支持。
 - Cypher `toSet(list)` 改写为文档公开的 `list_distinct(list)`；Cypher 列表推导式改写为 `transform()`/`filter()`。不要生成未文档化的 `array_distinct()`，也不要把单个 LIST 传给 `all_different()`。
 - Cypher/nGQL `exists(element.prop)` 的常见属性检查改写为文档公开的 `element.prop IS NOT NULL`。若需求必须区分“属性缺失”和“属性值为 NULL”，明确说明 v5.3.0 用户文档没有可靠等价构造；不要调用代码中存在但未文档化的 `property_exists()`。
-- 默认 `enable_reorder=false` 时，将已绑定或高选择性锚点放在路径左侧；只有用户明确要求或计划证据支持时才启用 CBO/添加 `NO_REORDER`，不要默认生成执行 Hint。
+- 默认 `enable_reorder=false` 时，在保留边方向、路径输出顺序和路径选择语义的前提下，将已绑定或高选择性锚点放在路径左侧；只有用户明确要求或计划证据支持时才启用 CBO/添加 `NO_REORDER`，不要默认生成执行 Hint。
 - 在不改变 `OPTIONAL MATCH`、NULL 保留、相关作用域或路径集合语义时，单变量属性过滤优先写在对应 pattern filler；跨变量、路径变量、子查询和结果级条件保留在其正确作用域。不要把语法位置本身宣称为必然的性能提升，optimizer 也会按依赖下推部分外层谓词。
-- 迁移路径集合断言时，先判断能否由 pattern 直接表达：量化边段上的逐边 `ALL` 且谓词只引用当前边和常量/参数时，下推为 edge pattern `WHERE`；节点零重复约束改用 `ACYCLIC`。`ANY`/`NONE`/`SINGLE`、跨元素条件和“筛选含重复节点”的条件不得套用该优化。
+- 迁移路径集合断言时，先判断能否由 pattern 直接表达：量化边段上的逐边 `ALL` 且谓词只引用当前边和常量/参数时，下推为 edge pattern `WHERE`；节点零重复约束优先用 `ACYCLIC`。含反向量化段且允许重排时，按 [patterns.md](references/patterns.md#反向量化路径与重排) 检查目标版本的路径结果。`ANY`/`NONE`/`SINGLE`、跨元素条件和“筛选含重复节点”的条件不得套用该优化。
 - 使用边后量词表达可变长度路径，例如 `(a)-[:KNOWS]->{1,3}(d)`；不要生成 `[:KNOWS*1..3]`。
 - 只在标签名来自字符串 `VALUE` 或绑定变量时生成动态标签表达式。不要把聚合器、文件、表或非字符串值当作标签。
 - 用户要求精确元素类型、类型集合或类型否定时使用 `@Type`、`@[Type1,Type2]` 或 `@!Type`；动态类型项也必须来自字符串值或绑定变量。

@@ -2,6 +2,6 @@
   "case_id": "q_page",
   "attempt": 1,
   "query": "MATCH (p:player)\nRETURN p.id AS id, p.age AS age\nORDER BY age DESC NULLS LAST, id ASC\nOFFSET 1\nLIMIT 2;",
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-  "notes": "按题目给定的 player 标签与 id 唯一主键生成；使用评测器已选择的图。保留所有年龄值（含 NULL），按 age 降序且 NULL 最后，再按 id 升序稳定分页；未执行数据库。"
+  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+  "notes": "Independent generation from the public prompt and bundled query skill."
 }

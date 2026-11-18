@@ -2,6 +2,6 @@
   "case_id": "q_anti",
   "attempt": 1,
   "query": "MATCH (p:player)\nWHERE NOT EXISTS {\n  MATCH (p)-[:follow]->()\n}\nRETURN p.id AS id;",
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-  "notes": "使用评测器已经选定的当前图；子查询直接捕获外层 p，仅检查其 follow 出边，入边不影响结果，平行边不改变存在性。返回业务主键列 id。已依据技能内公开语法和短清单静态核对；未执行数据库。"
+  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+  "notes": "Independent generation from the public prompt and bundled query skill."
 }

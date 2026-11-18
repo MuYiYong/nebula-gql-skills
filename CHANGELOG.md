@@ -2,6 +2,22 @@
 
 Notable changes to the Nebula GQL skills are documented here. Package versions follow the repository's YY.MM.DD convention; release tags also include a build number.
 
+## 26.11.18 - 2026-11-18
+
+### Changed
+
+- Consider primary-key constraints, traversal anchors, projected properties and ordering indexes during normal query generation. Preserve row multiplicity, NULL handling and path order when comparing candidates.
+- Check index and partition limit details when reading a TopN plan. A storage scan can stop early while the global TopN still merges results across partitions.
+
+### Fixed
+
+- Document a statement-scoped workaround for the tested 5.3.2 build when reordered reverse `ACYCLIC` expansion returns paths with repeated nodes. The workaround preserves the requested path set.
+
+### Validation
+
+- All 12 independently generated query attempts passed 48 result comparisons on 5.3.2. The full scoped suite passed 92 result comparisons, including unchanged procedure examples.
+- On the isolated benchmark graph, the median fell from 2.91 ms to 2.06 ms for a primary-key hit and from 4.03 ms to 3.28 ms for an indexed page. The high-fan-out incoming-edge case slightly favored the baseline. See the [benchmark data and plans](evals/reports/query-performance-2026-11-18.json).
+
 ## 26.11.06 - 2026-11-06
 
 ### Fixed

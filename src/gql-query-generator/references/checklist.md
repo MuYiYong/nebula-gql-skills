@@ -13,7 +13,7 @@ catalog as the capability authority.
 - Paths/optional/subqueries: preserve hop range, path mode, edge/node uniqueness, optional filter scope and correlation. Load the relevant validation section only when present.
 - Procedures: declarations precede statements; Database definitions may use a documented explicit USE; default to the caller graph; 0/1-hop match-compute; no RETURN inside PER NODE/PER PATH. Analytics does not use ordinary MATCH RETURN; export and return via documented table/partition patterns. Read specialized references for distributed tables or import/compute lifecycles.
 - Repair: retain diagnostic evidence; recheck the changed contract. Executability alone does not prove equivalence. Follow [repair.md](repair.md).
-- Performance: require result/error equivalence before plans/timing; report current evidence and unknowns; syntax changes or a single run cannot establish optimality.
+- Performance: check the access key, traversal anchor, projected columns and final sort/limit boundary on every query. Compare results and error behavior before timing alternatives. For index TopN, inspect the scan method and pushed limit even when a global TopN remains.
 - Output: query/definition plus necessary assumptions; distinguish placeholders/skeleton, static checked, server parsed and executed/result-compared.
 
 When a check cannot be decided from available evidence, state that specific
