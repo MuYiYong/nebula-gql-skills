@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "Package version without v prefix (e.g. 26.10.23)"
+        description: "Package date override in YY.MM.DD format (default: Beijing date)"
         required: false
         type: string
 
@@ -32,11 +32,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          version="${REQUESTED_VERSION:-$(date -u +%y.%m.%d)}"
+          beijing_stamp=$(TZ=Asia/Shanghai date '+%y.%m.%d %H%M')
+          read -r beijing_date build_time <<< "$beijing_stamp"
+          version="${REQUESTED_VERSION:-$beijing_date}"
           [[ "$version" =~ ^[0-9]{2}\.[0-9]{2}\.[0-9]{2}$ ]] || { echo 'Invalid version'; exit 1; }
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "tag=v${version}_Build${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${version}_Build${build_time}" >> "$GITHUB_OUTPUT"
       - name: Audit, regressions, package and isolated distribution validation
         run: python scripts/check_all.py
       - uses: actions/upload-artifact@v4
@@ -51,9 +53,24 @@ jobs:
     needs: validate
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    concurrency:
+      group: publish-${{ needs.validate.outputs.tag }}
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
+      - name: Check that the release tag is available
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.validate.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          refs=$(gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/$RELEASE_TAG" --jq '.[].ref')
+          if grep -Fxq "refs/tags/$RELEASE_TAG" <<< "$refs"; then
+            echo "Release tag $RELEASE_TAG already exists. Start a new workflow run for a new Beijing build time." >&2
+            exit 1
+          fi
       - uses: actions/download-artifact@v4
         with:
           name: verified-skills-${{ github.run_id }}

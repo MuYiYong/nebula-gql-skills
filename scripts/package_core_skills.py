@@ -10,7 +10,7 @@ import shutil
 import stat
 import zipfile
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath
 from urllib.parse import unquote
 
@@ -20,7 +20,8 @@ SKILLS_ROOT = ROOT / "src"
 DIST_ROOT = ROOT / "dist"
 CORE_SKILLS = ("gql-query-generator", "gql-procedure-generator")
 ROOT_PACKAGE_DOCS = ("README.md", "README.zh-CN.md", "docs/maintenance.md")
-RELEASE_VERSION = os.environ.get("RELEASE_VERSION") or datetime.now().strftime("%y.%m.%d")
+BEIJING_TIME = timezone(timedelta(hours=8))
+RELEASE_VERSION = os.environ.get("RELEASE_VERSION") or datetime.now(BEIJING_TIME).strftime("%y.%m.%d")
 MEGA_BUNDLE_PREFIX = "nebula-gql-skills"
 MEGA_BUNDLE_NAME = f"{MEGA_BUNDLE_PREFIX}-{RELEASE_VERSION}"
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")

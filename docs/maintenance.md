@@ -21,6 +21,13 @@ GitHub Actions runs this on every PR and main push, including test-only changes.
 The release job requires the successful validation job and publishes its exact
 artifacts. PR jobs have no write permission.
 
+The workflow reads the date and time once in `Asia/Shanghai`. The date sets
+the ZIP version, and the tag adds the hour and minute as `BuildHHMM`. For
+example, 2026-11-18 at 11:14 Beijing time produces ZIPs dated `26.11.18` and
+the tag `v26.11.18_Build1114`. A manually supplied `release_version` overrides
+the date only. If the tag already exists, start a new workflow run in a later
+minute.
+
 ## Model evaluation
 
 ```sh

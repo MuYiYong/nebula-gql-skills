@@ -1,6 +1,6 @@
 # Changelog
 
-Notable changes to the Nebula GQL skills are documented here. Package versions follow the repository's YY.MM.DD convention; release tags also include a build number.
+Notable changes to the Nebula GQL skills are documented here. ZIP versions use the Beijing date in `YY.MM.DD` format. GitHub release tags use `vYY.MM.DD_BuildHHMM`, with `HHMM` from the Beijing time when the workflow resolves the version.
 
 ## 26.11.18 - 2026-11-18
 
