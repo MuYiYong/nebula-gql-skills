@@ -1,0 +1,7 @@
+{
+  "case_id": "c_string_concat",
+  "attempt": 1,
+  "query": "VALUE concat_ids SumAgg<STRING> = \"\"\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET @concat_ids += t.id\n}\nRETURN length(@concat_ids) AS total_chars",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "继承评测器已选择的 Database 本地内存临时图；id 为非空 STRING 主键。每个单跳路径对应一条 follow 边，平行边分别拼接目标业务 id；空字符串初值使空图字符长度为 0，拼接顺序不作保证。已按技能参考检查；未执行数据库。"
+}

@@ -13,14 +13,14 @@
       ],
       "contract": {
         "requires": [
-          "\\b\\w+\\.age\\s*>\\s*30",
-          "\\b\\w+\\.id",
-          "\\b\\w+\\.name"
+          "`\\w+`\\.`age`\\s*>\\s*30",
+          "`\\w+`\\.`id`",
+          "`\\w+`\\.`name`"
         ],
         "forbids": []
       },
       "reference": {
-        "query": "MATCH (p:Person WHERE p.age > 30) RETURN p.id AS id, p.name AS name",
+        "query": "MATCH (`p`:`Person` WHERE `p`.`age` > 30) RETURN `p`.`id` AS `id`, `p`.`name` AS `name`",
         "explanation": ""
       }
     },
@@ -36,14 +36,14 @@
       "contract": {
         "requires": [
           "\\$id",
-          "name"
+          "`name`"
         ],
         "forbids": [
           "['\\\"]\\$id['\\\"]"
         ]
       },
       "reference": {
-        "query": "MATCH (p:Person {id: $id}) RETURN p.name AS name",
+        "query": "MATCH (`p`:`Person` {`id`: $id}) RETURN `p`.`name` AS `name`",
         "explanation": ""
       }
     },
@@ -61,7 +61,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "RETURN 1 AS n",
+        "query": "RETURN 1 AS `n`",
         "explanation": ""
       },
       "execution": {
@@ -95,7 +95,7 @@
         ]
       },
       "reference": {
-        "query": "FOR x IN LIST[1,2,2,3] RETURN x ORDER BY x",
+        "query": "FOR `x` IN LIST[1,2,2,3] RETURN `x` ORDER BY `x`",
         "explanation": ""
       },
       "execution": {
@@ -135,7 +135,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "FOR x IN LIST[1,2,2,3] RETURN count(*) AS total, count(DISTINCT x) AS unique_count",
+        "query": "FOR `x` IN LIST[1,2,2,3] RETURN count(*) AS `total`, count(DISTINCT `x`) AS `unique_count`",
         "explanation": ""
       },
       "execution": {
@@ -165,14 +165,14 @@
         "requires": [
           "count",
           "GROUP BY",
-          "GROUP BY\\s+age"
+          "GROUP BY\\s+`age`"
         ],
         "forbids": [
           "LIMIT"
         ]
       },
       "reference": {
-        "query": "MATCH (p:Person) RETURN p.age AS age, count(*) AS total GROUP BY age",
+        "query": "MATCH (`p`:`Person`) RETURN `p`.`age` AS `age`, count(*) AS `total` GROUP BY `age`",
         "explanation": ""
       }
     },
@@ -196,7 +196,7 @@
         ]
       },
       "reference": {
-        "query": "FOR x IN LIST[3,1,2,2] RETURN x ORDER BY x OFFSET 1 LIMIT 2",
+        "query": "FOR `x` IN LIST[3,1,2,2] RETURN `x` ORDER BY `x` OFFSET 1 LIMIT 2",
         "explanation": ""
       },
       "execution": {
@@ -225,15 +225,15 @@
       ],
       "contract": {
         "requires": [
-          "age DESC",
-          "id ASC",
+          "`age` DESC",
+          "`id` ASC",
           "OFFSET 20",
           "LIMIT 10"
         ],
         "forbids": []
       },
       "reference": {
-        "query": "MATCH (p:Person) RETURN p.id AS id, p.age AS age ORDER BY age DESC, id ASC OFFSET 20 LIMIT 10",
+        "query": "MATCH (`p`:`Person`) RETURN `p`.`id` AS `id`, `p`.`age` AS `age` ORDER BY `age` DESC, `id` ASC OFFSET 20 LIMIT 10",
         "explanation": ""
       }
     },
@@ -257,7 +257,7 @@
         ]
       },
       "reference": {
-        "query": "MATCH p = TRAIL (a:Person {id: 1})-[:KNOWS]->{1,3}(b) RETURN p",
+        "query": "MATCH `p` = TRAIL (`a`:`Person` {`id`: 1})-[:`KNOWS`]->{1,3}(`b`) RETURN `p`",
         "explanation": ""
       }
     },
@@ -273,7 +273,7 @@
       "contract": {
         "requires": [
           "ACYCLIC",
-          "weight\\s*>\\s*0",
+          "`weight`\\s*>\\s*0",
           "\\{1,\\s*3\\}"
         ],
         "forbids": [
@@ -283,7 +283,7 @@
         ]
       },
       "reference": {
-        "query": "MATCH p = ACYCLIC (a:Person {id: 1})-[e:KNOWS WHERE e.weight > 0]->{1,3}(b) RETURN p",
+        "query": "MATCH `p` = ACYCLIC (`a`:`Person` {`id`: 1})-[`e`:`KNOWS` WHERE `e`.`weight` > 0]->{1,3}(`b`) RETURN `p`",
         "explanation": ""
       }
     },
@@ -307,7 +307,7 @@
         ]
       },
       "reference": {
-        "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,4}(b) FILTER WHERE length(nodes(p)) <> length(list_distinct(nodes(p))) RETURN p",
+        "query": "MATCH `p` = TRAIL (`a`:`Person`)-[:`KNOWS`]->{1,4}(`b`) FILTER WHERE length(nodes(`p`)) <> length(list_distinct(nodes(`p`))) RETURN `p`",
         "explanation": ""
       }
     },
@@ -330,7 +330,7 @@
         ]
       },
       "reference": {
-        "query": "RETURN list_distinct(LIST[1,1,2]) AS items",
+        "query": "RETURN list_distinct(LIST[1,1,2]) AS `items`",
         "explanation": ""
       },
       "execution": {
@@ -368,7 +368,7 @@
         ]
       },
       "reference": {
-        "query": "FOR x IN LIST[1,2,2] RETURN x ORDER BY x",
+        "query": "FOR `x` IN LIST[1,2,2] RETURN `x` ORDER BY `x`",
         "explanation": ""
       },
       "execution": {
@@ -401,8 +401,8 @@
       "contract": {
         "requires": [
           "KNOWS",
-          "id",
-          "name"
+          "`id`",
+          "`name`"
         ],
         "forbids": [
           "\\bGO\\b",
@@ -410,7 +410,7 @@
         ]
       },
       "reference": {
-        "query": "MATCH (p:Person {id: 1})-[:KNOWS]->(f:Person) RETURN f.name AS name",
+        "query": "MATCH (`p`:`Person` {`id`: 1})-[:`KNOWS`]->(`f`:`Person`) RETURN `f`.`name` AS `name`",
         "explanation": ""
       }
     },
@@ -430,7 +430,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "RETURN list_distinct(LIST[1,1,2]) AS items",
+        "query": "RETURN list_distinct(LIST[1,1,2]) AS `items`",
         "explanation": ""
       },
       "execution": {
@@ -469,7 +469,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "FOR x IN LIST[3,1,2] RETURN x ORDER BY x LIMIT 2",
+        "query": "FOR `x` IN LIST[3,1,2] RETURN `x` ORDER BY `x` LIMIT 2",
         "explanation": ""
       },
       "execution": {
@@ -545,7 +545,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "FOR x IN LIST[] RETURN x",
+        "query": "FOR `x` IN LIST[] RETURN `x`",
         "explanation": ""
       },
       "execution": {
@@ -574,7 +574,7 @@
         ]
       },
       "reference": {
-        "query": "FOR x IN LIST[1,NULL,1] RETURN x",
+        "query": "FOR `x` IN LIST[1,NULL,1] RETURN `x`",
         "explanation": ""
       },
       "execution": {
@@ -609,7 +609,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "RETURN NULL AS missing, TRUE AS flag, 9007199254740993 AS `big`",
+        "query": "RETURN NULL AS `missing`, TRUE AS `flag`, 9007199254740993 AS `big`",
         "explanation": ""
       },
       "execution": {
@@ -691,7 +691,7 @@
         ]
       },
       "reference": {
-        "query": "MATCH (p:Person {id: 1}) RETURN p",
+        "query": "MATCH (`p`:`Person` {`id`: 1}) RETURN `p`",
         "explanation": ""
       }
     },
@@ -715,7 +715,7 @@
         ]
       },
       "reference": {
-        "query": "CALL neighbors(1) YIELD name RETURN name ORDER BY name LIMIT 5",
+        "query": "CALL `neighbors`(1) YIELD `name` RETURN `name` ORDER BY `name` LIMIT 5",
         "explanation": ""
       }
     },
@@ -738,7 +738,7 @@
         ]
       },
       "reference": {
-        "query": "CALL { RETURN 1 AS n } RETURN n",
+        "query": "CALL { RETURN 1 AS `n` } RETURN `n`",
         "explanation": ""
       }
     },
@@ -755,14 +755,14 @@
         "requires": [
           "CREATE PROCEDURE",
           "RETURNS",
-          "x\\s*\\+\\s*1"
+          "`x`\\s*\\+\\s*1"
         ],
         "forbids": [
           "\\bUSE\\b"
         ]
       },
       "reference": {
-        "query": "CREATE PROCEDURE plus_one(x INT64) RETURNS result INT64 AS { RETURN x + 1 AS result }",
+        "query": "CREATE PROCEDURE `plus_one`(`x` INT64) RETURNS `result` INT64 AS { RETURN `x` + 1 AS `result` }",
         "explanation": ""
       }
     },
@@ -780,12 +780,12 @@
           "DEFAULT",
           "\\|\\|",
           "DEFAULT\\s+[\\\"\\x27]hi[\\\"\\x27]",
-          "prefix\\s*\\|\\|\\s*name"
+          "`prefix`\\s*\\|\\|\\s*`name`"
         ],
         "forbids": []
       },
       "reference": {
-        "query": "CREATE PROCEDURE greet(name STRING, prefix STRING DEFAULT \"hi\") RETURNS message STRING AS { RETURN prefix || name AS message }",
+        "query": "CREATE PROCEDURE `greet`(`name` STRING, `prefix` STRING DEFAULT \"hi\") RETURNS `message` STRING AS { RETURN `prefix` || `name` AS `message` }",
         "explanation": ""
       }
     },
@@ -802,7 +802,7 @@
         "requires": [
           "ALTER PROCEDURE",
           "COMMENT",
-          "ALTER\\s+PROCEDURE\\s+plus_one\\s*\\(\\s*(?:x\\s+)?INT64\\s*\\)",
+          "ALTER\\s+PROCEDURE\\s+`plus_one`\\s*\\(\\s*(?:`x`\\s+)?INT64\\s*\\)",
           "COMMENT\\s+[\\\"\\x27]increment[\\\"\\x27]"
         ],
         "forbids": [
@@ -811,7 +811,7 @@
         ]
       },
       "reference": {
-        "query": "ALTER PROCEDURE plus_one(INT64) COMMENT \"increment\"",
+        "query": "ALTER PROCEDURE `plus_one`(INT64) COMMENT \"increment\"",
         "explanation": ""
       }
     },
@@ -830,12 +830,12 @@
         "requires": [
           "NODE VALUE",
           "PER PATH",
-          "->\\s*\\((\\w+)(?::Person)?\\)\\s*PER\\s+PATH\\s*\\{\\s*SET\\s+\\1\\.@score\\s*\\+=\\s*1"
+          "->\\s*\\(`(\\w+)`(?::`Person`)?\\)\\s*PER\\s+PATH\\s*\\{\\s*SET\\s+`\\1`\\.@`score`\\s*\\+=\\s*1"
         ],
         "forbids": []
       },
       "reference": {
-        "query": "CREATE PROCEDURE count_incoming_knows()\nRETURNS (id INT64, score INT64)\nAS {\n  NODE VALUE score SumAgg<INT64> = 0\n  TABLE results TYPED TABLE {id INT64, score INT64} PARTITION BY DEFAULT\n\n  MATCH (s:Person)-[:KNOWS]->(t:Person)\n  PER PATH {\n    SET t.@score += 1\n  }\n\n  MATCH (n:Person)\n  PER NODE (n) {\n    EXPORT n.id, n.@score INTO results\n  }\n\n  PER PARTITION (part) OF results {\n    FOR row IN part\n    RETURN row.id AS id, row.score AS score\n  }\n};",
+        "query": "CREATE PROCEDURE `count_incoming_knows`()\nRETURNS (`id` INT64, `score` INT64)\nAS {\n  NODE VALUE `score` SumAgg<INT64> = 0\n  TABLE `results` TYPED TABLE {`id` INT64, `score` INT64} PARTITION BY DEFAULT\n\n  MATCH (`s`:`Person`)-[:`KNOWS`]->(`t`:`Person`)\n  PER PATH {\n    SET `t`.@`score` += 1\n  }\n\n  MATCH (`n`:`Person`)\n  PER NODE (`n`) {\n    EXPORT `n`.`id`, `n`.@`score` INTO `results`\n  }\n\n  PER PARTITION (`part`) OF `results` {\n    FOR `row` IN `part`\n    RETURN `row`.`id` AS `id`, `row`.`score` AS `score`\n  }\n};",
         "explanation": ""
       }
     },
@@ -899,7 +899,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "MATCH (p:Person {id: 1})-[:KNOWS]->(f) RETURN f.id AS id LIMIT 10",
+        "query": "MATCH (`p`:`Person` {`id`: 1})-[:`KNOWS`]->(`f`) RETURN `f`.`id` AS `id` LIMIT 10",
         "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
       },
       "risk": "supernode"
@@ -923,7 +923,7 @@
         ]
       },
       "reference": {
-        "query": "MATCH p = TRAIL (a:Person)-[:KNOWS]->{1,8}(b) RETURN p",
+        "query": "MATCH `p` = TRAIL (`a`:`Person`)-[:`KNOWS`]->{1,8}(`b`) RETURN `p`",
         "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
       },
       "risk": "variable_path"
@@ -948,7 +948,7 @@
         ]
       },
       "reference": {
-        "query": "MATCH (p:Person)-[:KNOWS]->(f1), (p)-[:KNOWS]->(f2) RETURN f1.id AS first_id, f2.id AS second_id",
+        "query": "MATCH (`p`:`Person`)-[:`KNOWS`]->(`f1`), (`p`)-[:`KNOWS`]->(`f2`) RETURN `f1`.`id` AS `first_id`, `f2`.`id` AS `second_id`",
         "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
       },
       "risk": "intermediate_rows"
@@ -968,11 +968,11 @@
         ],
         "forbids": [
           "NEXT",
-          "\\bFILTER\\s+(?:WHERE\\s+)?\\w+\\.age\\s*>"
+          "\\bFILTER\\s+(?:WHERE\\s+)?`\\w+`\\.`age`\\s*>"
         ]
       },
       "reference": {
-        "query": "MATCH (p:Person) OPTIONAL MATCH (p)-[:KNOWS]->(f:Person WHERE f.age > 30) RETURN p.id AS id, f.id AS friend_id",
+        "query": "MATCH (`p`:`Person`) OPTIONAL MATCH (`p`)-[:`KNOWS`]->(`f`:`Person` WHERE `f`.`age` > 30) RETURN `p`.`id` AS `id`, `f`.`id` AS `friend_id`",
         "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
       },
       "risk": "optional_match"
@@ -989,14 +989,14 @@
       "contract": {
         "requires": [
           "EXISTS",
-          "MATCH\\s*\\((\\w+):Person\\).*?EXISTS\\s*\\{\\s*MATCH\\s*\\(\\1\\)"
+          "MATCH\\s*\\(`(\\w+)`:`Person`\\).*?EXISTS\\s*\\{\\s*MATCH\\s*\\(`\\1`\\)"
         ],
         "forbids": [
           "collect_list"
         ]
       },
       "reference": {
-        "query": "MATCH (p:Person) WHERE EXISTS { MATCH (p)-[:KNOWS]->(f) } RETURN p.id AS id",
+        "query": "MATCH (`p`:`Person`) WHERE EXISTS { MATCH (`p`)-[:`KNOWS`]->(`f`) } RETURN `p`.`id` AS `id`",
         "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
       },
       "risk": "correlated_subquery"
@@ -1019,7 +1019,7 @@
         "forbids": []
       },
       "reference": {
-        "query": "MATCH (p:Person) RETURN p.id AS id ORDER BY id OFFSET 10000 LIMIT 20",
+        "query": "MATCH (`p`:`Person`) RETURN `p`.`id` AS `id` ORDER BY `id` OFFSET 10000 LIMIT 20",
         "explanation": "结构候选，未验证性能。需Schema/索引和相同数据参数，先比对重复、NULL、路径及顺序，再检查EXPLAIN/PROFILE和交替多次运行；不能声称最优。"
       },
       "risk": "pagination"

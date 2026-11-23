@@ -2,8 +2,8 @@
   "producer": {
     "kind": "model",
     "model": "session-inherited",
-    "skill_version": "final-iteration",
-    "notes": "single independent batch; tokens unobserved; generated before general reserved-keyword lint expansion, rescored with final checks"
+    "skill_version": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+    "notes": "Fresh blind 37-prompt batch. The public response contract requires executable GQL, clarification when essential inputs are missing, label vs exact-type semantics, and explicit performance evidence status. Exact model identity and sampling settings were not exposed by the subagent tool."
   },
   "evaluation_kind": "static contracts only",
   "total": 37,
@@ -345,6 +345,6 @@
       "category": "repair"
     }
   ],
-  "cases_sha256": "d9cb57a62e508b873c4a4e402d150bef4749968c90df3635b57b0d596ae72966",
-  "outputs_sha256": "67b9fb7c8e3d8f4f3e7945e64ac9ad96824f2e8c4a09d50a8cbeafe59fa3e885"
+  "cases_sha256": "c3abb8d29cb593ca1f9c1525075f340d1b40951f06466e641bf5bb0434ff9be6",
+  "outputs_sha256": "22f2459bfad758cc90931c4511af6dd9c81cf5c202c5cb11d67056bc658b7b63"
 }

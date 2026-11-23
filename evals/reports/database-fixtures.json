@@ -11,7 +11,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "ed21d81f18106ab8f0b0dc4593a64a757cc2e6a525fb63d05d09f42441a781c0",
+      "query_sha256": "b2fdcdb3bb8e4ce6de4834a81e0ffec3b06765bf7a8069dd33cde356e5facff8",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -22,7 +22,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 4,
-      "query_sha256": "0dd247467f3fb617e71f40675d02d7f3db9c76f3634651f7760660980f9eccaf",
+      "query_sha256": "d539e18a8d5d7473b50c4a0ad0e1dfbb6849ea4a2419841a78c10e1ba8547e39",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -33,7 +33,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "5ed91a5634f47ffbbed071581621be0c80cf51b581fc85bbeb0f3d9bc4f2b008",
+      "query_sha256": "0490e1bcbb46dded2ad295c366e8d3ed8f33dfdb106bb0eb0d698bfcd9ca24b3",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -44,7 +44,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 2,
-      "query_sha256": "ccf98009f80ae2bd230a9009326f053ffce967a88f2449ef438996dc484a34aa",
+      "query_sha256": "6e23a09dfa7ebeddadd7de369994b6ce6a998d8706254f04ebe9424c4fca94a8",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -55,7 +55,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "22361b10c09868835df62c8ad361859f387bb3925497e38cebbae52b6949ac32",
+      "query_sha256": "f40fbcded79bbe0a23060d456df96dae0f4a51ae2ffd1f489afe06b4cd540cea",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -66,7 +66,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 3,
-      "query_sha256": "f97e37247b01d76d2fea7d0dd9b2f24e64770441e343436ee64544a411e999fd",
+      "query_sha256": "aba9b4e359b83a0c3be964c35fa621315f3b36723b41b697e25cfcc7781aa9b0",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -77,7 +77,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "22361b10c09868835df62c8ad361859f387bb3925497e38cebbae52b6949ac32",
+      "query_sha256": "f40fbcded79bbe0a23060d456df96dae0f4a51ae2ffd1f489afe06b4cd540cea",
       "original_status": "NR002",
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -88,7 +88,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 2,
-      "query_sha256": "c64851fc1eabcd1ad2e70da94d24d9883d07e1a3268559d3e80ad378b34c9cf7",
+      "query_sha256": "d4f14e27d41e488a13656aa7a2eaadeb63e6a4dfd69cb2516e65f33f6700762e",
       "original_status": "42N47",
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -110,7 +110,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 0,
-      "query_sha256": "33ab2bcb9bcf7ebb443e937683a8f9e3d10ff6b0ad7699bb5eb5d3c6a8dbac4b",
+      "query_sha256": "34b09d1b5bd5b8b76762f06c000ec6ac01382f68eb861341ed2bb8e1a256164b",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -121,7 +121,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 3,
-      "query_sha256": "03cc175799eccdf3d12481e2e1c8a997d4d5fe6e6e15aed3867313093db1ecf4",
+      "query_sha256": "ad8737a983d12b55364fd370f1fd5512e78a2ec7e053426d4922c08861322ba8",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -132,13 +132,13 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "c407031f928c9a96e9eb613b1b61e3ac009305b01ede11bb17b27a38f7d5137c",
+      "query_sha256": "eca955926c23d1f0022655649b4bef792027770248e35d5103c2099e05442151",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
     }
   ],
-  "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
+  "server_version": "5.3.2, Build Time: 2026-10-26T10:27:58Z",
   "performance": {
     "evidence": "fixture-specific repeated execution",
     "optimality": "not established",
@@ -152,16 +152,16 @@
       "ordered": true
     },
     "baseline": {
-      "median_ms": 1.3998205540701747,
-      "min_ms": 1.2932280078530312,
-      "max_ms": 1.5587408561259508,
-      "p95_ms": 1.5587408561259508
+      "median_ms": 0.9743624832481146,
+      "min_ms": 0.9208939736708999,
+      "max_ms": 1.2857220135629177,
+      "p95_ms": 1.2857220135629177
     },
     "candidate": {
-      "median_ms": 1.3876165030524135,
-      "min_ms": 1.2425528839230537,
-      "max_ms": 1.6057260800153017,
-      "p95_ms": 1.6057260800153017
+      "median_ms": 0.9199700143653899,
+      "min_ms": 0.8702930063009262,
+      "max_ms": 0.9524839988444,
+      "p95_ms": 0.9524839988444
     },
     "samples_ms": [
       {
@@ -169,48 +169,48 @@
           "baseline",
           "candidate"
         ],
-        "baseline": 1.3268140610307455,
-        "candidate": 1.4428750146180391
+        "baseline": 0.9775809885468334,
+        "candidate": 0.9158150060102344
       },
       {
         "order": [
           "candidate",
           "baseline"
         ],
-        "candidate": 1.3557909987866879,
-        "baseline": 1.4217521529644728
+        "candidate": 0.8934649813454598,
+        "baseline": 0.9711439779493958
       },
       {
         "order": [
           "baseline",
           "candidate"
         ],
-        "baseline": 1.2932280078530312,
-        "candidate": 1.4025340788066387
+        "baseline": 1.0568249854259193,
+        "candidate": 0.9241250227205455
       },
       {
         "order": [
           "candidate",
           "baseline"
         ],
-        "candidate": 1.2425528839230537,
-        "baseline": 1.3778889551758766
+        "candidate": 0.9260519873350859,
+        "baseline": 1.2857220135629177
       },
       {
         "order": [
           "baseline",
           "candidate"
         ],
-        "baseline": 1.5587408561259508,
-        "candidate": 1.6057260800153017
+        "baseline": 0.9298330114688724,
+        "candidate": 0.9524839988444
       },
       {
         "order": [
           "candidate",
           "baseline"
         ],
-        "candidate": 1.3726989272981882,
-        "baseline": 1.4996589161455631
+        "candidate": 0.8702930063009262,
+        "baseline": 0.9208939736708999
       }
     ],
     "plans": {
@@ -218,25 +218,25 @@
         "operator": "[P0]CallbackSink",
         "rows": 2,
         "memory_kib": 0.0,
-        "time_ms": 0.003238,
+        "time_ms": 0.001177,
         "children": [
           {
             "operator": "[P0]TopN",
             "rows": 2,
             "memory_kib": 0.25,
-            "time_ms": 0.02538,
+            "time_ms": 0.007177,
             "children": [
               {
                 "operator": "[P0]Unwind",
                 "rows": 4,
                 "memory_kib": 4.703125,
-                "time_ms": 0.024815,
+                "time_ms": 0.008153,
                 "children": [
                   {
                     "operator": "[P0]Values",
                     "rows": 1,
                     "memory_kib": 0.0,
-                    "time_ms": 0.001961,
+                    "time_ms": 0.000683,
                     "children": []
                   }
                 ]
@@ -249,25 +249,25 @@
         "operator": "[P0]CallbackSink",
         "rows": 2,
         "memory_kib": 0.0,
-        "time_ms": 0.003523,
+        "time_ms": 0.001218,
         "children": [
           {
             "operator": "[P0]TopN",
             "rows": 2,
             "memory_kib": 0.25,
-            "time_ms": 0.024054,
+            "time_ms": 0.008314,
             "children": [
               {
                 "operator": "[P0]Unwind",
                 "rows": 4,
                 "memory_kib": 4.703125,
-                "time_ms": 0.024785,
+                "time_ms": 0.009,
                 "children": [
                   {
                     "operator": "[P0]Values",
                     "rows": 1,
                     "memory_kib": 0.0,
-                    "time_ms": 0.002053,
+                    "time_ms": 0.000862,
                     "children": []
                   }
                 ]
@@ -278,5 +278,10 @@
       }
     }
   },
-  "passed": true
+  "passed": true,
+  "validation_source": {
+    "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+    "runner_sha256": "821ba1f8692c7b38f4eb8cbecc4ab9828df11f16dc67a9e5a88650141997cc45",
+    "suite_sha256": "c3abb8d29cb593ca1f9c1525075f340d1b40951f06466e641bf5bb0434ff9be6"
+  }
 }

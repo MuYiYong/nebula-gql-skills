@@ -611,8 +611,8 @@ def render_keywords(docs_root: Path) -> str:
         raise ValueError("Database and Analytics keyword categories differ")
     return json.dumps({
         "compatibility": VERSION, "documentation": keys[0], "documentation_keys": keys,
-        "policy": "Backtick reserved and non-reserved keywords when used as identifiers; "
-                  "ordinary regular identifiers may remain unquoted. Not a capability allowlist.",
+        "policy": "Backtick all identifiers in declarations and references, "
+                  "including reserved and non-reserved keywords. Not a capability allowlist.",
         **catalogs[0],
     }, ensure_ascii=False, indent=2) + "\n"
 

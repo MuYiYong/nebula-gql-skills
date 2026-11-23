@@ -1,0 +1,90 @@
+{
+  "producer": {
+    "kind": "model",
+    "model": "session-inherited",
+    "skill_version": "final-iteration",
+    "notes": "single independent batch; tokens unobserved"
+  },
+  "outputs": [
+    {
+      "id": "trigger-1",
+      "skill": "gql-query-generator",
+      "explanation": "普通 MATCH 筛选与分页属于查询。"
+    },
+    {
+      "id": "trigger-2",
+      "skill": "gql-query-generator",
+      "explanation": "已有签名 CALL/YIELD 后排序属于检索流水线。"
+    },
+    {
+      "id": "trigger-3",
+      "skill": "gql-query-generator",
+      "explanation": "只读内联 CALL 子查询由查询技能处理。"
+    },
+    {
+      "id": "trigger-4",
+      "skill": "gql-procedure-generator",
+      "explanation": "过程参数与循环变更涉及定义及控制流。"
+    },
+    {
+      "id": "trigger-5",
+      "skill": "gql-procedure-generator",
+      "explanation": "TigerGraph GSQL SELECT/ACCUM 迁移涉及过程算法和副作用。"
+    },
+    {
+      "id": "trigger-6",
+      "skill": "gql-procedure-generator",
+      "explanation": "PageRank 的 WHILE 与单跳匹配计算属于状态算法。"
+    },
+    {
+      "id": "trigger-7",
+      "skill": null,
+      "explanation": "目标保持 Neo4j 5 Cypher，排除 5.3 GQL 技能。"
+    },
+    {
+      "id": "trigger-8",
+      "skill": null,
+      "explanation": "明确为 3.8 nGQL 且不迁移，排除两种 5.3 GQL 技能。"
+    },
+    {
+      "id": "trigger-9",
+      "skill": null,
+      "explanation": "GraphQL API resolver 不是图数据库 GQL 查询或过程。"
+    },
+    {
+      "id": "trigger-10",
+      "skill": "gql-query-generator",
+      "explanation": "已有过程结果的聚合分页由查询技能处理。"
+    },
+    {
+      "id": "trigger-11",
+      "skill": "gql-procedure-generator",
+      "explanation": "SHOW CREATE PROCEDURE 是过程检查管理。"
+    },
+    {
+      "id": "trigger-12",
+      "skill": "gql-procedure-generator",
+      "explanation": "分布式表及 PER PARTITION 属于 Analytics 过程能力。"
+    },
+    {
+      "id": "trigger-13",
+      "skill": "gql-query-generator",
+      "explanation": "明确迁移 Cypher 到 NebulaGraph 5.3 GQL 查询。"
+    },
+    {
+      "id": "trigger-14",
+      "skill": "gql-query-generator",
+      "explanation": "5.3 GQL 函数错误驱动的查询修复。"
+    },
+    {
+      "id": "trigger-15",
+      "skill": null,
+      "explanation": "数据库备份脚本超出查询和过程生成范围。"
+    },
+    {
+      "id": "trigger-16",
+      "skill": null,
+      "explanation": "SQL SELECT 不是本技能目标 GQL 方言。"
+    }
+  ]
+}

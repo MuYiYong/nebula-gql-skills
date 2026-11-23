@@ -75,6 +75,16 @@ class QualityTests(unittest.TestCase):
             with self.subTest(query=query), self.assertRaises(ValueError):
                 guard(query, case)
 
+    def test_quoted_local_state_keeps_exact_guard_identity(self):
+        query = CASES['p_sum'][0]
+        guard(query, self.cases['p_sum'])
+        for changed in (
+            query.replace('SET `i` = `i` + 1', 'SET `I` = `I` + 1'),
+            query.replace('SET `total` =', 'SET `i`.`total` ='),
+        ):
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                guard(changed, self.cases['p_sum'])
+
     def test_unbounded_loops_and_paths_rejected(self):
         for query in ['VALUE i = 1 WHILE TRUE THEN { SET i = i + 1 } RETURN i',
                       'VALUE i = 1 WHILE i <= $n THEN { SET i = 1 } RETURN i',

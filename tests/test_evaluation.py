@@ -40,7 +40,7 @@ class LintTests(unittest.TestCase):
         self.assertIn('undocumented-function',self.rules('VALUE a ListAgg<INT> RETURN @a.no_such_method()',P,'analytics'))
         self.assertTrue(lint('RETURN obj.clear()',P,'analytics')['needs_review'])
     def test_strings_comments(self):
-        self.assertEqual(self.rules('RETURN "property_exists() // not code" AS x /* array_distinct() */'),set())
+        self.assertEqual(self.rules('RETURN "property_exists() // not code" AS `x` /* array_distinct() */'),set())
     def test_delimiters(self):
         self.assertIn('delimiters',self.rules('RETURN list_distinct(LIST[1,2)'))
     def test_unterminated_string(self):
@@ -78,7 +78,7 @@ class LintTests(unittest.TestCase):
                      '/*+ SET_VAR(a=1) */ RETURN 1','RETURN obj.write()', 'RETURN undocumented()']:
             with self.subTest(code=code),self.assertRaises(ValueError):read_only(code,Q)
     def test_read_only_allows_literal_keywords(self):
-        self.assertEqual(read_only('RETURN "DELETE" AS x',Q),'RETURN "DELETE" AS x')
+        self.assertEqual(read_only('RETURN "DELETE" AS `x`',Q),'RETURN "DELETE" AS `x`')
     def test_default_live_tier_no_graph(self):
         with self.assertRaises(ValueError):safe_query('MATCH (n) RETURN n')
 
@@ -114,12 +114,12 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(evaluate(self.cases,{'outputs':[o]},[c['id']])['passed'],0)
     def test_semantic_counterexamples_fail(self):
         mutations = {
-            'grouping': 'MATCH (p:Person) RETURN p.age AS age, count(*) AS total GROUP BY p',
-            'perf-optional': 'MATCH (p:Person) OPTIONAL MATCH (p)-[:KNOWS]->(f:Person) FILTER WHERE f.age > 30 RETURN p,f',
-            'perf-correlated': 'MATCH (p:Person) WHERE EXISTS { MATCH (a)-[:KNOWS]->(b) } RETURN p',
-            'procedure-algorithm': 'NODE VALUE score SumAgg<INT64> = 0 MATCH (s:Person)-[:KNOWS]->(t:Person) PER PATH { SET s.@score += 1 }',
-            'procedure-manage': 'ALTER PROCEDURE greet(STRING) COMMENT "unrelated"',
-            'procedure-default': 'CREATE PROCEDURE greet(name STRING, prefix STRING DEFAULT "bye") RETURNS message STRING AS { RETURN name || prefix AS message }',
+            'grouping': 'MATCH (`p`:`Person`) RETURN `p`.`age` AS `age`, count(*) AS `total` GROUP BY `p`',
+            'perf-optional': 'MATCH (`p`:`Person`) OPTIONAL MATCH (`p`)-[:`KNOWS`]->(`f`:`Person`) FILTER WHERE `f`.`age` > 30 RETURN `p`,`f`',
+            'perf-correlated': 'MATCH (`p`:`Person`) WHERE EXISTS { MATCH (`a`)-[:`KNOWS`]->(`b`) } RETURN `p`',
+            'procedure-algorithm': 'NODE VALUE `score` SumAgg<INT64> = 0 MATCH (`s`:`Person`)-[:`KNOWS`]->(`t`:`Person`) PER PATH { SET `s`.@`score` += 1 }',
+            'procedure-manage': 'ALTER PROCEDURE `greet`(STRING) COMMENT "unrelated"',
+            'procedure-default': 'CREATE PROCEDURE `greet`(`name` STRING, `prefix` STRING DEFAULT "bye") RETURNS `message` STRING AS { RETURN `name` || `prefix` AS `message` }',
         }
         for id, query in mutations.items():
             c=next(c for c in self.cases if c['id']==id)

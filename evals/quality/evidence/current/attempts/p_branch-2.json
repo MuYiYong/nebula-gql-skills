@@ -1,7 +1,7 @@
 {
   "case_id": "p_branch",
   "attempt": 2,
-  "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS `label`\n}\nELSEIF $x < 0 THEN {\n  RETURN 'negative' AS `label`\n}\nELSEIF $x = 0 THEN {\n  RETURN 'zero' AS `label`\n}\nELSE {\n  RETURN 'positive' AS `label`\n}",
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-  "notes": "假设评测器按约定绑定可空 INT64 外部参数 $x，并将此正文作为 Database 过程体执行；最终 IF 的各分支分别返回一行 STRING label。已核对随包公开文档参考及生成检查清单；未执行数据库。"
+  "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS `label`\n} ELSEIF $x < 0 THEN {\n  RETURN 'negative' AS `label`\n} ELSEIF $x = 0 THEN {\n  RETURN 'zero' AS `label`\n} ELSE {\n  RETURN 'positive' AS `label`\n}",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "notes": "已按 5.3.0 技能文档静态核对，未在数据库中执行。"
 }

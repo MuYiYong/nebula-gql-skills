@@ -21,7 +21,7 @@ Input intent:
 
 Output skeleton:
 ```gql
-CREATE PROCEDURE <procedure_name>() RETURNS ret INT AS {
+CREATE PROCEDURE `<procedure_name>`() RETURNS `ret` INT AS {
   RETURN 1
 }
 ```
@@ -32,11 +32,11 @@ Input intent:
 
 Output skeleton:
 ```gql
-CREATE PROCEDURE <procedure_name>(a INT DEFAULT 1, b STRING DEFAULT 'x')
-RETURNS ret INT
+CREATE PROCEDURE `<procedure_name>`(`a` INT DEFAULT 1, `b` STRING DEFAULT 'x')
+RETURNS `ret` INT
 COMMENT 'description'
 AS {
-  RETURN a
+  RETURN `a`
 }
 ```
 
@@ -46,7 +46,7 @@ Input intent:
 
 Output skeleton:
 ```gql
-ALTER PROCEDURE <procedure_name>(INT, STRING) COMMENT 'new comment'
+ALTER PROCEDURE `<procedure_name>`(INT, STRING) COMMENT 'new comment'
 ```
 
 ### 4. Drop overloaded procedure
@@ -55,7 +55,7 @@ Input intent:
 
 Output skeleton:
 ```gql
-DROP PROCEDURE <procedure_name>(INT, STRING)
+DROP PROCEDURE `<procedure_name>`(INT, STRING)
 ```
 
 ### 5. Named procedure call
@@ -64,7 +64,7 @@ Input intent:
 
 Output skeleton:
 ```gql
-CALL <procedure_name>(<arg_1>, <arg_2>)
+CALL `<procedure_name>`(<arg_1>, <arg_2>)
 RETURN *
 ```
 
@@ -74,13 +74,13 @@ Input intent:
 
 Output skeleton:
 ```gql
-VALUE frontier ACTIVE_SET
-MATCH (a)-[e]->(b) WHERE a IN frontier
+VALUE `frontier` ACTIVE_SET
+MATCH (`a`)-[`e`]->(`b`) WHERE `a` IN `frontier`
 PER PATH {
   LOG_INFO('visit edge')
 }
 FINALLY {
-  SET frontier = b
+  SET `frontier` = `b`
 }
 ```
 
@@ -90,14 +90,14 @@ Input intent:
 
 Output skeleton:
 ```gql
-VALUE frontier ACTIVE_SET
-MATCH (a)-[e:<edge_type> WHERE e.percent > 0]->(b)
-WHERE a IN frontier
+VALUE `frontier` ACTIVE_SET
+MATCH (`a`)-[`e`:`<edge_type>` WHERE `e`.`percent` > 0]->(`b`)
+WHERE `a` IN `frontier`
 PER PATH {
   LOG_INFO('visit eligible edge')
 }
 FINALLY {
-  SET frontier = b
+  SET `frontier` = `b`
 }
 ```
 
@@ -109,21 +109,21 @@ Input intent:
 
 Output skeleton:
 ```gql
-VALUE frontier ACTIVE_SET
-VALUE depth = 0
+VALUE `frontier` ACTIVE_SET
+VALUE `depth` = 0
 
-WHILE depth < <max_depth> {
-  MATCH (a)-[e]->(b) WHERE a IN frontier
+WHILE `depth` < <max_depth> {
+  MATCH (`a`)-[`e`]->(`b`) WHERE `a` IN `frontier`
   PER PATH {
     LOG_INFO('expand')
   }
   FINALLY {
-    SET frontier = b
+    SET `frontier` = `b`
   }
-  SET depth = depth + 1
+  SET `depth` = `depth` + 1
 }
 
-RETURN depth
+RETURN `depth`
 ```
 
 ### 8. Node-bound aggregate without unnecessary cast
@@ -132,13 +132,13 @@ Input intent:
 
 Output skeleton:
 ```gql
-NODE VALUE visits SumAgg<INT> = 0
-MATCH (a)-[e]->(b)
+NODE VALUE `visits` SumAgg<INT> = 0
+MATCH (`a`)-[`e`]->(`b`)
 PER PATH {
-  SET a.@visits += 1
+  SET `a`.@`visits` += 1
 }
-PER NODE (a) {
-  LOG_INFO(a.@visits)
+PER NODE (`a`) {
+  LOG_INFO(`a`.@`visits`)
 }
 ```
 
@@ -148,15 +148,15 @@ Input intent:
 
 Output skeleton:
 ```gql
-NODE VALUE intersection SumAgg<INT64> = 0
-VALUE union_size INT64 = <union_size>
-MATCH (s)-[]->(t)
+NODE VALUE `intersection` SumAgg<INT64> = 0
+VALUE `union_size` INT64 = <union_size>
+MATCH (`s`)-[]->(`t`)
 PER PATH {
-  SET t.@intersection += 1
+  SET `t`.@`intersection` += 1
 }
-PER NODE (t) {
-  VALUE similarity DOUBLE = CAST(t.@intersection AS DOUBLE) / union_size
-  LOG_INFO(similarity)
+PER NODE (`t`) {
+  VALUE `similarity` DOUBLE = CAST(`t`.@`intersection` AS DOUBLE) / `union_size`
+  LOG_INFO(`similarity`)
 }
 ```
 
@@ -166,13 +166,13 @@ Input intent:
 
 Output skeleton:
 ```gql
-VALUE total SumAgg<INT> = 0
-VALUE any_hit OrAgg = false
-VALUE avg_score AvgAgg<DOUBLE>
-VALUE ids ListAgg<INT64>
-VALUE seen SetAgg<STRING>
-VALUE buckets MapAgg<INT, SumAgg<INT>>
-VALUE topk TopKAgg<3, score INT DESC>
+VALUE `total` SumAgg<INT> = 0
+VALUE `any_hit` OrAgg = false
+VALUE `avg_score` AvgAgg<DOUBLE>
+VALUE `ids` ListAgg<INT64>
+VALUE `seen` SetAgg<STRING>
+VALUE `buckets` MapAgg<INT, SumAgg<INT>>
+VALUE `topk` TopKAgg<3, `score` INT DESC>
 ```
 
 ### 11. Top-k procedure output stays in ordinary return columns
@@ -181,11 +181,11 @@ Input intent:
 
 Output skeleton:
 ```gql
-CREATE PROCEDURE <procedure_name>(...)
-RETURNS (node_id INT64, score DOUBLE)
+CREATE PROCEDURE `<procedure_name>`(...)
+RETURNS (`node_id` INT64, `score` DOUBLE)
 AS {
   ...
-  RETURN <node_id_expr> AS node_id, <score_expr> AS score
+  RETURN <node_id_expr> AS `node_id`, <score_expr> AS `score`
 }
 ```
 
@@ -195,27 +195,27 @@ Input intent:
 
 Output skeleton:
 ```gql
-CREATE PROCEDURE <procedure_name>(...)
+CREATE PROCEDURE `<procedure_name>`(...)
 RETURNS (<result_columns>)
 AS {
-  TABLE stage_result TYPED TABLE {
-    mode_no INT64,
+  TABLE `stage_result` TYPED TABLE {
+    `mode_no` INT64,
     <stage_columns>
   }
 
-  MATCH (<start_node>)-[e:<EDGE_TYPE_1>]-(<next_node>)
+  MATCH (`<start_node>`)-[`e`:`<EDGE_TYPE_1>`]-(`<next_node>`)
   PER PATH {
-    EXPORT <mode_1_row> INTO stage_result
+    EXPORT <mode_1_row> INTO `stage_result`
   }
 
   WHILE <need_next_stage> {
-    MATCH (<frontier_node>)-[e:<EDGE_TYPE_N>]-(<next_node>)
+    MATCH (`<frontier_node>`)-[`e`:`<EDGE_TYPE_N>`]-(`<next_node>`)
     PER PATH {
-      EXPORT <stage_n_row> INTO stage_result
+      EXPORT <stage_n_row> INTO `stage_result`
     }
   }
 
-  FOR r IN stage_result
+  FOR `r` IN `stage_result`
   RETURN <final_projection>
 }
 ```
@@ -229,16 +229,16 @@ Input intent:
 
 Output skeleton:
 ```gql
-TABLE result_table TYPED TABLE {id INT, score DOUBLE} PARTITION BY DEFAULT
+TABLE `result_table` TYPED TABLE {`id` INT, `score` DOUBLE} PARTITION BY DEFAULT
 
-MATCH (a@<node_type>)
-PER NODE (a) {
-  EXPORT a.id, <score_expression> INTO result_table
+MATCH (`a`@`<node_type>`)
+PER NODE (`a`) {
+  EXPORT `a`.`id`, <score_expression> INTO `result_table`
 }
 
-PER PARTITION (part) OF result_table {
-  FOR r IN part
-  RETURN r.id AS id, r.score AS score
+PER PARTITION (`part`) OF `result_table` {
+  FOR `r` IN `part`
+  RETURN `r`.`id` AS `id`, `r`.`score` AS `score`
 }
 ```
 
@@ -251,10 +251,10 @@ Input intent:
 
 Output skeleton:
 ```gql
-CREATE OR REPLACE PROCEDURE <procedure_name>(t TABLE) AS {
-  MATCH (a@<node_type>)
-  PER NODE (a) {
-    EXPORT a.id, <value_expression> INTO t
+CREATE OR REPLACE PROCEDURE `<procedure_name>`(`t` TABLE) AS {
+  MATCH (`a`@`<node_type>`)
+  PER NODE (`a`) {
+    EXPORT `a`.`id`, <value_expression> INTO `t`
   }
 }
 ```
@@ -262,46 +262,46 @@ CREATE OR REPLACE PROCEDURE <procedure_name>(t TABLE) AS {
 Caller skeleton:
 ```gql
 USE #<analytic_graph> {
-  TABLE t TYPED TABLE {id INT, `value` STRING} PARTITION BY DEFAULT
-  CALL <procedure_name>(t) FINISH
-  PER PARTITION (part) OF t {
-    FOR r IN part
-    RETURN r.id, r.`value`
+  TABLE `t` TYPED TABLE {`id` INT, `value` STRING} PARTITION BY DEFAULT
+  CALL `<procedure_name>`(`t`) FINISH
+  PER PARTITION (`part`) OF `t` {
+    FOR `r` IN `part`
+    RETURN `r`.`id`, `r`.`value`
   }
 }
 ```
 
 Key rule:
-- `t TABLE` 可接收分布式表引用，但不因此支持 `size(t)`、直接 `FOR ... IN t` 或其它整表操作。
+- `` `t` TABLE `` 可接收分布式表引用，但不因此支持 `` size(`t`) ``、直接 `` FOR ... IN `t` `` 或其它整表操作。
 
 ## Negative patterns
 - 不要臆造过程的工作图；Database 过程允许显式 USE，缺省继承调用方。
 - 不要在用户显式指定本技能时退回普通 `MATCH ... RETURN ...`。
-- 不要生成 `NODE VALUE seed_id INT` 这种点绑定标量变量。
+- 不要生成 `` NODE VALUE `seed_id` INT `` 这种点绑定标量变量。
 - 不要在 `PER PATH` / `PER NODE` 内写 `FOR`。
 - 不要直接生成多跳 `match_compute_statement`。
-- 不要把全局聚合值变量裸写成 `total_weight`；使用时应写 `@total_weight`。
-- 不要把点绑定聚合值变量写成 `a.visits`；使用时应写 `a.@visits`。
+- 不要把全局聚合值变量裸写成 `total_weight`；使用时应写 `` @`total_weight` ``。
+- 不要把点绑定聚合值变量写成 `` `a`.`visits` ``；使用时应写 `` `a`.@`visits` ``。
 - 不要把所有类型差异都机械地改写成 `CAST(... AS ...)`；只有文档不支持隐式转换或目标类型必须固定时才显式转换。
-- 不要生成 `OrAgg<BOOLEAN>`、`AndAgg<BOOLEAN>` 这种带类型参数的布尔聚合器声明；应写成 `VALUE flag OrAgg = false`、`VALUE flag AndAgg = true`。
-- 不要给 `AvgAgg`、`ListAgg`、`SetAgg`、`MapAgg`、`TopKAgg` 的声明默认补初始值，例如 `VALUE avg AvgAgg<DOUBLE> = 0`、`VALUE ids ListAgg<INT64> = []`、`VALUE topk TopKAgg<3, score INT DESC> = 1` 都是错误方向。
+- 不要生成 `OrAgg<BOOLEAN>`、`AndAgg<BOOLEAN>` 这种带类型参数的布尔聚合器声明；应写成 `` VALUE `flag` OrAgg = false ``、`` VALUE `flag` AndAgg = true ``。
+- 不要给 `AvgAgg`、`ListAgg`、`SetAgg`、`MapAgg`、`TopKAgg` 的声明默认补初始值，例如 `` VALUE `avg` AvgAgg<DOUBLE> = 0 ``、`` VALUE `ids` ListAgg<INT64> = [] ``、`` VALUE `topk` TopKAgg<3, `score` INT DESC> = 1 `` 都是错误方向。
 - `SetAgg` 标识符遵循公开文档的 127 字符上限；旧的 15 字符规避建议源于基线发布前已修复的问题，不构成 5.3.0 限制。保留用户给定的合法长变量名。
 - SumAgg<STRING> 是文档支持的拼接。其它聚合器按各自声明核对类型；例如不要给 AvgAgg 使用 RECORD/BOOLEAN。不能用统一的“仅数值”规则覆盖所有聚合器。
 - 不要生成 `SetAgg<BOOLEAN>`、`SetAgg<LIST<INT>>`、`SetAgg<RECORD{...}>` 或其它非键型标量 `SetAgg`。
 - 不要生成 `MapAgg<INT64,MapAgg<INT64,SumAgg<DOUBLE>>>`；`MapAgg` 的 value 只能是文档白名单里的嵌套聚合器，不能再嵌套 `MapAgg`。
-- 不要把 `TopKAgg` 当成标量聚合器，例如 `SET @topk += 1`、`TopKAgg<3, score LIST<INT> DESC>` 都是错误方向。
-- 不要生成 `RETURNS ret LIST<RECORD>`、`RETURNS (rows LIST<RECORD>)` 或把 `TopKAgg` 的内部结果直接作为 procedure 返回类型暴露出去；如果要输出 top-k 记录，改成普通多列返回。
+- 不要把 `TopKAgg` 当成标量聚合器，例如 `` SET @`topk` += 1 ``、`` TopKAgg<3, `score` LIST<INT> DESC> `` 都是错误方向。
+- 不要生成 `` RETURNS `ret` LIST<RECORD> ``、`` RETURNS (`rows` LIST<RECORD>) `` 或把 `TopKAgg` 的内部结果直接作为 procedure 返回类型暴露出去；如果要输出 top-k 记录，改成普通多列返回。
 - 不要把 TigerGraph GSQL 的多跳 `SELECT` 链直接照搬成下面这种过程体：
 
 ```gql
-MATCH (u:`unit`)-[e1:connected_Unit_CN]-(cn1:CN)-[e2:connected_Breaker_CN]-(b1:Breaker)-[e3:connected_Breaker_CN]-(cn2:CN)-[e4:connected_Bus_CN]-(bus:BUS)
+MATCH (`u`:`unit`)-[`e1`:`connected_Unit_CN`]-(`cn1`:`CN`)-[`e2`:`connected_Breaker_CN`]-(`b1`:`Breaker`)-[`e3`:`connected_Breaker_CN`]-(`cn2`:`CN`)-[`e4`:`connected_Bus_CN`]-(`bus`:`BUS`)
 PER PATH {
   ...
 }
 ```
 
 正确方向是保留 mode 顺序，但拆成多轮单跳 `MATCH`，或在信息不足时退回 staged skeleton / planning procedure。
-- 不要直接遍历或清空外层分布式表，例如 `FOR r IN t`、`size(t)`、`SET t.clear()`；使用 `PER PARTITION (part) OF t` 并操作 `part`。
+- 不要直接遍历或清空外层分布式表，例如 `` FOR `r` IN `t` ``、`` size(`t`) ``、`` SET `t`.clear() ``；使用 `` PER PARTITION (`part`) OF `t` `` 并操作 `part`。
 - 不要在 `PER PARTITION` 内生成图 `MATCH`、任意过程调用、全局聚合器/活动集访问，或导出到另一个表变量。
 
 ## Placeholder policy

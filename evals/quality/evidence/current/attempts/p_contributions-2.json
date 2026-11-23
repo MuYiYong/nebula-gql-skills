@@ -1,7 +1,7 @@
 {
   "case_id": "p_contributions",
   "attempt": 2,
-  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN sum(contribution) AS total;",
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-  "notes": "假设评测器绑定非空 INT64 参数 $left 与 $right；UNION ALL 保留相同数值的两次贡献，NEXT 后聚合并返回 total。依据技能内 5.3.0 公开语法和 sum 签名生成；未执行数据库。"
+  "query": "RETURN $left AS `contribution`\nUNION ALL\nRETURN $right AS `contribution`\nNEXT\nRETURN SUM(`contribution`) AS `total`",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "notes": "假设两数之和在 INT64 范围内。已通过技能静态检查，未连接数据库执行。"
 }

@@ -16,9 +16,8 @@
   ],
   "passed": true,
   "validation_source": {
-    "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-    "runner_sha256": "abac1c6b4128d3639a17838a6bc72aa40a865ffeba36b9ff1871ef05baa42e4c",
-    "suite_sha256": "3b85b3a342631cb0537be3e3d39d8af04b4ec5cb152c947413102dddd71a3f47",
-    "binding": "fresh execution while source/runner remained equal to the frozen prompt/calibration snapshots"
-  }
+    "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+    "runner_sha256": "821ba1f8692c7b38f4eb8cbecc4ab9828df11f16dc67a9e5a88650141997cc45"
+  },
+  "server_version": "5.3.2, Build Time: 2026-10-26T10:27:58Z"
 }

@@ -5,20 +5,20 @@
 
 ### Node Vector KNN Template
 ```gql
-USE <graph_name>
-MATCH (v:<Tag>)
-ORDER BY <vector_function>(v.<vector_prop>, VECTOR<d,float>([...])) <ASC|DESC>
+USE `<graph_name>`
+MATCH (`v`:`<Tag>`)
+ORDER BY <vector_function>(`v`.`<vector_prop>`, VECTOR<d,float>([...])) <ASC|DESC>
 LIMIT <k>
-RETURN v, <vector_function>(v.<vector_prop>, VECTOR<d,float>([...])) AS <score>
+RETURN `v`, <vector_function>(`v`.`<vector_prop>`, VECTOR<d,float>([...])) AS `<score>`
 ```
 
 ### Edge Vector KNN Template
 ```gql
-USE <graph_name>
-MATCH (s)-[e:<EDGE_TYPE>]->(d)
-ORDER BY <vector_function>(e.<vector_prop>, VECTOR<d,float>([...])) <ASC|DESC>
+USE `<graph_name>`
+MATCH (`s`)-[`e`:`<EDGE_TYPE>`]->(`d`)
+ORDER BY <vector_function>(`e`.`<vector_prop>`, VECTOR<d,float>([...])) <ASC|DESC>
 LIMIT <k>
-RETURN s, e, d, <vector_function>(e.<vector_prop>, VECTOR<d,float>([...])) AS <score>
+RETURN `s`, `e`, `d`, <vector_function>(`e`.`<vector_prop>`, VECTOR<d,float>([...])) AS `<score>`
 ```
 
 ## ANN（近似最近邻）

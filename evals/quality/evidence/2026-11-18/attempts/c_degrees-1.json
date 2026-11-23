@@ -1,0 +1,7 @@
+{
+  "case_id": "c_degrees",
+  "attempt": 1,
+  "query": "NODE VALUE out_degree SumAgg<INT64> = 0\nTABLE result_table {id STRING, degree INT64}\n\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET s.@out_degree += 1\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id, p.@out_degree INTO result_table\n}\n\nFOR row IN result_table\nRETURN row.id AS id, row.degree AS degree",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "继承评测器已选定的 Database 本地临时图；每条 follow 路径累加 1，平行边分别计数；独立的零跳阶段导出所有 player，未匹配出边的节点保留初始计数 0。仅按包内 5.3.0 公开语法参考生成，未执行数据库。"
+}

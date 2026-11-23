@@ -11,7 +11,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 
 1. 按意图而非 `CALL` 关键字路由：已有签名的调用、YIELD 后过滤/聚合/分页和只读内联子查询由本技能处理；定义/管理过程、设计签名、状态循环和匹配计算由过程技能处理。纯 Neo4j 或 3.x nGQL 任务不触发；用户明确迁移到 5.3 GQL 时才触发。判断目标是查询还是过程。若用户要定义过程、实现图算法或使用 `match_compute_statement`，切换到 `gql-procedure-generator`。
 2. 提取图名、节点/边类型与标签、属性、方向、过滤、聚合、排序、分页和返回列。未知标识符使用 `<graph_name>`、`<node_type>` 等占位符，不臆造 schema。
-   标识符若命中保留或非保留关键字（忽略大小写），生成时一律用反引号包围，并同步处理声明和所有引用；普通合法标识符可以不加。按 [identifiers.md](references/identifiers.md) 核对完整清单，不给语法关键字、内置函数、数据类型或字符串值机械加反引号。 过程形参属于标识符；外部查询参数 `$name` 是独立词法 token，保持原语法，不在 `$` 后拼接反引号。
+   输出 GQL 前，给每个标识符的声明及每一次引用加反引号，保留原名和大小写。覆盖图、过程、元素类型、标签、属性、变量、形参、字段和别名，限定名逐段处理。从文档、feature、用户输入或示例复制的名称也适用。语法关键字、内置类型和函数按原语法输出，字符串值、外部参数 `$name` 和临时图 `#name` 保留原写法。见 [标识符规则](references/identifiers.md)。
 3. 每次生成都先确定结果契约，再选访问路径。点查用与参数同类型的原始键属性，遍历从符合语义的选择性端点展开，只携带结果所需的列。需要计数或判断存在时直接表达该意图。遇到多个可行起点、相关子查询、排序分页或性能调优请求时，按 [performance.md](references/performance.md) 比较等价候选，再输出所选查询。
 4. 按下方路由只加载与请求相关的参考。函数先在完整函数目录中按名称精确检索；其它语法先在完整语法目录中按关键字精确检索，再按需读取专题参考。
 5. 生成后执行短清单 [checklist.md](references/checklist.md)，再按当前语法定位完整 validation 的相关章节；文档目录内的能力不因缺少 feature 或常用示例而拒绝，只有文档限制或已确认的实现冲突才触发降级。性能结论还必须标明是结构推断、静态计划、隔离 PROFILE 还是业务数据验证。
@@ -51,19 +51,19 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 ## Core Generation Rules
 
 - 使用 GQL 语法，不混入 Cypher 的 `*1..3`、`WITH`、`UNWIND`、`MERGE` 或 nGQL 的 `GO`、管道、`==`。
-- 正则条件用 `regexp_like(value, pattern[, options])`，不生成 `=~`。它按整个字符串匹配；迁移时保留原 pattern、转义、大小写、否定和 NULL 语义，不擅自补删 `.*` 或改写属性路径。
+- 正则条件用 `` regexp_like(`value`, `pattern`[, `options`]) ``，不生成 `=~`。它按整个字符串匹配；迁移时保留原 pattern、转义、大小写、否定和 NULL 语义，不擅自补删 `.*` 或改写属性路径。
 - 对生成、改写或迁移任务逐项盘点输入中的函数和源方言表达式，即使语句主体已经混用 GQL 语法。只有在 v5.3.0 用户文档中能确认**同名且同签名**时才原样保留；feature 和代码只能验证实现边界，不能单独授权默认生成未文档化函数。没有文档证据时必须映射为公开构造或明确说明不支持。
 - 完整函数与语法目录中存在的能力，只要目标环境、签名、输入类型、前置条件和文档限制匹配，就允许生成；不得因为 [functions.md](references/functions.md)、feature 或示例未单独收录而判为不支持。
-- Cypher `toSet(list)` 改写为文档公开的 `list_distinct(list)`；Cypher 列表推导式改写为 `transform()`/`filter()`。不要生成未文档化的 `array_distinct()`，也不要把单个 LIST 传给 `all_different()`。
-- Cypher/nGQL `exists(element.prop)` 的常见属性检查改写为文档公开的 `element.prop IS NOT NULL`。若需求必须区分“属性缺失”和“属性值为 NULL”，明确说明 v5.3.0 用户文档没有可靠等价构造；不要调用代码中存在但未文档化的 `property_exists()`。
+- Cypher `toSet(list)` 改写为文档公开的 `` list_distinct(`list`) ``；Cypher 列表推导式改写为 `transform()`/`filter()`。不要生成未文档化的 `array_distinct()`，也不要把单个 LIST 传给 `all_different()`。
+- Cypher/nGQL `exists(element.prop)` 的常见属性检查改写为文档公开的 `` `element`.`prop` IS NOT NULL ``。若需求必须区分“属性缺失”和“属性值为 NULL”，明确说明 v5.3.0 用户文档没有可靠等价构造；不要调用代码中存在但未文档化的 `property_exists()`。
 - 默认 `enable_reorder=false` 时，在保留边方向、路径输出顺序和路径选择语义的前提下，将已绑定或高选择性锚点放在路径左侧；只有用户明确要求或计划证据支持时才启用 CBO/添加 `NO_REORDER`，不要默认生成执行 Hint。
 - 在不改变 `OPTIONAL MATCH`、NULL 保留、相关作用域或路径集合语义时，单变量属性过滤优先写在对应 pattern filler；跨变量、路径变量、子查询和结果级条件保留在其正确作用域。不要把语法位置本身宣称为必然的性能提升，optimizer 也会按依赖下推部分外层谓词。
 - 迁移路径集合断言时，先判断能否由 pattern 直接表达：量化边段上的逐边 `ALL` 且谓词只引用当前边和常量/参数时，下推为 edge pattern `WHERE`；节点零重复约束优先用 `ACYCLIC`。含反向量化段且允许重排时，按 [patterns.md](references/patterns.md#反向量化路径与重排) 检查目标版本的路径结果。`ANY`/`NONE`/`SINGLE`、跨元素条件和“筛选含重复节点”的条件不得套用该优化。
-- 使用边后量词表达可变长度路径，例如 `(a)-[:KNOWS]->{1,3}(d)`；不要生成 `[:KNOWS*1..3]`。
+- 使用边后量词表达可变长度路径，例如 `` (`a`)-[:`KNOWS`]->{1,3}(`d`) ``；不要生成 `[:KNOWS*1..3]`。
 - 只在标签名来自字符串 `VALUE` 或绑定变量时生成动态标签表达式。不要把聚合器、文件、表或非字符串值当作标签。
-- 用户要求精确元素类型、类型集合或类型否定时使用 `@Type`、`@[Type1,Type2]` 或 `@!Type`；动态类型项也必须来自字符串值或绑定变量。
+- 用户要求精确元素类型、类型集合或类型否定时使用 `` @`Type` ``、`` @[`Type1`,`Type2`] `` 或 `` @!`Type` ``；动态类型项也必须来自字符串值或绑定变量。
 - 不要在同一个节点或边模式中同时使用标签表达式 `:` 和元素类型表达式 `@`。
-- 区分内部标识与业务属性。`element_id()` 只接受节点；边要按需要组合端点 ID、`type(e)` 与 `multiedge_id(e)`，不要生成 `element_id(e)`。
+- 区分内部标识与业务属性。`element_id()` 只接受节点；边要按需要组合端点 ID、`` type(`e`) `` 与 `` multiedge_id(`e`) ``，不要生成 `` element_id(`e`) ``。
 - 在线性查询中保证末尾是 `RETURN`、`FINISH` 或更新语句；跨段传递结果时明确使用 `NEXT`。
 - 同一排序分页片段保持 `ORDER BY -> OFFSET/SKIP -> LIMIT`。5.3.0 允许该片段位于 `RETURN` 前或作为 `RETURN` 尾部；默认采用一种一致风格，不要误判另一种合法形式，也不要生成 `RETURN ... LIMIT ... ORDER BY ...`。
 - 参数化查询使用 `$name`，不要把参数名写成字符串字面量。

@@ -1,0 +1,7 @@
+{
+  "case_id": "q_optional",
+  "attempt": 1,
+  "query": "MATCH (s:player)\nOPTIONAL MATCH (s)-[:follow]->(t:player WHERE t.age > $min_age)\nRETURN s.id AS src, t.id AS dst;",
+  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+  "notes": "Independent generation from the public prompt and bundled query skill."
+}

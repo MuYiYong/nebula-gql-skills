@@ -1,0 +1,7 @@
+{
+  "case_id": "c_incoming",
+  "attempt": 2,
+  "query": "NODE VALUE incoming SumAgg<INT64> = 0\nTABLE result {id STRING, total INT64}\n\nMATCH (s:player)-[e:follow]->(t:player)\nPER PATH {\n  SET t.@incoming += coalesce(e.degree, 0)\n}\n\nMATCH (p:player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@incoming AS total INTO result\n}\n\nFOR r IN result\nRETURN r.id AS id, r.total AS total",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "继承评测器已选择的 Database 本地临时图。每条 follow 入边独立累计到目标节点，degree 为 NULL 时按 0；独立的零跳阶段输出全部 player，无入边节点保持初始化的 0。依据包内 5.3.0 文档生成，未执行数据库。"
+}

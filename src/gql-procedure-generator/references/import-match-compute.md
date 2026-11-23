@@ -18,20 +18,20 @@ Both can execute against a stale graph version and fail at runtime with `NR153` 
 Separate mutation and computation into sibling procedures. Let the parent select the graph before each call.
 
 ```gql
-CREATE OR REPLACE PROCEDURE <import_procedure>() AS {
-  TABLE nodes TYPED TABLE {id INT} = {id: <id>}
+CREATE OR REPLACE PROCEDURE `<import_procedure>`() AS {
+  TABLE `nodes` TYPED TABLE {`id` INT} = {`id`: <id>}
   IMPORT INTO GRAPH {
-    NODE (n@<node_type>{id: id}) FROM nodes
-  } OPTIONS {PRIMARY_KEY_AS_NODE_ID: true}
+    NODE (`n`@`<node_type>`{`id`: `id`}) FROM `nodes`
+  } OPTIONS {`PRIMARY_KEY_AS_NODE_ID`: true}
 }
 ```
 
 ```gql
-CREATE OR REPLACE PROCEDURE <compute_procedure>() AS {
-  NODE VALUE cnt SumAgg<INT> = 0
-  MATCH (n@<node_type>)
-  PER NODE (n) {
-    SET n.@cnt += 1
+CREATE OR REPLACE PROCEDURE `<compute_procedure>`() AS {
+  NODE VALUE `cnt` SumAgg<INT> = 0
+  MATCH (`n`@`<node_type>`)
+  PER NODE (`n`) {
+    SET `n`.@`cnt` += 1
   }
 }
 ```
@@ -39,12 +39,12 @@ CREATE OR REPLACE PROCEDURE <compute_procedure>() AS {
 Parent skeleton:
 
 ```gql
-CREATE OR REPLACE PROCEDURE <parent_procedure>() AS {
-  GRAPH g TYPED <graph_type>
-  USE g
-  CALL <import_procedure>() FINISH
-  USE g
-  CALL <compute_procedure>() FINISH
+CREATE OR REPLACE PROCEDURE `<parent_procedure>`() AS {
+  GRAPH `g` TYPED `<graph_type>`
+  USE `g`
+  CALL `<import_procedure>`() FINISH
+  USE `g`
+  CALL `<compute_procedure>`() FINISH
 }
 ```
 

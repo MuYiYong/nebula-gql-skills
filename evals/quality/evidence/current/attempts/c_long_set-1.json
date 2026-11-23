@@ -1,7 +1,7 @@
 {
   "case_id": "c_long_set",
   "attempt": 1,
-  "query": "VALUE collected_destination_ids SetAgg<STRING>\nMATCH (s:player)-[:follow]->(t:player)\nPER PATH {\n  SET @collected_destination_ids += t.id\n}\nRETURN @collected_destination_ids.size() AS distinct_targets",
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-  "notes": "假定调用方已选择 Database 本地临时图，按给定 player/follow 类型与方向执行；SetAgg 默认空集合，平行边目标去重，空图返回 distinct_targets=0。依据包内 5.3.0 公开文档目录生成；未执行数据库。"
+  "query": "VALUE `collected_destination_ids` SetAgg<STRING>\nMATCH (:`player`)-[:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`collected_destination_ids` += `dst`.`id`\n}\nRETURN @`collected_destination_ids`.size() AS `distinct_targets`",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "notes": "沿用评测器已选的本地临时图。平行边指向同一目标时只计一次，空图返回 0。静态检查通过，未连接数据库执行。"
 }

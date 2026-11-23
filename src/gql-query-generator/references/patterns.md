@@ -15,20 +15,20 @@
 
 当查询级、会话级或部署级显式开启 `enable_reorder` 时，CBO 可依据统计信息改选起点、方向和 join 顺序。此时文本顺序不是执行顺序保证；只有路径级 `/*+ NO_REORDER */` 会锁定该路径。ANN、全文、selective path、相关变量和部分复杂形状还有专用或不可重排计划，必须以 `EXPLAIN CBO`/`PROFILE` 为准。
 
-若交换端点，保持边的业务方向。返回路径、`nodes(p)`、有序边列表或涉及起点的选择器时，还要保留遍历顺序与所选路径。
+若交换端点，保持边的业务方向。返回路径、`` nodes(`p`) ``、有序边列表或涉及起点的选择器时，还要保留遍历顺序与所选路径。
 
 ### 规则 1：默认计划把锚点放左侧
 
 Preferred:
 ```gql
-MATCH (v{id: 123})-[e]->(v2)
-RETURN v2
+MATCH (`v`{`id`: 123})-[`e`]->(`v2`)
+RETURN `v2`
 ```
 
 同一 inner-MATCH 中也合法，但端点锚点不够直观：
 ```gql
-MATCH (v2)<-[e]-(v{id: 123})
-RETURN v2
+MATCH (`v2`)<-[`e`]-(`v`{`id`: 123})
+RETURN `v2`
 ```
 
 ### 规则 2：默认计划把已绑定变量放左侧
@@ -42,23 +42,23 @@ RETURN v2
 
 Preferred（已绑定变量 `n` 放左）:
 ```gql
-MATCH p = ACYCLIC (n:DataPlatformTable)-[:DEPENDS_ON]->+(m:DataPlatformTable)
+MATCH `p` = ACYCLIC (`n`:`DataPlatformTable`)-[:`DEPENDS_ON`]->+(`m`:`DataPlatformTable`)
 WHERE NOT EXISTS {
-  MATCH (n)<-[:DEPENDS_ON]-(:DataPlatformTable)
+  MATCH (`n`)<-[:`DEPENDS_ON`]-(:`DataPlatformTable`)
 }
-RETURN p, length(p) AS L
-ORDER BY L DESC
+RETURN `p`, length(`p`) AS `L`
+ORDER BY `L` DESC
 LIMIT 1
 ```
 
 对照写法（已绑定变量 `n` 放右，可用 PROFILE 比较实际展开行数）
 ```gql
-MATCH p = ACYCLIC (n:DataPlatformTable)-[:DEPENDS_ON]->+(m:DataPlatformTable)
+MATCH `p` = ACYCLIC (`n`:`DataPlatformTable`)-[:`DEPENDS_ON`]->+(`m`:`DataPlatformTable`)
 WHERE NOT EXISTS {
-  MATCH (:DataPlatformTable)-[:DEPENDS_ON]->(n)
+  MATCH (:`DataPlatformTable`)-[:`DEPENDS_ON`]->(`n`)
 }
-RETURN p, length(p) AS L
-ORDER BY L DESC
+RETURN `p`, length(`p`) AS `L`
+ORDER BY `L` DESC
 LIMIT 1
 ```
 
@@ -66,20 +66,20 @@ LIMIT 1
 
 Preferred（第一段返回的 `src` 在第二段放左）:
 ```gql
-MATCH (src:Person{id: 123})
-RETURN src
+MATCH (`src`:`Person`{`id`: 123})
+RETURN `src`
 NEXT
-MATCH (src)-[:KNOWS]->(friend:Person)
-RETURN friend
+MATCH (`src`)-[:`KNOWS`]->(`friend`:`Person`)
+RETURN `friend`
 ```
 
 对照写法（已绑定变量 `src` 放右，可用 PROFILE 比较实际展开行数）
 ```gql
-MATCH (src:Person{id: 123})
-RETURN src
+MATCH (`src`:`Person`{`id`: 123})
+RETURN `src`
 NEXT
-MATCH (friend:Person)<-[:KNOWS]-(src)
-RETURN friend
+MATCH (`friend`:`Person`)<-[:`KNOWS`]-(`src`)
+RETURN `friend`
 ```
 
 ### 专用遍历与 Hint
@@ -90,19 +90,19 @@ RETURN friend
 
 ### 反向量化路径与重排
 
-在测试过的 5.3.2 构建中，`enable_reorder=true` 时，`ACYCLIC (a)<-[]-{1,2}(x)<-[e]-(b)` 可能返回内部节点重复的路径。先用含环和合法路径的样本核对有序节点 ID 列表及其重复次数。对复现该问题的查询，在语句开头加 `/*+ SET_VAR(enable_reorder=false) */` 并重验结果。该写法在同一测试构建上保留了两条合法路径，排除了多出的一条。新构建可用同一反例复核后采用默认计划。普通正向遍历和已验证正确的计划继续使用原会话配置。
+在测试过的 5.3.2 构建中，`enable_reorder=true` 时，`` ACYCLIC (`a`)<-[]-{1,2}(`x`)<-[`e`]-(`b`) `` 可能返回内部节点重复的路径。先用含环和合法路径的样本核对有序节点 ID 列表及其重复次数。对复现该问题的查询，在语句开头加 `/*+ SET_VAR(enable_reorder=false) */` 并重验结果。该写法在同一测试构建上保留了两条合法路径，排除了多出的一条。新构建可用同一反例复核后采用默认计划。普通正向遍历和已验证正确的计划继续使用原会话配置。
 
 ## Node Pattern Filler
 组件顺序（稳定）：点变量 → 标签表达式或点类型 → 点属性 → `WHERE`
 
 ```gql
-(v)                        -- 仅变量
-(v:`Label`)                  -- 标签表达式
-(v IS `Label`)               -- IS 形式
-(v @`Type`)                  -- 点类型
-(v @[Type1, Type2])        -- 多点类型
-(v {prop: expr})           -- 属性过滤
-(v WHERE v.prop > 10)      -- pattern WHERE
+(`v`)                        -- 仅变量
+(`v`:`Label`)                  -- 标签表达式
+(`v` IS `Label`)               -- IS 形式
+(`v` @`Type`)                  -- 点类型
+(`v` @[`Type1`, `Type2`])        -- 多点类型
+(`v` {`prop`: `expr`})           -- 属性过滤
+(`v` WHERE `v`.`prop` > 10)      -- pattern WHERE
 ```
 
 - 至多使用三类组件：变量、标签/类型、属性/WHERE。
@@ -111,12 +111,12 @@ RETURN friend
 组件顺序（稳定）：边变量 → 标签表达式或边类型 → 边属性 → `SAMPLE` → `WHERE`
 
 ```gql
--[e:`Label`]->               -- 标签
--[e IS `Label`]->            -- IS 形式
--[e @`Type`]->               -- 边类型
--[e {prop: expr}]->        -- 属性过滤
--[e SAMPLE RIGHT 10]->     -- 采样
--[e WHERE e.weight > 0.5]-> -- pattern WHERE
+-[`e`:`Label`]->               -- 标签
+-[`e` IS `Label`]->            -- IS 形式
+-[`e` @`Type`]->               -- 边类型
+-[`e` {`prop`: `expr`}]->        -- 属性过滤
+-[`e` SAMPLE RIGHT 10]->     -- 采样
+-[`e` WHERE `e`.`weight` > 0.5]-> -- pattern WHERE
 ```
 
 - 至多使用四类组件：变量、标签/类型、属性/WHERE、SAMPLE。
@@ -136,30 +136,30 @@ RETURN friend
 
 ### Path Variable
 ```gql
-p = <path_pattern>
+`p` = <path_pattern>
 ```
 只在后续需引用整条路径时才声明路径变量。
 
 ### Quantifiers（量词）
 位置：放在边方向片段之后。
 ```gql
--[e:T]->{1,3}     -- 1到3跳
--[e:T]->*         -- 0到无穷
--[e:T]->+         -- 1到无穷
--[e:T]->{3}       -- 恰好3跳
--[e:T]->{2,}      -- 2到无穷
--[e:T]->{,5}      -- 0到5跳
+-[`e`:`T`]->{1,3}     -- 1到3跳
+-[`e`:`T`]->*         -- 0到无穷
+-[`e`:`T`]->+         -- 1到无穷
+-[`e`:`T`]->{3}       -- 恰好3跳
+-[`e`:`T`]->{2,}      -- 2到无穷
+-[`e`:`T`]->{,5}      -- 0到5跳
 ```
 
-**禁止** Cypher 风格：`[:T*1..3]` — 必须改为 `-[:T]->{1,3}`。
+**禁止** Cypher 风格：`[:T*1..3]` — 必须改为 `` -[:`T`]->{1,3} ``。
 
 ### Quantified Path Groups
 ```gql
-((inner_pattern)){m,n}
+((<inner_pattern>)){<lower>,<upper>}
 ```
 将一段内层路径整体量化，只在用户明确要对路径段整体重复时使用。
 
-量化路径中边变量下标访问：`(e[0]).prop`、`(e[1]).prop`。
+量化路径中边变量下标访问：`` (`e`[0]).`prop` ``、`` (`e`[1]).`prop` ``。
 
 ### Match Mode Prefix
 - `REPEATABLE` — 允许重复边和点（默认）
@@ -181,12 +181,12 @@ p = <path_pattern>
 ## Filter Placement Priority
 在保持当前 MATCH/OPTIONAL/相关作用域语义时，按以下优先级组织过滤条件：
 
-1. **单变量简单等值** → pattern 属性 `{prop: value}`
+1. **单变量简单等值** → pattern 属性 `` {`prop`: `value`} ``
 2. **单变量非等值**（IN、范围、CONTAINS、空值、时间比较） → pattern 内 `WHERE`
 3. **跨变量关系或结果级约束** → 外层 `WHERE`
 
 规则：
-- `(v{id:1})` 与同一 MATCH 作用域内的 `(v WHERE v.id = 1)` 可表达同一局部约束；简单等值首选属性字面量。
+- `` (`v`{`id`:1}) `` 与同一 MATCH 作用域内的 `` (`v` WHERE `v`.`id` = 1) `` 可表达同一局部约束；简单等值首选属性字面量。
 - 只引用一个局部节点/边和常量的条件优先靠近该 pattern，便于看清锚点、类型和索引候选；optimizer 也可能把同一 MATCH 的外层单变量 `WHERE` 自动附着到 scan/expand，因此这不是无条件性能保证。
 - 引用外部绑定、子查询、路径变量、多个 component 或多个图元素的条件不要机械下沉。`OPTIONAL MATCH` 内部条件会保留未命中的外层行，而 `NEXT` 之后的 `FILTER` 可能删除 NULL 行；两者不能互换。
 - shortest/quantified/variable-length 端点的纯局部条件仍优先写在端点 pattern；路径集合与跨端点条件保留结果级作用域。
@@ -195,14 +195,14 @@ p = <path_pattern>
 
 迁移 Cypher/APOC 的路径集合断言时，先恢复它约束的 pattern 元素，再决定是否生成 lambda 后置检查。
 
-- `ALL(r IN relationships(p) WHERE edge_predicate(r))`：当 `p` 只有一个对应的量化边段，且谓词只引用当前边 `r` 与常量/参数时，改为 `-[r:<edge_type> WHERE edge_predicate(r)]->{m,n}`。pattern 谓词会约束每次重复匹配，不要再生成 `length(filter(edges(p), ...)) = length(edges(p))`。
+- `ALL(r IN relationships(p) WHERE edge_predicate(r))`：当 `p` 只有一个对应的量化边段，且谓词只引用当前边 `r` 与常量/参数时，改为 `` -[`r`:`<edge_type>` WHERE edge_predicate(`r`)]->{m,n} ``。pattern 谓词会约束每次重复匹配，不要再生成 `` length(filter(edges(`p`), ...)) = length(edges(`p`)) ``。
 - 路径包含多个边段时，只有同一逐边条件能逐段等价放入所有相关 edge pattern 才下推；不能只约束其中一段。
 - 谓词引用端点、其它边、边下标、路径位置、聚合值或子查询时，不是量化边 local filter，保留结果级条件或改写为可证明等价的结构。
 - `ANY`、`NONE`、`SINGLE` 一般不能改成 edge pattern `WHERE`：pattern filler 会过滤候选边，而这些量词断言的是已匹配整条路径上的数量语义。
 
 路径唯一性优先由 path type 表达：
 
-- `size(apoc.coll.duplicates(nodes(p))) = 0` 或 `length(nodes(p)) = length(list_distinct(nodes(p)))` → `ACYCLIC`。
+- `size(apoc.coll.duplicates(nodes(p))) = 0` 或 `` length(nodes(`p`)) = length(list_distinct(nodes(`p`))) `` → `ACYCLIC`。
 - 边零重复约束 → `TRAIL`；仅允许首尾点相同、其它点不重复时才用 `SIMPLE`。
 - 若条件用于筛选**存在重复节点**的路径，例如去重前后长度不等，保留允许重复的 `WALK`/`TRAIL` 和后置条件；改成 `ACYCLIC` 会反转语义。
 
@@ -210,36 +210,36 @@ p = <path_pattern>
 
 Preferred（普通 MATCH）:
 ```gql
-MATCH (a:Person WHERE a.age > 30)-[:KNOWS]->(b:Person WHERE b.city = 'Beijing')
-RETURN a, b
+MATCH (`a`:`Person` WHERE `a`.`age` > 30)-[:`KNOWS`]->(`b`:`Person` WHERE `b`.`city` = 'Beijing')
+RETURN `a`, `b`
 ```
 
 Also legal in the same inner-MATCH scope, but less explicit about each anchor:
 ```gql
-MATCH (a:Person)-[:KNOWS]->(b:Person)
-WHERE a.age > 30 AND b.city = 'Beijing'
-RETURN a, b
+MATCH (`a`:`Person`)-[:`KNOWS`]->(`b`:`Person`)
+WHERE `a`.`age` > 30 AND `b`.`city` = 'Beijing'
+RETURN `a`, `b`
 ```
 
 Preferred（shortest path）:
 ```gql
-MATCH p = ANY SHORTEST PATH
-  (src:facility WHERE src.id IN <source_ids>)
-  -[:is_comp|is_leg]->*
-  (dst:facility WHERE dst.id IN <dest_ids>)
-RETURN p
+MATCH `p` = ANY SHORTEST PATH
+  (`src`:`facility` WHERE `src`.`id` IN <source_ids>)
+  -[:`is_comp`|`is_leg`]->*
+  (`dst`:`facility` WHERE `dst`.`id` IN <dest_ids>)
+RETURN `p`
 ```
 
 Anti-pattern:
 ```gql
-MATCH p = ANY SHORTEST PATH
-  (src:facility)-[:is_comp|is_leg]->*(dst:facility)
-WHERE src.id IN <source_ids>
-  AND dst.id IN <dest_ids>
-RETURN p
+MATCH `p` = ANY SHORTEST PATH
+  (`src`:`facility`)-[:`is_comp`|`is_leg`]->*(`dst`:`facility`)
+WHERE `src`.`id` IN <source_ids>
+  AND `dst`.`id` IN <dest_ids>
+RETURN `p`
 ```
 
-原因：`src.id` 只约束 `src`、`dst.id` 只约束 `dst`，写进各自 pattern 能直接表达两个端点锚点。若条件涉及两个端点（如 `src.x = dst.y`）、路径变量或子查询，则保留在外层 `WHERE`。
+原因：`` `src`.`id` `` 只约束 `src`、`` `dst`.`id` `` 只约束 `dst`，写进各自 pattern 能直接表达两个端点锚点。若条件涉及两个端点（如 `` `src`.`x` = `dst`.`y` ``）、路径变量或子查询，则保留在外层 `WHERE`。
 
 ## OPTIONAL MATCH
 - 未命中时继续返回该行并产出 `null` 列。

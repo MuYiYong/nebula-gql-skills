@@ -36,8 +36,8 @@ Never call a structure-only or empty-graph result “optimal”, “production-r
 `enable_reorder` defaults to `false`. For ordinary, executable MATCH paths, prefer an already-bound or highly selective anchor on the left:
 
 ```gql
-MATCH (u:`User`{node_id: <id>})-[:FOLLOWS]->(v:`User`)
-RETURN v.node_id
+MATCH (`u`:`User`{`node_id`: <id>})-[:`FOLLOWS`]->(`v`:`User`)
+RETURN `v`.`node_id`
 ```
 
 This is a conservative source form, not proof that every later operator follows the text literally. Dedicated shortest-path, K-hop, index, join, and fallback rules can still change the physical plan.
@@ -74,7 +74,7 @@ The optimizer can attach many same-MATCH predicates to scans and expands even if
 
 ### Index prerequisites
 
-- For an exact key lookup with a correctly typed parameter, generate a comparison on the stored key, e.g. `MATCH (p@player {id: $seed}) RETURN p.name AS name` for a STRING primary key. The constraint extractor matches a direct property reference. A function around the stored key can leave a residual filter over a broad scan. Check the scan method and constraint. Preserve intentional normalization, collation, NULL and conversion errors. For instance, converting string IDs to integers can merge `"01"` and `"1"`.
+- For an exact key lookup with a correctly typed parameter, generate a comparison on the stored key, e.g. `` MATCH (`p`@`player` {`id`: $seed}) RETURN `p`.`name` AS `name` `` for a STRING primary key. The constraint extractor matches a direct property reference. A function around the stored key can leave a residual filter over a broad scan. Check the scan method and constraint. Preserve intentional normalization, collation, NULL and conversion errors. For instance, converting string IDs to integers can merge `"01"` and `"1"`.
 - Match all supplied components of a composite key. Treat a partial key as a potentially multirow lookup. A label can span multiple element types with different keys or indexes.
 - For a composite normal index, useful constraints normally begin with its leading properties; ORDER elimination additionally requires compatible property order, direction, NULL ordering, and equality-fixed prefixes.
 - An index that exists but has no usable constraint is not automatically faster; a non-covering unconstrained index can lose to a table scan.
@@ -87,7 +87,7 @@ The optimizer can attach many same-MATCH predicates to scans and expands even if
 
 ### Paths
 
-- Do not bind `p =` unless the query returns the path or calls a path function.
+- Do not bind `` `p` = `` unless the query returns the path or calls a path function.
 - Use the narrowest hop range allowed by the requirement. Never cap an unbounded requirement only for speed.
 - Use `TRAIL`, `ACYCLIC`, or `SIMPLE` only when it is the requested path-set semantics; path modes are not interchangeable tuning switches.
 - Push an edge-local `ALL` condition into each corresponding quantified edge pattern only under the equivalence rules in [patterns.md](patterns.md).
@@ -97,7 +97,7 @@ The optimizer can attach many same-MATCH predicates to scans and expands even if
 ### Projection and materialization
 
 - Return only requested columns. Avoid `RETURN *`, whole nodes, whole edges, or whole paths when scalar IDs/properties are sufficient.
-- Avoid `nodes(p)`, `edges(p)`, `collect_list(...)`, or large RECORD/LIST construction when the user only needs a count, existence test, or Top K score.
+- Avoid `` nodes(`p`) ``, `` edges(`p`) ``, `collect_list(...)`, or large RECORD/LIST construction when the user only needs a count, existence test, or Top K score.
 - Compute expensive expressions after cardinality has been safely reduced, but do not move expressions across an operation that changes their input set.
 
 ### Duplicates and aggregation
@@ -112,9 +112,9 @@ The optimizer can attach many same-MATCH predicates to scans and expands even if
 Use a deterministic tie-breaker when repeatable pages or Top K order matters:
 
 ```gql
-MATCH (u:`User`{node_id: <id>})-[e:FOLLOWS]->(v:`User`)
-RETURN v.node_id AS candidate_id, e.weight AS weight
-ORDER BY weight DESC, candidate_id ASC
+MATCH (`u`:`User`{`node_id`: <id>})-[`e`:`FOLLOWS`]->(`v`:`User`)
+RETURN `v`.`node_id` AS `candidate_id`, `e`.`weight` AS `weight`
+ORDER BY `weight` DESC, `candidate_id` ASC
 LIMIT 20
 ```
 
@@ -123,12 +123,12 @@ LIMIT 20
 - `ORDER BY + LIMIT` is eligible for a TopN rewrite. Preserve both at the final candidate-set boundary.
 - A no-sort LIMIT may be pushed toward a single planned unit, but a final LIMIT is not independently valid for every component/UNION arm.
 - Large OFFSET still requires producing/skipping earlier rows. Prefer a stable keyset predicate only when the API contract allows changing from offset pagination and the relevant ordered key is known.
-- For ordinary index TopN, use the requested sort properties directly. For example, with a readable index on `player(age ASC, id ASC)`, an exact page ordered by age then unique ID can use the following form when the requested NULL ordering matches the index.
+- For ordinary index TopN, use the requested sort properties directly. For example, with a readable index on `` player(`age` ASC, `id` ASC) ``, an exact page ordered by age then unique ID can use the following form when the requested NULL ordering matches the index.
 
   ```gql
-  MATCH (p@player)
-  RETURN p.age AS age, p.id AS id
-  ORDER BY age ASC, id ASC OFFSET 10 LIMIT 20
+  MATCH (`p`@`player`)
+  RETURN `p`.`age` AS `age`, `p`.`id` AS `id`
+  ORDER BY `age` ASC, `id` ASC OFFSET 10 LIMIT 20
   ```
 
   Inspect the scan details for the chosen index and a per-partition limit of 30. The global TopN can remain to merge partitions and apply the page. An equality prefix fixed to one value across all spans may be skipped. A range or multiple prefix values, a computed sort expression, an extra tie-breaker outside the key order, or mismatched direction/NULL placement can prevent this pushdown. Preserve the complete requested ordering in each case.

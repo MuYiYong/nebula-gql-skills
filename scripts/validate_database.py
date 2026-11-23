@@ -145,8 +145,8 @@ def main():
                 report['results'].append({'id':case['id'],'passed':False,'stage':'read-only guard'})
         if a.performance:
             report['performance']=measure_pair(client,
-                'FOR x IN LIST[3,1,2,2] RETURN x ORDER BY x OFFSET 1 LIMIT 2',
-                'FOR x IN LIST[3,1,2,2] ORDER BY x OFFSET 1 LIMIT 2 RETURN x',
+                'FOR `x` IN LIST[3,1,2,2] RETURN `x` ORDER BY `x` OFFSET 1 LIMIT 2',
+                'FOR `x` IN LIST[3,1,2,2] ORDER BY `x` OFFSET 1 LIMIT 2 RETURN `x`',
                 {'fixture':'four scalar rows / duplicate pagination','scale':'4 input rows',
                  'parameters':'fixed literal fixture','settings':'same client/default settings',
                  'snapshot':'immutable literals','ordered':True})

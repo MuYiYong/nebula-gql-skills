@@ -1,0 +1,7 @@
+{
+  "case_id": "p_contributions",
+  "attempt": 1,
+  "query": "RETURN $left AS contribution\nUNION ALL\nRETURN $right AS contribution\nNEXT\nRETURN sum(contribution) AS total;",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "按题设使用由评测器绑定的非空 INT64 参数 $left 和 $right；UNION ALL 保留数值相同的两条贡献记录。仅依据技能内公开文档参考生成，未执行数据库。"
+}

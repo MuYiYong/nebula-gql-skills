@@ -1,0 +1,350 @@
+{
+  "producer": {
+    "kind": "model",
+    "model": "session-inherited",
+    "skill_version": "final-iteration",
+    "notes": "single independent batch; tokens unobserved; generated before general reserved-keyword lint expansion, rescored with final checks"
+  },
+  "evaluation_kind": "static contracts only",
+  "total": 37,
+  "passed": 37,
+  "results": [
+    {
+      "id": "aggregate",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "aggregation"
+    },
+    {
+      "id": "basic-filter",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "basic"
+    },
+    {
+      "id": "call-pipeline",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "routing"
+    },
+    {
+      "id": "cypher-dedup",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "migration"
+    },
+    {
+      "id": "cypher-unwind",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "migration"
+    },
+    {
+      "id": "distributed-boundary",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "negative"
+    },
+    {
+      "id": "duplicates",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "boundary"
+    },
+    {
+      "id": "empty",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "boundary"
+    },
+    {
+      "id": "grouping",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "aggregation"
+    },
+    {
+      "id": "inline-call",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "routing"
+    },
+    {
+      "id": "missing-schema",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "negative"
+    },
+    {
+      "id": "ngql-go",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "migration"
+    },
+    {
+      "id": "null-duplicate",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "boundary"
+    },
+    {
+      "id": "pagination",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "pagination"
+    },
+    {
+      "id": "pagination-ties",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "pagination"
+    },
+    {
+      "id": "parameter",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "basic"
+    },
+    {
+      "id": "path-all",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "migration"
+    },
+    {
+      "id": "path-duplicates",
+      "passed": true,
+      "issues": [],
+      "needs_review": [
+        "Special signature requires checking: size"
+      ],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "complex_path"
+    },
+    {
+      "id": "path-range",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "complex_path"
+    },
+    {
+      "id": "perf-correlated",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    },
+    {
+      "id": "perf-fanout",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    },
+    {
+      "id": "perf-optional",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    },
+    {
+      "id": "perf-pagination",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    },
+    {
+      "id": "perf-supernode",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    },
+    {
+      "id": "perf-varlen",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "performance"
+    },
+    {
+      "id": "procedure-algorithm",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "procedure"
+    },
+    {
+      "id": "procedure-default",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "procedure"
+    },
+    {
+      "id": "procedure-manage",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "procedure"
+    },
+    {
+      "id": "procedure-multihop",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "negative"
+    },
+    {
+      "id": "procedure-scalar",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "procedure"
+    },
+    {
+      "id": "repair-arity",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "repair"
+    },
+    {
+      "id": "repair-page",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "repair"
+    },
+    {
+      "id": "repair-reserved",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "repair"
+    },
+    {
+      "id": "scalar",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "basic"
+    },
+    {
+      "id": "typed-values",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "boundary"
+    },
+    {
+      "id": "unknown-property",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "negative"
+    },
+    {
+      "id": "zero-hop",
+      "passed": true,
+      "issues": [],
+      "needs_review": [],
+      "grammar": "not executed",
+      "semantics": "not executed",
+      "category": "repair"
+    }
+  ],
+  "cases_sha256": "d9cb57a62e508b873c4a4e402d150bef4749968c90df3635b57b0d596ae72966",
+  "outputs_sha256": "67b9fb7c8e3d8f4f3e7945e64ac9ad96824f2e8c4a09d50a8cbeafe59fa3e885"
+}

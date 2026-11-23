@@ -48,7 +48,7 @@ def lookup(root, term, kind='function', offset=0, limit=6000, all_matches=False)
             'text': content[offset:offset + limit]}
 
 
-TOKEN = re.compile(r'''(?P<space>\s+)|(?P<comment>--[^\n]*|//[^\n]*|/\*[\s\S]*?\*/)|(?P<string>'(?:''|\\.|[^'\\])*'|"(?:""|\\.|[^"\\])*")|(?P<quoted>`(?:``|[^`])*`)|(?P<param>\$(?:`(?:``|[^`])*`|[\w]+))|(?P<word>[^\W\d]\w*)|(?P<number>\d+(?:\.\d+)?)|(?P<symbol>.)''', re.UNICODE)
+TOKEN = re.compile(r'''(?P<space>\s+)|(?P<comment>--[^\n]*|//[^\n]*|/\*[\s\S]*?\*/)|(?P<string>'(?:''|\\.|[^'\\])*'|"(?:""|\\.|[^"\\])*")|(?P<quoted>`(?:``|[^`])*`)|(?P<param>\$(?:`(?:``|[^`])*`|[\w$]+))|(?P<temp>\#[^\W\d][\w$]*)|(?P<word>[^\W\d]\w*)|(?P<number>\d+(?:\.\d+)?)|(?P<symbol>.)''', re.UNICODE)
 
 
 def tokens(code):
@@ -110,36 +110,77 @@ STRUCTURAL = {'MATCH', 'OPTIONAL', 'IF', 'WHILE', 'FOR', 'IN', 'EXISTS', 'NOT',
               'THEN', 'ELSE', 'NEXT', 'UNION', 'INSERT', 'UPDATE', 'CAST', 'RETURNS', 'PARTITION'}
 
 
-def quote_identifier(name, root):
+def quote_identifier(name, root=None):
     """Format one raw identifier, not an expression or an already quoted name."""
     if not name or len(name) > 127 or '`' in name or any(ord(c) < 32 for c in name):
         raise ValueError('Expected one raw identifier of 1..127 characters without backticks/control characters')
-    data = json.loads((root / 'references/documented-keywords.json').read_text())
-    keywords = set(data['reserved']) | set(data['non_reserved'])
-    if name.upper() in keywords or not re.fullmatch(r'[^\W\d]\w*', name, re.UNICODE):
-        return '`' + name + '`'
-    return name
+    if name.startswith('@'):
+        raise ValueError('Identifier cannot start with @; format the name separately from its prefix')
+    return '`' + name.replace('\\', '\\\\') + '`'
 
 
-def identifier_positions(ts):
+def catalog_path_positions(ts, values):
+    """Collect only name segments, leaving IF clauses and path separators intact."""
+    found = {}
+    for i, word in enumerate(values):
+        if ts[i][0] != 'word' or word not in {'USE', 'CALL', 'PROCEDURE', 'GRAPH', 'SCHEMA', 'INDEX', 'TYPE'}:
+            continue
+        prev = values[i-1] if i else ''
+        if word == 'TYPE' and prev not in {'GRAPH', 'NODE', 'EDGE'}:
+            continue
+        j = i+1
+        if values[j:j+3] == ['IF', 'NOT', 'EXISTS']:
+            j += 3
+        elif values[j:j+2] == ['IF', 'EXISTS']:
+            j += 2
+        while j < len(ts) and values[j] in {'/', '.'}:
+            j += 1
+        while j < len(ts) and ts[j][0] in {'word', 'quoted', 'string'}:
+            has_next = j+2 < len(ts) and values[j+1] in {'/', '.'} and ts[j+2][0] in {'word', 'quoted', 'string'}
+            if has_next or j > i+1:
+                found[j] = 'catalog path'
+            if not has_next:
+                break
+            j += 2
+    return found
+
+
+def identifier_positions(ts, keywords=(), non_reserved=()):
     """Recognize clear identifier positions; this is not a complete GQL parser."""
     values = [v.upper() if k == 'word' else v for k, v in ts]
-    found, stack = {}, []
+    found = catalog_path_positions(ts, values)
+    stack = []
     pattern = False
     expression_forms = {'ALL', 'DISTINCT', 'CASE', 'NOT', 'EXISTS', 'TRUE', 'FALSE', 'NULL',
-                        'UNKNOWN', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+                        'UNKNOWN', 'NAN', 'INFINITY', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
                         'CURRENT_GRAPH', 'CURRENT_PROPERTY_GRAPH', 'CURRENT_SCHEMA',
                         'CURRENT_USER', 'CURRENT_ROLE', 'CURRENT_SESSION', 'SESSION_USER',
                         'SYSTEM_USER', 'LOCAL_TIME', 'LOCAL_TIMESTAMP', 'LOCAL_DATETIME'}
     constructors = {'LIST': '[', 'RECORD': '{', 'TABLE': '{', 'MAP': '{', 'VECTOR': '<',
-                    'VALUE': '{', 'GRAPH': '{'}
+                    'VALUE': '{', 'GRAPH': '{', 'SET': '{', 'PATH': '['}
+    ann_keys = {'TYPE', 'DIM', 'METRIC', 'NLIST', 'TRAINSIZE', 'MAXDEGREE',
+                'EFCONSTRUCTION', 'CAPACITY', 'NPROBE', 'EFSEARCH'}
+    pattern_prefixes = {'MATCH', '=', ',', '>', '-', '~', 'OPTIONAL', 'ACYCLIC',
+                        'TRAIL', 'WALK', 'SIMPLE', 'SHORTEST', 'INSERT', 'UPDATE', 'REPLACE', 'IGNORE', '}', '+', '*'}
+    operand_prefixes = {'(', '[', ',', ':', '=', '+', '-', '/', '*', '%', '|',
+                        'THEN', 'ELSE', 'WHEN', 'EXPORT', 'IN', 'FROM', 'WHILE',
+                        'IF', 'AND', 'OR', 'NOT', 'DELETE', 'YIELD'}
+    # Track comma-separated expressions at the depth of their clause. Nested
+    # calls and type specifications have their own argument grammar.
+    list_depth = None
+
     def mark(index, role):
         if 0 <= index < len(ts) and ts[index][0] in {'word', 'quoted', 'string'}:
-            found[index] = role
+            found.setdefault(index, role)
+
     for i, (kind, value) in enumerate(ts):
         word = values[i]
         prev = values[i-1] if i else ''
         after = values[i+1] if i+1 < len(ts) else ''
+        if kind == 'word' and word in {'RETURN', 'YIELD', 'BY', 'EXPORT'}:
+            list_depth = len(stack)
+        elif word in {'NEXT', 'MATCH', 'CALL', 'LIMIT', 'OFFSET', 'UNION', ';'}:
+            list_depth = None
         if kind == 'word' and word in {'MATCH', 'INSERT'}:
             pattern = True
             if i+2 < len(ts) and values[i+2] == '=':
@@ -150,12 +191,20 @@ def identifier_positions(ts):
             pattern = False
         if kind == 'symbol' and value in {'(', '[', '{'}:
             context = 'expression'
-            if value == '{' and prev in {'OPTIONS', 'DATAFILE'}:
+            if value == '{' and i >= 2 and (prev == 'TABLE' or values[i-2] in {'FILE', 'TABLE'}):
+                context = 'fields'
+            if value == '{' and prev == 'OPTIONS':
                 context = 'options'
+            if value in {'(', '['} and (prev in {'LABELED', '!', '&', '|'}
+                    or stack and (stack[-1][1] == 'labels' or
+                                  stack[-1][1] == 'pattern' and prev in {':', 'IS'})):
+                context = 'labels'
             if value == '(':
-                if i >= 2 and values[i-2] == 'PROCEDURE':
+                if prev in {'NODE', 'PARTITION'} and i >= 2 and values[i-2] == 'PER':
+                    mark(i+1, 'compute binding')
+                if i >= 2 and (values[i-2] == 'PROCEDURE' or prev == 'RETURNS'):
                     context = 'parameters'
-                elif pattern and (prev in {'MATCH', '=', ',', '>', '-', '~', 'OPTIONAL'}
+                elif context != 'labels' and pattern and (prev in pattern_prefixes
                                   or (stack and stack[-1][1] == 'pattern' and prev == '(')):
                     context = 'pattern'
                 elif (i+2 < len(ts) and values[i+2] in {':', '@', 'IS', '{', 'WHERE'}
@@ -163,66 +212,95 @@ def identifier_positions(ts):
                     context = 'pattern'
             elif value == '[' and prev in {'-', '~', '<'}:
                 context = 'pattern'
-            elif value == '[' and prev == '@':
+            elif value == '[' and (prev in {'@', 'LABELED'} or values[max(0, i-2):i] in (['@', '!'], ['ELEMENT', 'TYPED'], ['TYPED', '!'])):
                 context = 'types'
             stack.append((value, context, prev))
-            if context == 'pattern' and after not in {'WHERE', 'IS'}:
+            if context == 'pattern' and after not in {'WHERE', 'IS', 'SAMPLE'}:
                 mark(i+1, 'pattern binding')
         elif kind == 'symbol' and value in {')', ']', '}'}:
             if stack:
                 stack.pop()
         if kind not in {'word', 'quoted', 'string'}:
             continue
-        if prev == 'AS' and not any(s[2] == 'CAST' for s in stack):
-            mark(i, 'alias')
+        if prev == 'AS' and not (stack and stack[-1][2] == 'CAST'):
+            found[i] = 'alias'
         if prev == '.' and (i < 2 or values[i-2] != '.') and after != '(':
             mark(i, 'qualified name or property')
-        if after == ':' and not any(s[1] == 'options' for s in stack):
+        if (after == ':' and values[i+1:i+3] != [':', ':']
+                and not (stack and (stack[-1][1] == 'options' and word in ann_keys
+                                    or stack[-1][2] == 'MAP' and kind == 'string'))):
             mark(i, 'field or pattern binding')
-        if prev in {':', '|', '&'} and stack and stack[-1][1] == 'pattern':
+        if stack and (stack[-1][1] == 'labels' or stack[-1][1] == 'pattern' and prev in {':', '|', '&'}):
             mark(i, 'label or type')
         if (prev == 'IS' and stack and stack[-1][1] == 'pattern'
                 and word not in {'NOT', 'TYPED', 'DIRECTED', 'SOURCE', 'DESTINATION', 'NULL'}):
             mark(i, 'label')
+        if stack and stack[-1][1] == 'fields' and prev in {'{', ','}:
+            mark(i, 'field')
         if stack and stack[-1][1] == 'types' and prev in {'[', ','}:
             mark(i, 'type')
-        if prev == '@':
+        if ((prev in {'@', 'LABELED', '!', 'LABEL', 'LABELS'} and i-1 not in found)
+                or (prev == 'TYPED' and i >= 2 and values[i-2] == 'ELEMENT')):
             mark(i, 'type or aggregator name')
         if values[i+1:i+3] == ['-', '>']:
             mark(i, 'lambda binding')
         if (prev in {'LET', 'VALUE', 'FOR', 'YIELD', 'PROCEDURE', 'CALL', 'USE'} and i-1 not in found
-                and not (prev == 'PROCEDURE' and word == 'IF')):
+                and not (prev == 'PROCEDURE' and (word == 'IF' or kind == 'string' and values[i-2:i] == ['SHOW', 'PROCEDURE']))
+                and not (prev == 'USE' and word in {'GRAPH', 'HOME_GRAPH', 'CURRENT_GRAPH'})):
             mark(i, 'name or binding')
         if (prev in {'GRAPH', 'SCHEMA', 'INDEX'} and i-1 not in found
                 and word not in {'TYPE', 'IF', 'ON'}):
             mark(i, 'catalog object')
-        if prev == 'TYPE' and i >= 2 and values[i-2] == 'GRAPH':
+        if prev in {'RETURNS', 'FILE', 'TABLE', 'INTO', 'OF'} and i-1 not in found and word not in {'GRAPH', 'TABLE', 'IF', 'NULL'}:
+            mark(i, 'declaration or target')
+        if prev == 'TO' and i >= 2 and values[i-2] == 'RENAME':
+            mark(i, 'catalog object')
+        if prev == 'TYPE' and i >= 2 and values[i-2] in {'GRAPH', 'NODE', 'EDGE'} and word != 'IF':
+            mark(i, 'element or graph type')
+        if prev in {'NODE', 'EDGE', 'VERTEX', 'RELATIONSHIP'} and after == '(' and word != 'TYPE':
+            mark(i, 'element type')
+        if (prev == 'TYPED' and word not in {'GRAPH', 'TABLE'} and
+                ('GRAPH' in values[max(0, i-3):i-1] or found.get(i-2) == 'catalog path')):
             mark(i, 'graph type')
+        if (values[i+1:i+3] == [':', ':'] or after == 'TYPED') and word not in {'ELEMENT', 'NOT', 'IS'}:
+            mark(i, 'typed declaration')
+        if stack and stack[-1][1] == 'parameters' and prev in {'(', ','} and after not in {',', ')', '<'}:
+            mark(i, 'parameter or return column')
         # Parameter/column declarations and multi-variable LET declarations.
-        scalar = r'(?:U?INT\d*|INTEGER\d*|STRING|BOOLEAN|DOUBLE|FLOAT\d*|DECIMAL|NODE|EDGE|PATH|TABLE)'
+        scalar = r'(?:U?INT(?:EGER)?\d*|STRING|BOOL(?:EAN)?|DOUBLE|FLOAT\d*|DECIMAL|DATE|TIME|TIMESTAMP|DURATION|LIST|SET|MAP|RECORD|VECTOR|NODE|EDGE|PATH|TABLE)'
         if re.fullmatch(scalar, after) or (after.endswith('AGG') and i+2 < len(ts) and values[i+2] == '<'):
-            if prev in {'(', ',', 'VALUE', 'PARAMETER'}:
+            if prev in {'(', '{', ',', 'VALUE', 'PARAMETER', 'RETURNS'}:
                 mark(i, 'declaration')
-        if prev == ',' and after == '=':
+        if (i == 0 and after == '=') or (prev == ',' and after in {'=', 'IN'}):
             mark(i, 'binding')
-        # A bare projection/predicate name need not have a declaration in this snippet.
-        if (kind in {'word', 'quoted'} and prev in {'RETURN', 'DISTINCT', 'BY', 'WHERE', 'FILTER'} and after != '('
-                and word not in expression_forms and constructors.get(word) != after
-                and not (prev == 'FILTER' and word == 'WHERE')
-                and not (prev == 'BY' and i >= 2 and values[i-2] == 'PARTITION' and word == 'DEFAULT')
-                and not (i+1 < len(ts) and ts[i+1][0] == 'string')):
+        if prev == 'SET' and after in {'.', ':', '=', '+', '-'}:
+            mark(i, 'assignment target')
+        if after == '.' and i+2 < len(ts) and (ts[i+2][0] in {'word', 'quoted'} or values[i+2] == '@'):
+            mark(i, 'qualified name')
+        if prev in {'|', '&'} and (i < 2 or values[i-2] != '|') and after != '|':
+            mark(i, 'label expression')
+        # Exclude calls, typed literals and constructors before looking at
+        # expression slots. The same spelling can be a label, function or type.
+        if (kind != 'word' or after == '(' or word in expression_forms
+                or constructors.get(word) == after or word in constructors and after == '<'
+                or i+1 < len(ts) and ts[i+1][0] == 'string'):
+            continue
+        if (prev in {'RETURN', 'DISTINCT', 'BY', 'WHERE', 'FILTER'}
+                and values[max(0, i-1):i+1] != ['FILTER', 'WHERE']
+                and values[max(0, i-2):i+1] != ['PARTITION', 'BY', 'DEFAULT']):
             mark(i, 'expression name')
-    # Follow bound names in expression positions, retaining keyword clauses.
-    names = {ts[i][1].strip('`"').upper() for i in found}
-    expression_prefixes = {'RETURN', 'BY', 'WHERE', 'FILTER', 'WHEN', 'IN', 'AND', 'OR',
-                           '(', ',', '=', '+', '-', '*', '/', '%', '<', '>'}
-    for i, (kind, value) in enumerate(ts):
-        if (kind == 'word' and value.upper() in names and i and values[i-1] in expression_prefixes
-                and value.upper() not in expression_forms
-                and not (values[i-1] == 'FILTER' and value.upper() == 'WHERE')
-                and not (values[i-1] == 'BY' and i >= 2 and values[i-2] == 'PARTITION' and value.upper() == 'DEFAULT')
-                and not (i+1 < len(ts) and (values[i+1] == '(' or constructors.get(value.upper()) == values[i+1]))):
-            mark(i, 'bound reference')
+        if prev == ',' and len(stack) == list_depth and after != '>':
+            mark(i, 'list item')
+        if stack and stack[-1][1] in {'options', 'parameters'}:
+            continue
+        plain_operand = word not in keywords
+        keyword_operand = (word in non_reserved
+                           and after in {'', ',', ')', ']', '}', ';', 'AS', '.', '=', '+', '-', '*', '/', '<', '>'}
+                           and not (stack and stack[-1][2] in {'NORMALIZE', 'TRIM', 'CAST', 'EXTRACT'}))
+        if ((plain_operand or keyword_operand)
+                and (prev in operand_prefixes or prev in {'<', '>'} and plain_operand
+                     or values[max(0, i-2):i] == ['-', '>'])):
+            mark(i, 'expression name')
     return found
 
 
@@ -230,7 +308,7 @@ def lint(code, root, scope='database'):
     issues, unknown = [], []
     ts = tokens(code)
     values = [v.upper() if k == 'word' else v for k, v in ts]
-    clean = ' '.join(v if k not in {'string', 'quoted', 'param'} else '?' for k, v in ts)
+    clean = ' '.join(v if k not in {'string', 'quoted', 'param', 'temp'} else '?' for k, v in ts)
     def add(rule, message):
         item = {'rule': rule, 'message': message}
         if item not in issues: issues.append(item)
@@ -242,8 +320,8 @@ def lint(code, root, scope='database'):
         elif value in ')]}':
             if not stack or stack.pop() != pairs[value]: add('delimiters', 'Unbalanced delimiters')
     if stack: add('delimiters', 'Unbalanced delimiters')
-    if re.search(r"['\"]", ''.join(v for k,v in ts if k == 'symbol')):
-        add('literal', 'Unterminated string literal')
+    if re.search(r"['\"`]", ''.join(v for k,v in ts if k == 'symbol')):
+        add('literal', 'Unterminated string or identifier')
     if re.search(r'\b(?:UNWIND|MERGE|GO)\b|==|\[\s*[^\]]*\*\s*\d', clean, re.I):
         add('dialect', 'Source dialect syntax requires a documented GQL mapping')
     if re.search(r'=\s*~', clean):
@@ -261,21 +339,26 @@ def lint(code, root, scope='database'):
         if re.search(r'\b(?:RETURN|NEXT|MATCH)\b', m.group(1), re.I): continue
         if len(re.findall(r'\]\s*(?:-\s*>|-)', m.group(1))) > 1 or re.search(r'\}\s*\(', m.group(1)):
             add('compute-hop', 'Match-compute accepts only zero or one hop')
-    if re.search(r'\bNODE\s+VALUE\s+@?\w+\s+(?:INT\d*|STRING|DOUBLE|BOOLEAN)\b', clean, re.I):
+    if re.search(r'\bNODE\s+VALUE\s+@?\s*(?:\w+|\?)\s+(?:INT\d*|STRING|DOUBLE|BOOLEAN)\b', clean, re.I):
         add('node-value-type', 'NODE VALUE requires a documented aggregator type')
     keyword_data = json.loads((root / 'references/documented-keywords.json').read_text())
     reserved = set(keyword_data['reserved'])
-    keywords = reserved | set(keyword_data['non_reserved'])
-    for i, role in identifier_positions(ts).items():
+    non_reserved = set(keyword_data['non_reserved'])
+    positions = identifier_positions(ts, reserved | non_reserved, non_reserved)
+    for i, role in positions.items():
         kind, value = ts[i]
         if kind == 'quoted' or (kind == 'string' and not value.startswith('"')):
             continue
         name = value.strip('"') if kind == 'string' else value
-        if name.upper() in keywords:
+        if name.upper() in reserved or name.upper() in non_reserved:
             category = 'reserved' if name.upper() in reserved else 'non-reserved'
             rule = 'reserved-alias' if role == 'alias' and category == 'reserved' else 'keyword-identifier'
             add(rule, f'Quote {category} identifier {name} as `{name}` ({role})')
+        else:
+            add('unquoted-identifier', f'Use backticks for {name} ({role})')
     for kind, value in ts:
+        if kind == 'symbol' and value == '#':
+            add('temporary-graph-token', 'Use #name for a temporary graph; the scanner requires one token')
         if kind == 'param' and value.startswith('$`'):
             add('parameter-quoting', 'External $name parameters are lexical tokens; backticks after $ are unsupported')
     for i in range(len(values)-1):
@@ -301,7 +384,12 @@ def lint(code, root, scope='database'):
         if kind not in {'word', 'quoted'} or ts[i+1][1] != '(': continue
         prev = values[i-1] if i else ''
         if name.upper() in STRUCTURAL or prev in {'CALL', 'PROCEDURE'}: continue
-        if prev in {':', '@'}: continue  # a label/type before a node's parentheses
+        if (values[i] == 'LABELED' and prev in {'IS', 'NOT'}
+                or values[i] == 'IS' and prev != 'RETURN'
+                or values[i] == 'KEY' and prev in {'PRIMARY', 'MULTIEDGE'}):
+            continue
+        if prev in {':', '@'} or positions.get(i) in {'catalog path', 'element type', 'element or graph type'}:
+            continue
         # Find balanced call body.
         depth, end = 1, i + 2
         while end < len(ts) and depth:
@@ -310,8 +398,9 @@ def lint(code, root, scope='database'):
         key = name.strip('`').lower()
         if prev == '.':
             receiver = ts[i-2][1] if i >= 2 else ''
-            declared = re.search(r'\b' + re.escape(receiver) + r'\s+([A-Za-z]+Agg)\b', clean, re.I)
-            if declared: key = declared.group(1).lower() + '.' + key
+            declared = next((ts[j+1][1] for j in range(len(ts)-1)
+                             if ts[j][1] == receiver and values[j+1].endswith('AGG')), None)
+            if declared: key = declared.lower() + '.' + key
             else:
                 unknown.append(f'Receiver type needed for {receiver}.{name}'); continue
         entry = records.get(key)
@@ -328,7 +417,8 @@ def lint(code, root, scope='database'):
             add('function-type', 'list_distinct requires a LIST argument')
         if key == 'element_id' and args:
             variable = ''.join(v for _,v in args[0])
-            if re.search(r'\[\s*' + re.escape(variable) + r'\s*[:@\]]', clean):
+            if any(values[j] == '[' and ts[j+1][1] == variable and values[j+2] in {':', '@', ']'}
+                   for j in range(len(ts)-2)):
                 add('function-type', 'element_id accepts NODE, not EDGE')
         if key == 'all_different' and count == 1 and args[0] and args[0][0][1].upper() == 'LIST':
             add('function-type', 'all_different is not a list-deduplication function')

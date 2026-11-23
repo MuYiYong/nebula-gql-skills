@@ -13,15 +13,15 @@
       ],
       "contract": {
         "requires": [
-          "regexp_like\\s*\\(\\s*lower\\s*\\(\\s*n\\.job_name\\s*\\)\\s*,\\s*'\\.\\+\\\\\\\\\\.\\[psv\\]_\\.\\+'\\s*\\)"
+          "regexp_like\\s*\\(\\s*lower\\s*\\(\\s*`n`\\.`job_name`\\s*\\)\\s*,\\s*'\\.\\+\\\\\\\\\\.\\[psv\\]_\\.\\+'\\s*\\)"
         ],
         "forbids": [
           "=\\s*~",
-          "n\\.job\\.job_name"
+          "`n`\\.`job`\\.`job_name`"
         ]
       },
       "reference": {
-        "query": "MATCH (n:`Job`) WHERE regexp_like(lower(n.job_name), '.+\\\\.[psv]_.+') RETURN n.job_name AS job_name",
+        "query": "MATCH (`n`:`Job`) WHERE regexp_like(lower(`n`.`job_name`), '.+\\\\.[psv]_.+') RETURN `n`.`job_name` AS `job_name`",
         "explanation": ""
       }
     },
@@ -44,7 +44,7 @@
         ]
       },
       "reference": {
-        "query": "FOR job_name IN LIST['etl.p_load','etlXs_load','etl.v_run','etl.s_','etl.q_run'] RETURN job_name, regexp_like(lower(job_name), '.+\\\\.[psv]_.+') AS matched",
+        "query": "FOR `job_name` IN LIST['etl.p_load','etlXs_load','etl.v_run','etl.s_','etl.q_run'] RETURN `job_name`, regexp_like(lower(`job_name`), '.+\\\\.[psv]_.+') AS `matched`",
         "explanation": ""
       },
       "execution": {
@@ -95,7 +95,7 @@
         ]
       },
       "reference": {
-        "query": "RETURN regexp_like(\"hello, world\", \"hello\") AS whole, regexp_like(\"hello, world\", \".*hello.*\") AS contained",
+        "query": "RETURN regexp_like(\"hello, world\", \"hello\") AS `whole`, regexp_like(\"hello, world\", \".*hello.*\") AS `contained`",
         "explanation": ""
       },
       "execution": {
@@ -130,7 +130,7 @@
         ]
       },
       "reference": {
-        "query": "RETURN regexp_like(\"HELLO\", \"hello\") AS sensitive, regexp_like(\"HELLO\", \"hello\", \"i\") AS insensitive",
+        "query": "RETURN regexp_like(\"HELLO\", \"hello\") AS `sensitive`, regexp_like(\"HELLO\", \"hello\", \"i\") AS `insensitive`",
         "explanation": ""
       },
       "execution": {
@@ -165,7 +165,7 @@
         ]
       },
       "reference": {
-        "query": "RETURN regexp_like(\"a\\nb\", \"a.b\") AS plain, regexp_like(\"a\\nb\", \"a.b\", \"n\") AS with_n, regexp_like(\"a\\nb\", \"a.b\", \"m\") AS with_m",
+        "query": "RETURN regexp_like(\"a\\nb\", \"a.b\") AS `plain`, regexp_like(\"a\\nb\", \"a.b\", \"n\") AS `with_n`, regexp_like(\"a\\nb\", \"a.b\", \"m\") AS `with_m`",
         "explanation": ""
       },
       "execution": {
@@ -202,7 +202,7 @@
         ]
       },
       "reference": {
-        "query": "RETURN regexp_like($text, $pattern, \"i\") AS matched",
+        "query": "RETURN regexp_like($text, $pattern, \"i\") AS `matched`",
         "explanation": ""
       }
     },
@@ -225,7 +225,7 @@
         ]
       },
       "reference": {
-        "query": "RETURN NOT regexp_like(NULL, \".*\") AS matched",
+        "query": "RETURN NOT regexp_like(NULL, \".*\") AS `matched`",
         "explanation": ""
       },
       "execution": {
@@ -252,7 +252,7 @@
       "contract": {
         "requires": [
           "CREATE\\s+PROCEDURE",
-          "regexp_like\\s*\\(\\s*lower\\s*\\(\\s*job_name\\s*\\)",
+          "regexp_like\\s*\\(\\s*lower\\s*\\(\\s*`job_name`\\s*\\)",
           "\\\\\\\\\\.\\[psv\\]_"
         ],
         "forbids": [
@@ -260,7 +260,7 @@
         ]
       },
       "reference": {
-        "query": "CREATE PROCEDURE matches_job(job_name STRING) RETURNS matched BOOL AS { RETURN regexp_like(lower(job_name), '.+\\\\.[psv]_.+') AS matched }",
+        "query": "CREATE PROCEDURE `matches_job`(`job_name` STRING) RETURNS `matched` BOOL AS { RETURN regexp_like(lower(`job_name`), '.+\\\\.[psv]_.+') AS `matched` }",
         "explanation": ""
       }
     }

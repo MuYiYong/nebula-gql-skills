@@ -29,34 +29,34 @@
 - `nodes(<path>)` / `edges(<path>)` — 路径中的点/边列表
 - `typeof(<expr>)` — 值类型名称字符串
 
-**注意**：当前没有内置 `id()` 函数。节点身份用 `element_id(node)`；边没有 `element_id(edge)`，按需求使用 `start_node_id(edge)`、`end_node_id(edge)`、`type(edge)` 与 `multiedge_id(edge)`。代码中的 `property_exists()` 未被 v5.3.0 用户文档公开，不得默认生成；普通非 NULL 检查使用 `<element>.<prop> IS NOT NULL`。
+**注意**：当前没有内置 `id()` 函数。节点身份用 `` element_id(`node`) ``；边没有 `` element_id(`edge`) ``，按需求使用 `` start_node_id(`edge`) ``、`` end_node_id(`edge`) ``、`` type(`edge`) `` 与 `` multiedge_id(`edge`) ``。代码中的 `property_exists()` 未被 v5.3.0 用户文档公开，不得默认生成；普通非 NULL 检查使用 `` <element>.`<prop>` IS NOT NULL ``。
 
 ## Temporal Functions
 - `duration_between(<t1>, <t2>)` — 时间差；可附加 `DAY TO SECOND` / `YEAR TO MONTH`。
 - 两侧应是相同时间类型。
 
 ## String Functions
-- 正则使用 `regexp_like(str, pattern[, options])`，按整串匹配；不使用 `=~`。生成或迁移时读取 [regular-expressions.md](regular-expressions.md)，核对大小写、NULL、选项与字符串转义。
+- 正则使用 `` regexp_like(`str`, `pattern`[, `options`]) ``，按整串匹配；不使用 `=~`。生成或迁移时读取 [regular-expressions.md](regular-expressions.md)，核对大小写、NULL、选项与字符串转义。
 - `NORMALIZE(<str>)` — Unicode 规范化（仅单参数形态）；`NORMALIZE(str, form)` 不支持。
 - 只在用户明确要求时谨慎尝试。
 
 ## List Functions
 - `list_distinct(<list>)` — 文档公开的列表去重函数。不要依赖返回元素顺序；适合成员或长度比较等与顺序无关的语义。
-- `transform(<list>, x -> <expr>)` — 对列表逐项映射，替代 Cypher `[x IN list | expr]`。
-- `filter(<list>, x -> <predicate>)` — 按条件保留元素，可与 `transform()` 组合替代带 `WHERE` 的 Cypher 列表推导式。
+- `` transform(<list>, `x` -> <expr>) `` — 对列表逐项映射，替代 Cypher `[x IN list | expr]`。
+- `` filter(<list>, `x` -> <predicate>) `` — 按条件保留元素，可与 `transform()` 组合替代带 `WHERE` 的 Cypher 列表推导式。
 
 **迁移限制**：当前文档没有 `toSet()`。列表去重使用 `list_distinct()`；不要生成未文档化的 `array_distinct()` 别名。`all_different(<elem1>, <elem2>, ...)` 要求至少两个显式图元素参数，不接受单个 LIST，也不是 `toSet()` 的替代函数。
 
 ## Lambda Expressions
 ```gql
-<variable> -> <value_expression>
+`<variable>` -> <value_expression>
 ```
 
 只出现在接受 lambda 参数的函数中：
 ```gql
-transform(<list>, x -> <expr>)
-filter(<list>, x -> <predicate>)
-reduce(<list>, <init>, (acc, x) -> <expr>)
+transform(<list>, `x` -> <expr>)
+filter(<list>, `x` -> <predicate>)
+reduce(<list>, <init>, (`acc`, `x`) -> <expr>)
 ```
 
 规则：
@@ -76,7 +76,7 @@ reduce(<list>, <init>, (acc, x) -> <expr>)
 ## Fulltext Functions
 - 只在用户明确要全文检索且已有全文索引时使用。
 - 不要主动生成 `ftscore(...)` 一类调用。
-- `ftscore()` 不支持 `OR` 组合：不能在同一 WHERE/FILTER 中写 `ftscore(n.a, q) > 0 OR ftscore(n.b, q) > 0`。
+- `ftscore()` 不支持 `OR` 组合：不能在同一 WHERE/FILTER 中写 `` ftscore(`n`.`a`, `q`) > 0 OR ftscore(`n`.`b`, `q`) > 0 ``。
 - 每个 MATCH 分支中只能对同一节点变量调用一次 `ftscore()`。
 - 多属性全文搜索必须拆成多个 MATCH + UNION，最后用 `sum()` 聚合分数。
 
@@ -85,7 +85,7 @@ reduce(<list>, <init>, (acc, x) -> <expr>)
 - 不要把普通坐标条件伪装成 `ST_*` 调用。
 
 ## Legacy nGQL Migration
-- `id(v)` / `id(e)` 承担业务主键语义 → 改写为 `{id: ...}` 或 `WHERE v.id ...`
-- `id(v)` 承担节点身份值语义 → 改写为 `element_id(v)`
-- `id(e)` / `rank(e)` 承担边标识语义 → 先明确是否只需要 multiedge key；需要完整定位时组合端点、`type(e)` 与 `multiedge_id(e)`
-- 不要把 `id(e)` 机械翻译成不存在的 `element_id(e)`。
+- `id(v)` / `id(e)` 承担业务主键语义 → 改写为 `` {`id`: ...} `` 或 `` WHERE `v`.`id` ... ``
+- `id(v)` 承担节点身份值语义 → 改写为 `` element_id(`v`) ``
+- `id(e)` / `rank(e)` 承担边标识语义 → 先明确是否只需要 multiedge key；需要完整定位时组合端点、`` type(`e`) `` 与 `` multiedge_id(`e`) ``
+- 不要把 `id(e)` 机械翻译成不存在的 `` element_id(`e`) ``。

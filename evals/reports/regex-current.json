@@ -11,7 +11,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 5,
-      "query_sha256": "559364a8cca90f2615864140701c90ced6eca3dfd9b0181a4eeade8a16547e87",
+      "query_sha256": "9f2d4f588cae4a5ad70759f1699c64399437d2e89435a072125c44806e242b5e",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -22,7 +22,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "9e60645b397dbdddc290f41761745d74a31bc9db23269ff3f46b56c8ef5498a5",
+      "query_sha256": "02a5c324b92ef498d7518ba181f882d40d3d3b3d4794b89b94297c7931624982",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -33,7 +33,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "7dd287a25f92305b067ecc6566f7e5105daf9b9466657d189f97cfed339dfff7",
+      "query_sha256": "a7343acb952e529d155505944b57e242a485dc49b24b9b1586e7c208f1b139d4",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -44,7 +44,7 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "ce0fd20a4765deb2eef97a7b711ece67a67dc6f3d22a7b5bee9c1a7f665d72d0",
+      "query_sha256": "3e2024a797b2a3d2dee8cf47767384274635ad1fbc2f1d1bbfe8c4881ef31a1b",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
@@ -55,18 +55,17 @@
       "stage": "result-comparison",
       "status": "00000",
       "row_count": 1,
-      "query_sha256": "c39e0b9b19993bb77a7f8c04fc9823476f94fa7f7534e476c706e747719e468b",
+      "query_sha256": "52cf8d58e5dd30ad919305fbb23c4535874e5066ad1551e9622b59c37e6bae12",
       "original_status": null,
       "grammar": "server EXPLAIN passed",
       "semantics": "fixture comparison passed"
     }
   ],
-  "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
+  "server_version": "5.3.2, Build Time: 2026-10-26T10:27:58Z",
   "passed": true,
   "validation_source": {
-    "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-    "runner_sha256": "abac1c6b4128d3639a17838a6bc72aa40a865ffeba36b9ff1871ef05baa42e4c",
-    "suite_sha256": "3b85b3a342631cb0537be3e3d39d8af04b4ec5cb152c947413102dddd71a3f47",
-    "binding": "fresh execution while source/runner remained equal to the frozen prompt/calibration snapshots"
+    "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+    "runner_sha256": "821ba1f8692c7b38f4eb8cbecc4ab9828df11f16dc67a9e5a88650141997cc45",
+    "suite_sha256": "acde4ec3b624aaa075a50b9a69af16874bd709f370feb14b65040d09513b2109"
   }
 }

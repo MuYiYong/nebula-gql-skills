@@ -5,7 +5,7 @@
     "database-gql-reference/overview/keywords-identifiers/",
     "analytics-gql-reference/overview/keywords-identifiers/"
   ],
-  "policy": "Backtick reserved and non-reserved keywords when used as identifiers; ordinary regular identifiers may remain unquoted. Not a capability allowlist.",
+  "policy": "Backtick all identifiers in declarations and references, including reserved and non-reserved keywords. Not a capability allowlist.",
   "reserved": [
     "ABSTRACT",
     "AGGREGATE",

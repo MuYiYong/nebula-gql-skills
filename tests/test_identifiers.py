@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -49,7 +50,7 @@ class IdentifierTests(unittest.TestCase):
                 with self.subTest(root=root.name, query=query):
                     self.assertTrue(self.keyword_issues(query, root))
 
-    def test_grammar_functions_literals_and_ordinary_names_are_not_identifiers(self):
+    def test_grammar_and_ordinary_names_are_not_keyword_violations(self):
         for query in [
             'MATCH (p:Person)-[:Follows]->(q) RETURN p.id AS person_id ORDER BY person_id ASC',
             'RETURN CAST(1 AS STRING) AS text_value',
@@ -66,7 +67,7 @@ class IdentifierTests(unittest.TestCase):
             'CREATE OR REPLACE PROCEDURE ...',
             'RETURN EXISTS { MATCH ... } AS found',
             'OPTIONS { METRIC: IP, TYPE: HNSW, EFSEARCH: 16 } RETURN 1',
-            'FILE f {name STRING} = DATAFILE {PATH: "file:///test", FORMAT: CSV}',
+            'FILE f {name STRING} = DATAFILE {`PATH`: "file:///test", `FORMAT`: "CSV"}',
             'RETURN CAST("2026-10-25" AS DATE) AS today',
             'MATCH (p:Person) WHERE p IS NOT NULL RETURN p',
             'TABLE t TYPED TABLE {id INT64} PARTITION BY DEFAULT',
@@ -96,12 +97,75 @@ class IdentifierTests(unittest.TestCase):
 
     def test_ordinary_and_special_identifier_formatting(self):
         for name in ('person_id', 'Person', '_score', '客户'):
-            self.assertEqual(tools.quote_identifier(name, SKILLS[0]), name)
+            self.assertEqual(tools.quote_identifier(name, SKILLS[0]), '`' + name + '`')
         self.assertEqual(tools.quote_identifier('VerSion', SKILLS[0]), '`VerSion`')
         self.assertEqual(tools.quote_identifier('odd-name', SKILLS[0]), '`odd-name`')
         for invalid in ('', 'a' * 128, 'a`b'):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 tools.quote_identifier(invalid, SKILLS[0])
+
+    def test_single_omission_in_an_otherwise_quoted_statement(self):
+        statements = [
+            'USE /`Tenant`/`schema`.`social` MATCH `path` = TRAIL '
+            '(`left`:!(`User`|`date`))-[`edge`@![`Type`,`version`]]->(`right`) '
+            'WHERE `edge`.`order` > $limit RETURN `path` AS `result` ORDER BY `result`',
+            'CREATE GRAPH TYPE IF NOT EXISTS `network` AS { '
+            'NODE `person` (LABEL `User` {`key` INT PRIMARY KEY, `name` STRING}), '
+            'EDGE `link` (`person`)-[:`label` {`weight` INT}]->(`person`) }',
+            'CALL `schema`.`g`.`compute`(1) YIELD `first`, `second` '
+            'RETURN `first`, `second` AS `sum` ORDER BY `sum`',
+            'CREATE PROCEDURE `type`(`date` STRING) RETURNS `out` STRING '
+            'AS { RETURN `date` AS `out` }',
+            'NODE VALUE `nodeSum` SumAgg<INT> = 0 MATCH (`p`@`player`) '
+            'PER NODE (`p`) { SET `p`.@`nodeSum` += 1 }',
+            'RETURN RECORD {`a`: 1} AS `row` NEXT RETURN `row`.`a` AS `a`',
+            'FOR `x` IN LIST[1] RETURN transform(LIST[`x`], `y` -> `y` + `x`) AS `items`',
+            'MATCH (`p`) WHERE `p` IS LABELED (`date`|`label`) '
+            'RETURN `p` IS ELEMENT TYPED ![`a`, `b`] AS `is_match`',
+            'INSERT OR UPDATE (:`User` {`name`: "date"})',
+        ]
+        rules = {'reserved-alias', 'keyword-identifier', 'unquoted-identifier'}
+        for root in SKILLS:
+            for query in statements:
+                self.assertFalse(tools.lint(query, root)['issues'], query)
+                for match in re.finditer(r'`(\w+)`', query):
+                    changed = query[:match.start()] + match[1] + query[match.end():]
+                    with self.subTest(root=root.name, changed=changed):
+                        issues = tools.lint(changed, root)['issues']
+                        self.assertTrue(any(i['rule'] in rules for i in issues), issues)
+
+    def test_concrete_examples_follow_generation_policy(self):
+        from audit_skill_capabilities import CATALOG_FILES, NEGATIVE_MARKERS, parse_blocks
+        rules = {'reserved-alias', 'keyword-identifier', 'unquoted-identifier'}
+        for root in SKILLS:
+            for path in (root / 'references').glob('*.md'):
+                if path.name in CATALOG_FILES:
+                    continue
+                for block in parse_blocks(path):
+                    if block.language != 'gql' or any(m in block.context for m in NEGATIVE_MARKERS):
+                        continue
+                    # Grammar templates also contain bare metavariables and alternatives.
+                    if '...' in block.code or re.search(r'<[\w|]+>', block.code):
+                        continue
+                    with self.subTest(path=path.name, line=block.line):
+                        issues = tools.lint(block.code, root)['issues']
+                        self.assertFalse([i for i in issues if i['rule'] in rules])
+
+    def test_literal_and_syntax_roles_in_fully_quoted_output(self):
+        for root in SKILLS:
+            for query in [
+                'USE #graph MATCH (`return`:`DATE`) RETURN `return`.`order` AS `limit`',
+                'RETURN CAST($date AS DATE) AS `date`, CURRENT_DATE AS `when`',
+                'RETURN MAP {"type": "date"} AS `m`, NULL AS `n`',
+                'RETURN 1 AS `score` /* AS order */ ORDER BY `score`',
+                'SHOW PROCEDURE ".*version.*"',
+                'OPTIONS { METRIC: IP, TYPE: HNSW, EFSEARCH: 16 }',
+            ]:
+                with self.subTest(root=root.name, query=query):
+                    self.assertFalse(tools.lint(query, root)['issues'])
+            self.assertEqual(tools.quote_identifier(r'a\\b', root), r'`a\\\\b`')
+            with self.assertRaises(ValueError):
+                tools.quote_identifier('@visits', root)
 
     def test_standalone_quoting_cli(self):
         for root in SKILLS:
@@ -110,29 +174,29 @@ class IdentifierTests(unittest.TestCase):
                  'quote-identifiers', 'property', 'version', 'person_id'],
                 cwd=tempfile.gettempdir(), text=True, capture_output=True, check=True)
             self.assertEqual(json.loads(completed.stdout),
-                             {'property': '`property`', 'version': '`version`', 'person_id': 'person_id'})
+                             {'property': '`property`', 'version': '`version`', 'person_id': '`person_id`'})
 
     def test_keyword_parameters_and_values_are_distinct(self):
-        self.assertFalse(tools.lint('RETURN $left + $right AS total', SKILLS[0])['issues'])
+        self.assertFalse(tools.lint('RETURN $left + $right AS `total`', SKILLS[0])['issues'])
         self.assertIn('parameter-quoting', {
-            i['rule'] for i in tools.lint('RETURN $`left` + $`right` AS total', SKILLS[0])['issues']})
+            i['rule'] for i in tools.lint('RETURN $`left` + $`right` AS `total`', SKILLS[0])['issues']})
         self.assertEqual(tools.tokens('$`left`')[0], ('param', '$`left`'))
         for name in ('with', 'graph', 'return', 'left', 'node'):
-            report = tools.lint('RETURN $' + name + ' AS result_value', SKILLS[0])
+            report = tools.lint('RETURN $' + name + ' AS `result_value`', SKILLS[0])
             self.assertFalse(report['issues'], report)
 
     def test_external_parameter_execution_binding_preserves_names_and_guard(self):
         from quality.runtime import guard, statement
         case = {'oracle': 'contributions', 'stratum': 'database_procedure',
                 'parameter_sets': [{'left': 1, 'right': 2}]}
-        query = 'RETURN $left + $right AS total'
+        query = 'RETURN $left + $right AS `total`'
         guard(query, case)
         compiled = statement(query, case, {'left': 1, 'right': 2})
         self.assertIn('PARAMETERS $left = 1, $right = 2', compiled)
         with self.assertRaisesRegex(ValueError, 'Unexpected parameter'):
-            guard('RETURN $`unknown` AS total', case)
+            guard('RETURN $`unknown` AS `total`', case)
         with self.assertRaises(ValueError):
-            guard('RETURN $`left` AS total', case)
+            guard('RETURN $`left` AS `total`', case)
 
 
 class KeywordSourceTests(unittest.TestCase):

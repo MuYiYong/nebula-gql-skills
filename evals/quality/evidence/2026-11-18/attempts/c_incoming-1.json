@@ -1,0 +1,7 @@
+{
+  "case_id": "c_incoming",
+  "attempt": 1,
+  "query": "NODE VALUE incoming_sum SumAgg<INT64> = 0\nTABLE incoming_totals {id STRING, total INT64}\n\nMATCH (src@player)-[e@follow]->(dst@player)\nPER PATH {\n  SET dst.@incoming_sum += coalesce(e.degree, 0)\n}\n\nMATCH (p@player)\nPER NODE (p) {\n  EXPORT p.id AS id, p.@incoming_sum AS total INTO incoming_totals\n}\n\nFOR row IN incoming_totals\nRETURN row.id AS id, row.total AS total",
+  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+  "notes": "继承评测器已选择的 Database 本地临时图；player/follow 为题设的节点/边类型。按每条有向边向目标点聚合，NULL degree 按 0，独立零跳阶段导出全部 player；未执行数据库。"
+}

@@ -2,8 +2,8 @@
   "producer": {
     "kind": "model",
     "model": "session-inherited",
-    "skill_version": "final-iteration",
-    "notes": "single independent batch; tokens unobserved"
+    "skill_version": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+    "notes": "Fresh blind batch of 16 public routing prompts and the two current skill entry points. Exact model identity and sampling settings were not exposed by the subagent tool."
   },
   "total": 16,
   "passed": 16,

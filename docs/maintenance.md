@@ -124,7 +124,7 @@ authorization. Review the diff against the pinned version; update curated
 references and feature evidence selectively while retaining human edits.
 
 Refresh without `--check` writes only the six **generated** catalogs (four function/syntax files and two reserved/non-reserved keyword catalogs) whose
-content changed. Other references, SKILL.md, cases and helper code remain intact. Both keyword categories govern identifier quoting only; they never authorize syntax capabilities. Generated identifier names matching either category use backticks; ordinary names may remain unquoted. The manuals permit bare non-reserved identifiers, but generation follows this stricter policy.
+content changed. Other references, SKILL.md, cases and helper code remain intact. The keyword categories describe the 5.3.0 vocabulary. The quoting rule applies independently of catalog membership. Use backticks for every identifier, including ordinary names, in declarations and references. The manuals permit bare non-reserved identifiers, but generation follows this stricter policy.
 Run the offline gate, relevant model/live cases and then explicitly accept the
 new source snapshot using `track_sources.py ... --update`. A source-manifest
 update alone does not certify coverage. Original local directories are optional

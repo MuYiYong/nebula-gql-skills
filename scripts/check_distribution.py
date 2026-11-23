@@ -22,7 +22,7 @@ def main():
                                   cwd=td,text=True,capture_output=True,check=True)
             found=json.loads(result.stdout)
             if found['matches']!=1 or 'LIST' not in found['text']:raise SystemExit('Standalone lookup failed')
-            candidate=Path(td)/'candidate.gql';candidate.write_text('RETURN list_distinct(LIST[1,1,2]) AS items')
+            candidate=Path(td)/'candidate.gql';candidate.write_text('RETURN list_distinct(LIST[1,1,2]) AS `items`')
             result=subprocess.run([sys.executable,'-I',str(root/'scripts/skill_tools.py'),'lint',str(candidate)],
                                   cwd=td,text=True,capture_output=True,check=True)
             if json.loads(result.stdout)['issues']:raise SystemExit('Standalone lint failed')
@@ -32,8 +32,8 @@ def main():
             if 'references/regular-expressions.md:' not in json.loads(result.stdout)['text']:
                 raise SystemExit('Standalone regex reference lookup failed')
             for query,expected_code in [
-                (r"RETURN regexp_like(lower('job.p_a'), '.+\\.[psv]_.+') AS matched",0),
-                (r"RETURN lower('job.p_a') =~ '.+\\.[psv]_.+' AS matched",1),
+                (r"RETURN regexp_like(lower('job.p_a'), '.+\\.[psv]_.+') AS `matched`",0),
+                (r"RETURN lower('job.p_a') =~ '.+\\.[psv]_.+' AS `matched`",1),
             ]:
                 candidate.write_text(query)
                 result=subprocess.run([sys.executable,'-I',str(root/'scripts/skill_tools.py'),'lint',str(candidate)],
@@ -44,7 +44,7 @@ def main():
             result=subprocess.run([sys.executable,'-I',str(root/'scripts/skill_tools.py'),
                                    'quote-identifiers','values','version','person_id'],
                                   cwd=td,text=True,capture_output=True,check=True)
-            if json.loads(result.stdout)!={'values':'`values`','version':'`version`','person_id':'person_id'}:
+            if json.loads(result.stdout)!={'values':'`values`','version':'`version`','person_id':'`person_id`'}:
                 raise SystemExit('Standalone keyword quoting failed')
             # Query routing to the sibling is optional handoff, never a link required at runtime.
             if not (root/'references/repair.md').is_file():raise SystemExit('Missing packaged repair contract')

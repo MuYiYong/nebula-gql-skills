@@ -2,6 +2,17 @@
 
 Notable changes to the Nebula GQL skills are documented here. ZIP versions use the Beijing date in `YY.MM.DD` format. GitHub release tags use `vYY.MM.DD_BuildHHMM`, with `HHMM` from the Beijing time when the workflow resolves the version.
 
+## 26.11.23 - 2026-11-23
+
+### Fixed
+
+- Both skills now enclose every identifier in backticks at declaration and at each use, including ordinary names and keywords used as names. Qualified names and type sets are quoted one component at a time.
+- Updated the bundled formatter, lint checks and examples to cover labels, element types, properties, variables, procedure parameters and output aliases. External parameters and temporary graph tokens retain their native spelling.
+
+### Validation
+
+- All 37 generated answers passed their static contracts. On NebulaGraph 5.3.2, 26 independently generated queries and procedure bodies passed 92 result comparisons. Both case variants of all 431 documented keywords passed as column aliases. See the [identifier validation results](docs/keyword-identifiers.md).
+
 ## 26.11.18 - 2026-11-18
 
 ### Changed

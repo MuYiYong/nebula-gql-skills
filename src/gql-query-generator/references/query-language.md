@@ -49,10 +49,10 @@ Use this file as the detailed NebulaGraph 5.3.0 query syntax reference. Search b
 ## Query Skeleton
 
 ```gql
-[USE <graph_name>]
+[USE `<graph_name>`]
 MATCH <graph_pattern>
 [WHERE <cross_variable_condition>]
-[CALL <procedure>(<args>) [YIELD <items>]]
+[CALL `<procedure>`(<args>) [YIELD <items>]]
 RETURN <items>
 [GROUP BY <binding_variables_or_return_aliases>]
 [ORDER BY <sort_items>]
@@ -66,8 +66,8 @@ RETURN <items>
 - 基础：`MATCH <graph_pattern>` / `OPTIONAL MATCH <graph_pattern>`
 - 图模式按点-边-点交替组织。
 - **执行方向**：`enable_reorder` 默认 `false`，默认计划优先按文本从左到右展开，所以把已绑定或高选择性锚点放左侧。显式启用重排后 CBO 可改选起点/方向；`NO_REORDER` 才锁定路径文本顺序。shortest path 还可能使用专用 `BiBFS`。具体见 [performance.md](performance.md)。
-- 路径变量：`p = <path_pattern>` — 只在后续引用整条路径时声明。
-- 变长路径量词放在边方向后：`-[:T]->{1,3}`、`-[:T]->*`、`-[:T]->+`。
+- 路径变量：`` `p` = <path_pattern> `` — 只在后续引用整条路径时声明。
+- 变长路径量词放在边方向后：`` -[:`T`]->{1,3} ``、`` -[:`T`]->* ``、`` -[:`T`]->+ ``。
 - **禁止** Cypher 风格 `[:T*1..3]`。
 - 未明确要求时不主动添加匹配模式前缀或路径类型前缀。
 - 最短路：`ALL SHORTEST`、`ANY SHORTEST`、`SHORTEST n` — 只在用户要求时生成。
@@ -75,7 +75,7 @@ RETURN <items>
 
 ### WHERE / Filter Placement
 **三级优先级**：
-1. 单变量等值 → pattern 属性 `{prop: value}`
+1. 单变量等值 → pattern 属性 `` {`prop`: `value`} ``
 2. 单变量非等值（IN、范围、CONTAINS 等） → pattern 内 `WHERE`
 3. 跨变量/结果级约束 → 外层 `WHERE`
 
@@ -83,44 +83,44 @@ RETURN <items>
 
 Preferred:
 ```gql
-MATCH (src:Tag WHERE src.id IN <ids>)-[:E]->(dst:Tag WHERE dst.id IN <ids>)
-RETURN src, dst
+MATCH (`src`:`Tag` WHERE `src`.`id` IN <ids>)-[:`E`]->(`dst`:`Tag` WHERE `dst`.`id` IN <ids>)
+RETURN `src`, `dst`
 ```
 
 同一 inner-MATCH 中也合法，但没有把两个端点锚点直接写在 pattern 中：
 ```gql
-MATCH (src:Tag)-[:E]->(dst:Tag)
-WHERE src.id IN <ids> AND dst.id IN <ids>
-RETURN src, dst
+MATCH (`src`:`Tag`)-[:`E`]->(`dst`:`Tag`)
+WHERE `src`.`id` IN <ids> AND `dst`.`id` IN <ids>
+RETURN `src`, `dst`
 ```
 
 - `AND` 连接多条件；只有用户说"或者"才用 `OR`。
-- 在 `WHERE` / `FILTER` 中表达"存在某个图模式"或"排除某个图模式"时，使用相关子查询：`EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`。不要生成裸 pattern 谓词，例如 `AND NOT (p1)-[:follow]-(p2)`。
+- 在 `WHERE` / `FILTER` 中表达"存在某个图模式"或"排除某个图模式"时，使用相关子查询：`EXISTS { MATCH ... }` / `NOT EXISTS { MATCH ... }`。不要生成裸 pattern 谓词，例如 `` AND NOT (`p1`)-[:`follow`]-(`p2`) ``。
 - 当自然语言出现“是 A，但不是 B”“不是好友”“没有某关系”“排除某模式”“without ...”“but not ...”这类排除关系时，把被排除的图模式落成 `NOT EXISTS { MATCH ... }`；当表达“是 A，且也是/并且有 B 关系”时，把额外图模式落成 `EXISTS { MATCH ... }`。
 
 Preferred:
 ```gql
-MATCH (p1:player)-[:serve]->(t:team)<-[:serve]-(p2:player)
-WHERE p1.id <> p2.id
+MATCH (`p1`:`player`)-[:`serve`]->(`t`:`team`)<-[:`serve`]-(`p2`:`player`)
+WHERE `p1`.`id` <> `p2`.`id`
   AND NOT EXISTS {
-    MATCH (p1)-[:follow]-(p2)
+    MATCH (`p1`)-[:`follow`]-(`p2`)
   }
-RETURN p1, p2
+RETURN `p1`, `p2`
 ```
 
 Anti-pattern（不要生成）:
 ```gql
-MATCH (p1:player)-[:serve]->(t:team)<-[:serve]-(p2:player)
-WHERE p1.id <> p2.id
-  AND NOT (p1)-[:follow]-(p2)
-RETURN p1, p2
+MATCH (`p1`:`player`)-[:`serve`]->(`t`:`team`)<-[:`serve`]-(`p2`:`player`)
+WHERE `p1`.`id` <> `p2`.`id`
+  AND NOT (`p1`)-[:`follow`]-(`p2`)
+RETURN `p1`, `p2`
 ```
 
 - 详细表达式规则见 [expressions.md](expressions.md)。
 
 ### RETURN
 ```gql
-RETURN [ALL | DISTINCT] <expr> [AS <alias>], ...
+RETURN [ALL | DISTINCT] <expr> [AS `<alias>`], ...
 RETURN *
 ```
 - 别名用 `AS`；需去重用 `DISTINCT`。
@@ -134,7 +134,7 @@ GROUP BY <binding_variables_or_return_aliases>
 ```
 - RETURN 中有聚合函数才进入聚合模式。
 - `GROUP BY ()` — 所有行归为一组。
-- 5.3 的显式分组项必须是绑定变量或 `RETURN` 别名；不要直接写属性/表达式，如 `GROUP BY v.id` 会触发 `NS203`。若按节点身份分组且还需返回属性，使用 `RETURN v.id AS id, count(*) AS cnt GROUP BY v`；若需求确实按属性值合并多个节点，使用 `RETURN v.id AS id, count(*) AS cnt GROUP BY id`。
+- 5.3 的显式分组项必须是绑定变量或 `RETURN` 别名；不要直接写属性/表达式，如 `` GROUP BY `v`.`id` `` 会触发 `NS203`。若按节点身份分组且还需返回属性，使用 `` RETURN `v`.`id` AS `id`, count(*) AS `cnt` GROUP BY `v` ``；若需求确实按属性值合并多个节点，使用 `` RETURN `v`.`id` AS `id`, count(*) AS `cnt` GROUP BY `id` ``。
 - 没有聚合函数不要生成 `GROUP BY`。
 
 ### ORDER BY / OFFSET / LIMIT
@@ -148,7 +148,7 @@ GROUP BY <binding_variables_or_return_aliases>
 
 ### CALL（命名过程）
 ```gql
-CALL <procedure>(<args>) [YIELD <items>]
+CALL `<procedure>`(<args>) [YIELD <items>]
 RETURN <items>
 ```
 - `CALL` 后必须跟结果语句（`RETURN` 或 `RETURN *`）。
@@ -172,7 +172,7 @@ FILTER [WHERE] <condition>
 
 ### LET
 ```gql
-LET <var> = <expr>, ...
+LET `<var>` = <expr>, ...
 ```
 - 声明后续可用的变量。
 - 跨 `NEXT` 时需先放进 `RETURN`。
@@ -180,9 +180,9 @@ LET <var> = <expr>, ...
 
 ### FOR
 ```gql
-FOR <var> IN <list_expr>
-FOR <var>, <idx> IN <list_expr> WITH ORDINALITY  -- 1-based
-FOR <var>, <idx> IN <list_expr> WITH OFFSET      -- 0-based
+FOR `<var>` IN <list_expr>
+FOR `<var>`, `<idx>` IN <list_expr> WITH ORDINALITY  -- 1-based
+FOR `<var>`, `<idx>` IN <list_expr> WITH OFFSET      -- 0-based
 ```
 - 展开列表或表；多个 `FOR` 产生笛卡尔积。
 - 不用作图遍历原语。
@@ -204,8 +204,8 @@ FOR <var>, <idx> IN <list_expr> WITH OFFSET      -- 0-based
 
 ### USE
 ```gql
-USE <graph_name>
-USE <graph_variable>
+USE `<graph_name>`
+USE `<graph_variable>`
 ```
 - 只在图上下文不可省略时生成。
 - 用户没提供时不主动添加。
@@ -221,8 +221,8 @@ INSERT OR UPDATE <pattern>          -- 仅更新属性
 ```
 
 ```gql
-SET <element>.<prop> = <expr>       -- 更新属性
-SET <node>:<label>                  -- 追加标签
+SET `<element>`.`<prop>` = <expr>       -- 更新属性
+SET `<node>`:`<label>`                  -- 追加标签
 ```
 
 ```gql
@@ -232,9 +232,9 @@ SET <node>:<label>                  -- 追加标签
 ### Parameterized Query
 ```gql
 PARAMETERS $<name>=<expr>, ...
-MATCH (v:<Tag>)
-WHERE v.<prop> = $<name>
-RETURN v
+MATCH (`v`:`<Tag>`)
+WHERE `v`.`<prop>` = $<name>
+RETURN `v`
 ```
 - 只在用户明确要求参数化时使用。
 - 会话参数：`SESSION SET VALUE $<name>=<expr>` / `SESSION RESET $<name>`。
@@ -257,7 +257,7 @@ FINISH
 
 1. 判断用户意图：新生成 / 改写 / 补全 / 解释 / 错误修复 / **Cypher 迁移** / **nGQL 迁移**。
 2. **若输入是 Cypher 或 nGQL 语句**，加载 [migration.md](migration.md)，识别语言特征并按映射表逐条改写。
-3. 确定查询主干：`MATCH` / `CALL procedure(...)` / `CALL { ... }`。
+3. 确定查询主干：`MATCH` / `` CALL `procedure`(...) `` / `CALL { ... }`。
 4. 抽取图模式、过滤条件、返回列、聚合、排序分页。
 5. Schema 不足时继续生成草稿，不确定部分用占位符（`<Tag>`、`<prop>`）。
 6. 若涉及错误码，加载 [error-codes.md](error-codes.md) 按优先级修复。
@@ -267,11 +267,11 @@ FINISH
 
 ## Key Decision Points
 - 同一需求既可 `MATCH` 也可 `CALL` → 选更短更直接的。
-- 单变量等值过滤 → 属性字面量 `{prop: value}`，不要 pattern WHERE。
+- 单变量等值过滤 → 属性字面量 `` {`prop`: `value`} ``，不要 pattern WHERE。
 - 单变量非等值 → pattern 内 `WHERE`，不要外层 WHERE。
 - 在不改变 MATCH/OPTIONAL/相关作用域语义时，局部单变量过滤优先写入 pattern；引用外部变量、子查询、路径变量或多个 component 时保留正确作用域。
 - 跨变量约束 → 外层 `WHERE`。
-- 图模式存在性过滤 → `EXISTS { MATCH ... }`；图模式排除过滤 → `NOT EXISTS { MATCH ... }`；不要用 `NOT (a)-[:T]-(b)`。
+- 图模式存在性过滤 → `EXISTS { MATCH ... }`；图模式排除过滤 → `NOT EXISTS { MATCH ... }`；不要用 `` NOT (`a`)-[:`T`]-(`b`) ``。
 - 自然语言若出现“但不是/不是…的人/没有…关系/排除…模式/without/but not”，优先识别为“先匹配主模式，再用 `NOT EXISTS { MATCH ... }` 排除子模式”，不要把否定关系直接写成裸 pattern。
 - 子查询再排序/聚合 → `CALL { ... }`。
 - 聚合后再筛选 → `RETURN ... NEXT ... FILTER`。
@@ -291,27 +291,27 @@ FINISH
 - 不生成 Cypher 风格量词 `[:T*1..n]`。
 - 不保留 Cypher 的 `WITH`（中间投影）——必须改为 `RETURN...NEXT`。
 - 不保留 Cypher 的 `UNWIND`——必须改为 `FOR`。
-- 不保留 Cypher 的 `toSet(list)`——必须改为文档公开的 `list_distinct(list)`；不生成未文档化的 `array_distinct()`。
+- 不保留 Cypher 的 `toSet(list)`——必须改为文档公开的 `` list_distinct(`list`) ``；不生成未文档化的 `array_distinct()`。
 - 不保留 Cypher 的 `[x IN list | expr]` 或 `[x IN list WHERE pred | expr]`——必须改为 `transform()`，必要时组合 `filter()`。
 - 不保留 nGQL 的 `GO`/`FETCH`/`LOOKUP`——必须改为 `MATCH`。
 - 不保留 nGQL 的管道 `|`——必须改为 `RETURN...NEXT` 或 `CALL { ... }`。
 - 不保留 nGQL 的 `$-.col`/`$^.tag.prop`/`$$.tag.prop`——必须改为变量属性引用。
-- 不保留 nGQL 的 `v.tag.prop`——必须改为 `v.prop`。
+- 不保留 nGQL 的 `v.tag.prop`——必须改为 `` `v`.`prop` ``。
 - 不保留 nGQL 的 `==` 等值比较——必须改为 `=`。
-- 不保留 nGQL 的 `[:T1|:T2]` 多边类型并集——必须改为 GQL 标签表达式 `[:T1|T2]`（去掉多余 `:`）。
-- 不生成 `type(r) IN ['T1', 'T2']` 来过滤已知的多边类型——必须改为标签表达式 `-[:T1|T2]->`；仅在边类型列表来自运行时参数或动态计算时才用 `type()`。
-- 不保留 nGQL 的 `rank(edge)` / `@rank` 原写法；需要 edge rank 时改为 `multiedge_id(edge)`。
+- 不保留 nGQL 的 `[:T1|:T2]` 多边类型并集——必须改为 GQL 标签表达式 `` [:`T1`|`T2`] ``（去掉多余 `:`）。
+- 不生成 `` type(`r`) IN ['T1', 'T2'] `` 来过滤已知的多边类型——必须改为标签表达式 `` -[:`T1`|`T2`]-> ``；仅在边类型列表来自运行时参数或动态计算时才用 `type()`。
+- 不保留 nGQL 的 `rank(edge)` / `@rank` 原写法；需要 edge rank 时改为 `` multiedge_id(`edge`) ``。
 - 不保留 nGQL 的 `properties(v)` / `keys(...)` / `src(edge)` / `dst(edge)`——必须改为逐属性返回或 pattern 绑定。
 - 不保留 nGQL 的 `allShortestPaths(...)` / `shortestPath(...)` 函数包裹——必须改为 `ALL SHORTEST` / `ANY SHORTEST PATH`。
-- 不保留 nGQL/Cypher 的 `exists(v.prop)`——常见属性检查改为文档公开的 `v.prop IS NOT NULL`；若必须区分属性缺失与 NULL，明确说明没有可靠等价构造，不生成未文档化的 `property_exists()`。
-- 不保留 Cypher 的 `^` 求幂——必须改为 `power(x, y)`（不是 `pow`）。
-- 不保留 Cypher/nGQL 的 `STARTS WITH` / `ENDS WITH` 运算符——必须改为 `like(str, 'prefix%')` / `like(str, '%suffix')`（GQL 无 `starts_with`/`ends_with` 函数）。
-- 不保留 Cypher/nGQL 的 `CONTAINS` 运算符——必须改为 `contains(str, substr)`（小写函数形式）。
+- 不保留 nGQL/Cypher 的 `exists(v.prop)`——常见属性检查改为文档公开的 `` `v`.`prop` IS NOT NULL ``；若必须区分属性缺失与 NULL，明确说明没有可靠等价构造，不生成未文档化的 `property_exists()`。
+- 不保留 Cypher 的 `^` 求幂——必须改为 `` power(`x`, `y`) ``（不是 `pow`）。
+- 不保留 Cypher/nGQL 的 `STARTS WITH` / `ENDS WITH` 运算符——必须改为 `` like(`str`, 'prefix%') `` / `` like(`str`, '%suffix') ``（GQL 无 `starts_with`/`ends_with` 函数）。
+- 不保留 Cypher/nGQL 的 `CONTAINS` 运算符——必须改为 `` contains(`str`, `substr`) ``（小写函数形式）。
 - 不在 `ACYCLIC` 路径中再用 `all_different()` 列出同一条路径的所有点——ACYCLIC 已保证点不重复，无需冗余。
-- 不生成 `all_different(list)`——该函数要求至少两个显式图元素参数，不接受单个 LIST，也不能替代列表去重。
+- 不生成 `` all_different(`list`) ``——该函数要求至少两个显式图元素参数，不接受单个 LIST，也不能替代列表去重。
 - 所有默认生成的函数都必须在 v5.3.0 用户文档中存在同名且同签名的证据；feature/代码只能验证实现边界，不能把未文档化函数加入白名单。只有用户明确提供的已安装 UDF 可以例外。
 - 不保留 Cypher 的 `CALL { WITH n ... }`——GQL 子查询自动捕获外层变量，删除 `WITH`。
-- 不机械把 `id(v)` 翻译成 `element_id(v)`——必须先判断语义。
+- 不机械把 `id(v)` 翻译成 `` element_id(`v`) ``——必须先判断语义。
 - 不输出只有 `CALL` 没有结果语句的查询。
 - 不在同层复合查询混用不同连接词。
 - 不在 `CALL { ... }` 内放 DDL/DML。
@@ -324,7 +324,7 @@ FINISH
 - 不在 KNN 中拼 `APPROX` 或 ANN OPTIONS。
 - 不把 `FOR` 误用成图遍历。
 - 不为追求下沉而改变 `OPTIONAL MATCH` 的 NULL 保留、相关变量可见性、路径集合或跨 component 语义。
-- 不生成裸图模式谓词作为布尔条件，例如 `WHERE NOT (a)-[:T]-(b)` 或 `WHERE (a)-[:T]-(b)`；必须改成 `NOT EXISTS { MATCH ... }` 或 `EXISTS { MATCH ... }`。
+- 不生成裸图模式谓词作为布尔条件，例如 `` WHERE NOT (`a`)-[:`T`]-(`b`) `` 或 `` WHERE (`a`)-[:`T`]-(`b`) ``；必须改成 `NOT EXISTS { MATCH ... }` 或 `EXISTS { MATCH ... }`。
 - 不把“但不是/不是…/没有…关系/排除…”这类自然语言排除条件翻译成裸 `NOT (pattern)`；必须生成 `NOT EXISTS { MATCH ... }`。
 - 不跨 `NEXT` 引用未返回的列。
 - 不假设 `OFFSET` 接受负数。

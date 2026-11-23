@@ -1,15 +1,15 @@
 {
   "version": 1,
-  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
   "suite_sha256": "1ef49b157eee45c0e05f1225f1b6a399f0b10d2c2dbf95fe0a7e8255571ba564",
-  "runner_sha256": "f9e31f99436f56bf646bb7318965193291c38a4327fc837e04b5dfd6ad5960d1",
+  "runner_sha256": "821ba1f8692c7b38f4eb8cbecc4ab9828df11f16dc67a9e5a88650141997cc45",
   "attempts": [
     {
       "case_id": "c_degrees",
       "attempt": 1,
       "stratum": "local_compute",
       "split": "development",
-      "output_sha256": "df4cf943adfbbe735566306d0b4b7e594a53feb4616a224718c7ce2e5c97b732",
+      "output_sha256": "c59a2227f1ea85dce896e50d253dcc194c9b0c442274e3d769e2550a2fa05d1c",
       "instances": [
         {
           "variant": "branching",
@@ -218,7 +218,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -228,7 +228,7 @@
       "attempt": 2,
       "stratum": "local_compute",
       "split": "development",
-      "output_sha256": "056fdf5ebb70bfb18c56401e9c6f5dbd7265d053272c39b1c603dcf4fea328eb",
+      "output_sha256": "1b5262e91c57bcdb9d1dcd129b63f9443a556ab880028347ee16ce0d8bf8f91a",
       "instances": [
         {
           "variant": "branching",
@@ -437,7 +437,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -447,7 +447,7 @@
       "attempt": 1,
       "stratum": "local_compute",
       "split": "holdout",
-      "output_sha256": "5797253373b89de22e091ed73d9a5575ff644aec874a0766954fd6382158ca88",
+      "output_sha256": "a2ca9a470aa9518139b248bee607a5910779bb7145ca5dad1813a64811f6eb6d",
       "instances": [
         {
           "variant": "branching",
@@ -656,7 +656,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [
         "Special signature requires checking: coalesce"
@@ -668,7 +668,7 @@
       "attempt": 2,
       "stratum": "local_compute",
       "split": "holdout",
-      "output_sha256": "c05f624dd24e0dbc55d0859bc4e6439d97e2ab4fb9c62e303d99953b87f5a8b0",
+      "output_sha256": "024465aae300093af2d3db801b7c6991d0d575ce74c56ea39bf215cc842bda9c",
       "instances": [
         {
           "variant": "branching",
@@ -877,7 +877,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [
         "Special signature requires checking: coalesce"
@@ -889,7 +889,7 @@
       "attempt": 1,
       "stratum": "local_compute",
       "split": "development",
-      "output_sha256": "ea820b5c67db59f580ae4a9e1dd803c1b54a6d74a71e08076745ae4e822177c7",
+      "output_sha256": "869bee75aa1fb21bfb3ab80dfb8875157dd223ff1b02f912db4c156f3b7d129f",
       "instances": [
         {
           "variant": "branching",
@@ -977,7 +977,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -987,7 +987,7 @@
       "attempt": 2,
       "stratum": "local_compute",
       "split": "development",
-      "output_sha256": "bad9376b69fdf308c234934629e734d1e49dfbc514bbce05b3b7c59c29683037",
+      "output_sha256": "9e684f2fbdb7f2b20a6e1cedc0363ae537909d8ea79c7319c42360997e211d41",
       "instances": [
         {
           "variant": "branching",
@@ -1075,7 +1075,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1085,7 +1085,7 @@
       "attempt": 1,
       "stratum": "local_compute",
       "split": "fresh_holdout",
-      "output_sha256": "4ddb4bb852bdf3b253b012bc7a3ed1735cbc441f635bde54e763f41910a140a8",
+      "output_sha256": "7e97f516e9cd6870a8b9ca6bbea30e7ceb9afa93b8a535b3da20ebfb47393416",
       "instances": [
         {
           "variant": "word_ids",
@@ -1145,7 +1145,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1155,7 +1155,7 @@
       "attempt": 2,
       "stratum": "local_compute",
       "split": "fresh_holdout",
-      "output_sha256": "a16f98d4a8413871769947d09b60747adb170e1b4e2682db30aab674f21d0177",
+      "output_sha256": "39b97e3c27c1a972114678aaa7d1ce7c26da1c1bafd0e388f93372bec8d9baac",
       "instances": [
         {
           "variant": "word_ids",
@@ -1215,7 +1215,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1225,7 +1225,7 @@
       "attempt": 1,
       "stratum": "database_procedure",
       "split": "holdout",
-      "output_sha256": "06e44bcaa346a9c45a62fdfa4aaed96b92a982af293a00e6d8f19939c5a1066d",
+      "output_sha256": "21c052064d3108aaa9a14860d4a7953d0848970824446539fb6dc72bb4b23d8d",
       "instances": [
         {
           "variant": "scalar",
@@ -1337,7 +1337,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1347,7 +1347,7 @@
       "attempt": 2,
       "stratum": "database_procedure",
       "split": "holdout",
-      "output_sha256": "626af52a9590e46c37e6111efdd5c995968664ee26739451c8e29fa9f46f8a13",
+      "output_sha256": "5fc611482d1b46e9759e29527d27ee35261350063e411034ecc72e67e241355b",
       "instances": [
         {
           "variant": "scalar",
@@ -1459,7 +1459,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1469,7 +1469,7 @@
       "attempt": 1,
       "stratum": "database_procedure",
       "split": "development",
-      "output_sha256": "031648aa126bfc314c16215f6f7f683afc903b7ffeef2dcd7a6eab2b49e860b1",
+      "output_sha256": "20decab42c781663b17ca4287312458b2684b34f1a6ed46a44eb6d7c53537502",
       "instances": [
         {
           "variant": "scalar",
@@ -1554,7 +1554,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1564,7 +1564,7 @@
       "attempt": 2,
       "stratum": "database_procedure",
       "split": "development",
-      "output_sha256": "2b20eaa1e1a5bbce82907835e51ea60f95939b7e0b10bbf0ce263f45ea0c7f1b",
+      "output_sha256": "c7fba8dd5def23271e25ca84b5d29701a724946b7294c8f75da2892c04a8f3e4",
       "instances": [
         {
           "variant": "scalar",
@@ -1649,7 +1649,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1659,7 +1659,7 @@
       "attempt": 1,
       "stratum": "database_procedure",
       "split": "development",
-      "output_sha256": "c6c3a24503cdbdc17d1ddda6a3a0260cdaa5883b7ba3022d232f4cf8f990bbea",
+      "output_sha256": "fe45fd9aa8939eae3803503df135ccf883491277e9f27c982fd9de8a598b0fb8",
       "instances": [
         {
           "variant": "scalar",
@@ -1771,7 +1771,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1781,7 +1781,7 @@
       "attempt": 2,
       "stratum": "database_procedure",
       "split": "development",
-      "output_sha256": "30c88c53042b2f2ef76c83cfcefca65111a2dbe3eccc52b1b5b54c6862609bcb",
+      "output_sha256": "8847b73dd3fc9f9c4b7ef28a1cbf8abb071a5a49fb1673432c14fc70fde003c6",
       "instances": [
         {
           "variant": "scalar",
@@ -1893,7 +1893,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -1903,7 +1903,7 @@
       "attempt": 1,
       "stratum": "query",
       "split": "holdout",
-      "output_sha256": "a8ee71fe84788779ab19b98079175dc209e1cb0c4aaf7da33e68b6e6a7c07f40",
+      "output_sha256": "9802341b64325f9c784fc009849ae877922bcaeb7f5b57119d7b0851c78865f3",
       "instances": [
         {
           "variant": "branching",
@@ -2175,7 +2175,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -2185,7 +2185,7 @@
       "attempt": 2,
       "stratum": "query",
       "split": "holdout",
-      "output_sha256": "f305f15f476f1aafb8b7e29a3cee09c43052bc6f693cfe901bb09e3ccba375ac",
+      "output_sha256": "a58abe840a8402d4c49e0099d8f9650b0cebd0071ee3b3e1dea40d0855c6cb3e",
       "instances": [
         {
           "variant": "branching",
@@ -2457,7 +2457,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -2467,7 +2467,7 @@
       "attempt": 1,
       "stratum": "query",
       "split": "holdout",
-      "output_sha256": "0cd3d9a3296e43eedfeec794255827ed2d40979b2c113cd85aae002c4ac09a8b",
+      "output_sha256": "19af1598f1839dde5dae6ed6a535b62996147de1e9ce0e66ae7cad4781dda9b5",
       "instances": [
         {
           "variant": "branching",
@@ -2554,7 +2554,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -2564,7 +2564,7 @@
       "attempt": 2,
       "stratum": "query",
       "split": "holdout",
-      "output_sha256": "1e68d216d0066cf3f93af9e4e4878d6cb288e354a306dee05648c93382b2328c",
+      "output_sha256": "38735b54574aa0c1e176bd5a0c2fad576ce742728036cd23b7b7a6ee4cb60fd7",
       "instances": [
         {
           "variant": "branching",
@@ -2651,7 +2651,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -2661,7 +2661,7 @@
       "attempt": 1,
       "stratum": "query",
       "split": "development",
-      "output_sha256": "e2c5acae8b5bebf23262dcdd986caeb91d480ed7dc03b5226525d4f76a954b71",
+      "output_sha256": "f28fe0196a55bf2a403ce7fac625788b4ca8d77a48bbbce409d44acced969f0d",
       "instances": [
         {
           "variant": "branching",
@@ -2844,7 +2844,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -2854,7 +2854,7 @@
       "attempt": 2,
       "stratum": "query",
       "split": "development",
-      "output_sha256": "0ab4ce56f408f352a60966fea6ece22d56433b2389817413845f1716dcfa1555",
+      "output_sha256": "66963464b696c7bea4b8a8b42b7cbe84a7b8c27ced64d224a9bb3db40d0174b6",
       "instances": [
         {
           "variant": "branching",
@@ -3037,7 +3037,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -3047,7 +3047,7 @@
       "attempt": 1,
       "stratum": "query",
       "split": "development",
-      "output_sha256": "01f2ff962db936ac701a8d4cdfdedf66d1b92c6b5ed8fc78564c7d5252c3bec5",
+      "output_sha256": "b45ac38222831776b1a56c3bc6cd811d5535ddab85905b014737544041114784",
       "instances": [
         {
           "variant": "branching",
@@ -3487,7 +3487,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -3497,7 +3497,7 @@
       "attempt": 2,
       "stratum": "query",
       "split": "development",
-      "output_sha256": "052d3ec43b356262165ab6a9f87ce56e8292496a90479b6c9a410601c3d781c4",
+      "output_sha256": "98d659cb99eae821617e87d3b10016d52aa6b97d2962a5b2ec0f98601693d0cd",
       "instances": [
         {
           "variant": "branching",
@@ -3937,7 +3937,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -3947,7 +3947,7 @@
       "attempt": 1,
       "stratum": "query",
       "split": "holdout",
-      "output_sha256": "c45bed63360a176fabaffac7042c986199d904c8647b8c2a67ea3a66187ebeac",
+      "output_sha256": "bfafc52cba71a3bec64e57f748e3cb9ed36887eab95ccea264e3dfb8ccdb20d3",
       "instances": [
         {
           "variant": "branching",
@@ -4065,7 +4065,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -4075,7 +4075,7 @@
       "attempt": 2,
       "stratum": "query",
       "split": "holdout",
-      "output_sha256": "224df3240f1a388e085e8dc22c26c02acc04325ddb45b0a6f9bdf0f5cfc47d9f",
+      "output_sha256": "3c784c3f410d6ad37c5876431205ee6e436967d1b02db95608c1e637157a6066",
       "instances": [
         {
           "variant": "branching",
@@ -4193,7 +4193,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -4203,7 +4203,7 @@
       "attempt": 1,
       "stratum": "query",
       "split": "development",
-      "output_sha256": "cb8d0c04aed29e4f06117e43e9f184f135d3dd7acd42213097cc875847d50cd9",
+      "output_sha256": "ce8f48a4e96025fe14e65093ca28568f2e9390694d2c834aa849078c7f8ace58",
       "instances": [
         {
           "variant": "branching",
@@ -4747,7 +4747,7 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
@@ -4757,7 +4757,7 @@
       "attempt": 2,
       "stratum": "query",
       "split": "development",
-      "output_sha256": "c39c59a218ee830eb76a8ce93fa77b29176c7f9a3a4efb51e6431ac05582c171",
+      "output_sha256": "250f9a8646b9d66e7e32913c3c96ad003c80395bf84b7717fe920faacfe155ab",
       "instances": [
         {
           "variant": "branching",
@@ -5301,17 +5301,17 @@
         }
       ],
       "cleanup_ok": true,
-      "generation_package_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+      "generation_package_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
       "generation_scope": "entire referenced skill tree must be identical",
       "static_review_notices": [],
       "state": "passed"
     }
   ],
   "server_version": "5.3.2, Build Time: 2026-10-26T10:27:58Z",
-  "schema_sha256": "860c8074d328a913875617e731c0d08f182f1adfa435aff0c5b0b1ad50997a56",
-  "elapsed_seconds": 2.5439129690639675,
+  "schema_sha256": "1ef0de86d6da240351cc96871b6baab65f00ac6f432ae584f1454c07eb6181bd",
+  "elapsed_seconds": 1.522419451008318,
   "judgement": {
-    "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
+    "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
     "suite_sha256": "1ef49b157eee45c0e05f1225f1b6a399f0b10d2c2dbf95fe0a7e8255571ba564",
     "oracle_calibrated": true,
     "overall": "insufficient_evidence",

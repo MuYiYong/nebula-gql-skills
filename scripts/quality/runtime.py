@@ -53,7 +53,14 @@ def guard(query, case):
                 raise ValueError('Only inline CALL is allowed')
         if kind == 'param' and value[1:] not in case['parameter_sets'][0]:
             raise ValueError('Unexpected parameter')
-    clean = ' '.join(value if kind not in {'string', 'quoted'} else '?' for kind, value in ts)
+    # The prefix starts with a digit so no bare name can collide with it.
+    # Keep quoted names distinct without treating any of their text as syntax.
+    def guard_token(kind, value):
+        if kind == 'quoted':
+            return '0q' + value[1:-1].encode().hex()
+        return '?' if kind == 'string' else value
+
+    clean = ' '.join(guard_token(kind, value) for kind, value in ts)
     if re.search(r'\]\s*(?:-\s*>|-|~)\s*[+*]', clean):
         raise ValueError('Unbounded path outside fixture budget')
     if re.search(r'\{\s*\d*\s*,\s*\}', clean):
@@ -82,12 +89,13 @@ def guard(query, case):
         if case['oracle'] != 'sum' or words.count('WHILE') != 1:
             raise ValueError('Unproven loop termination')
         # Only the explicitly requested increment loop: i=1; i<=n; tail i=i+1.
-        if not re.search(r'\bVALUE\s+i(?:\s+(?:INT64|INT))?\s*=\s*1\b', clean, re.I):
+        counter = guard_token('quoted', '`i`') if ('quoted', '`i`') in ts else 'i'
+        if not re.search(rf'\bVALUE\s+{counter}(?:\s+(?:INT64|INT))?\s*=\s*1\b', clean, re.I):
             raise ValueError('Unknown loop initialization')
-        if not re.search(r'\bWHILE\s+i\s*<\s*=\s*\$n\s+THEN\s*\{', clean, re.I):
+        if not re.search(rf'\bWHILE\s+{counter}\s*<\s*=\s*\$n\s+THEN\s*\{{', clean, re.I):
             raise ValueError('Unknown loop condition')
-        assignments = re.findall(r'\bSET\s+i\s*=\s*([^}]+)', clean, re.I)
-        if len(assignments) != 1 or not re.fullmatch(r'\s*i\s*\+\s*1\s*', assignments[0]):
+        assignments = re.findall(rf'\bSET\s+{counter}\s*=\s*([^}}]+)', clean, re.I)
+        if len(assignments) != 1 or not re.fullmatch(rf'\s*{counter}\s*\+\s*1\s*', assignments[0]):
             raise ValueError('Loop counter must advance once at the tail')
         if any(word in words for word in ['CONTINUE', 'BREAK', 'IF', 'FOR']):
             raise ValueError('Loop progress could be bypassed')
@@ -122,13 +130,13 @@ def statement(query, case, params, graph=None):
 def seed_statement(fixture):
     if not fixture['nodes']:
         return None
-    aliases = {node['id']: f'n{i}' for i, node in enumerate(fixture['nodes'])}
+    aliases = {node['id']: f'`n{i}`' for i, node in enumerate(fixture['nodes'])}
     parts = []
     for node in fixture['nodes']:
-        properties = ','.join(key + ':' + literal(node[key]) for key in ('id', 'name', 'age'))
-        parts.append('(' + aliases[node['id']] + '@player {' + properties + '})')
+        properties = ','.join(f'`{key}`:' + literal(node[key]) for key in ('id', 'name', 'age'))
+        parts.append('(' + aliases[node['id']] + '@`player` {' + properties + '})')
     for edge in fixture['edges']:
-        parts.append('(' + aliases[edge['src']] + ')-[@follow {degree:' + literal(edge['degree']) + '}]->(' + aliases[edge['dst']] + ')')
+        parts.append('(' + aliases[edge['src']] + ')-[@`follow` {`degree`:' + literal(edge['degree']) + '}]->(' + aliases[edge['dst']] + ')')
     return 'INSERT ' + ', '.join(parts)
 
 
@@ -161,8 +169,8 @@ class OwnedGraph:
                 raise RuntimeError('Synthetic seed failed: ' + result.status_code)
         # Verify all rows/properties and parallel edges before trusting any oracle.
         from evaluate import compare_results
-        nodes = materialize(self.client.execute(f'USE #{self.name} MATCH (p@player) RETURN p.id AS id, p.name AS name, p.age AS age'))
-        edges = materialize(self.client.execute(f'USE #{self.name} MATCH (s@player)-[e@follow]->(t@player) RETURN s.id AS src, t.id AS dst, e.degree AS degree'))
+        nodes = materialize(self.client.execute(f'USE #{self.name} MATCH (`p`@`player`) RETURN `p`.`id` AS `id`, `p`.`name` AS `name`, `p`.`age` AS `age`'))
+        edges = materialize(self.client.execute(f'USE #{self.name} MATCH (`s`@`player`)-[`e`@`follow`]->(`t`@`player`) RETURN `s`.`id` AS `src`, `t`.`id` AS `dst`, `e`.`degree` AS `degree`'))
         expected_nodes = {'columns': ['id', 'name', 'age'], 'rows': [[n['id'], n['name'], n['age']] for n in fixture['nodes']]}
         expected_edges = {'columns': ['src', 'dst', 'degree'], 'rows': [[e['src'], e['dst'], e['degree']] for e in fixture['edges']]}
         if nodes['status'] != '00000' or edges['status'] != '00000' or not compare_results(expected_nodes, nodes) or not compare_results(expected_edges, edges):

@@ -1,193 +1,167 @@
 {
-  "kind": "source_compatible_generation",
-  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
-  "model_snapshot": "not exposed by the subagent tool; inherited session model",
-  "sampling_parameters": "not exposed",
-  "context_policy": "one fresh context per case and attempt, only public prompt and the relevant bundled skill; no oracles, hidden fixtures or prior outputs",
-  "constraint_limit": "read restrictions were instructions, not an operating-system sandbox",
-  "suite_use": "Two fresh isolated attempts for each query. Procedure generations reused from the identical procedure skill snapshot. Existing curated cases are regression evidence.",
+  "kind": "fresh_independent_generation",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "model_snapshot": "gpt-6.2-astra",
+  "reasoning_effort": "xhigh",
+  "sampling_parameters": "temperature and seed not exposed",
+  "context_policy": "One ephemeral Codex process per case and attempt. Each received one public prompt and the selected skill. Its working copy and registered skill location used the same frozen source. The evaluation repository was masked during generation.",
+  "suite_use": "Repeated regression on the existing 13-case suite. No reuse of historical generated queries or execution receipts.",
   "outputs": [
     {
       "case_id": "c_degrees",
       "attempt": 1,
       "file": "attempts/c_degrees-1.json",
-      "sha256": "6813225490023073cfe221d528a035e53e157e92c55e989f4eb18c84c9b32113",
-      "worker_task": "/root/semantic_generation_one/isolated_c_degrees_1"
+      "sha256": "58d5984b4dfa305d280283ab87a138cf659969c904b61c070e9ca5cd90cae608"
     },
     {
       "case_id": "c_degrees",
       "attempt": 2,
       "file": "attempts/c_degrees-2.json",
-      "sha256": "520a3c47a12a2da4cb362629ea20d252e46a1aab7e3da709ac63f896efe7fcbc",
-      "worker_task": "/root/semantic_generation_one/isolated_c_degrees_2"
+      "sha256": "78f166f2a8b67e978888121a30cf916add5f34ba77a17056d82292a0a274fb4b"
     },
     {
       "case_id": "c_incoming",
       "attempt": 1,
       "file": "attempts/c_incoming-1.json",
-      "sha256": "b32072aaffb7775d5b3af4ea32933e1b65c7d7c42428f454a962256e219e075d",
-      "worker_task": "/root/semantic_generation_one/isolated_c_incoming_1"
+      "sha256": "fccce4ce780f90bd223f6cb81c83319e1b61f8b8b652cb634cc53a15b6747b57"
     },
     {
       "case_id": "c_incoming",
       "attempt": 2,
       "file": "attempts/c_incoming-2.json",
-      "sha256": "dca606de5e3dd2d06effca4a09dc4fff1c137556dd033e3b81f63685838ec1da",
-      "worker_task": "/root/semantic_generation_one/isolated_c_incoming_2"
+      "sha256": "6333f6fd0c7b703db4a1f48c219143456b28ff0dc6020050eba4850290145ea2"
     },
     {
       "case_id": "c_long_set",
       "attempt": 1,
       "file": "attempts/c_long_set-1.json",
-      "sha256": "16b7b366b8daaa10328b2b9fd2618ee15ccd3fcd6f584b2f7ed34da4a7de5a32",
-      "worker_task": "/root/semantic_generation_one/isolated_c_long_set_1"
+      "sha256": "39e52efb301679cb5cd014e81a9387637fdcf754ce6773838cf423b1717bfea5"
     },
     {
       "case_id": "c_long_set",
       "attempt": 2,
       "file": "attempts/c_long_set-2.json",
-      "sha256": "6846eca5e3dc94ce286b8b11b5bf97dd1faea7cb7adee788a8832f85533db4db",
-      "worker_task": "/root/semantic_generation_one/isolated_c_long_set_2"
+      "sha256": "568ed5ca3c31df76fe386399e7001b2cdcf3217ba95aff4647c358b54673668c"
     },
     {
       "case_id": "c_string_concat",
       "attempt": 1,
       "file": "attempts/c_string_concat-1.json",
-      "sha256": "a3ebad0e08385dc53fb3f0203528e105a6a865a7082b735d993eb69707dfd9bf",
-      "worker_task": "/root/semantic_generation_one/isolated_c_string_concat_1"
+      "sha256": "43337f82619dbdcbf6db9009969ba75f3355680b3956ca31aebd7d5a392733c3"
     },
     {
       "case_id": "c_string_concat",
       "attempt": 2,
       "file": "attempts/c_string_concat-2.json",
-      "sha256": "1fbc7254da6470170b55c6b05a34b82d9a65ddaba89fd84cf7f08e65f4c8123b",
-      "worker_task": "/root/semantic_generation_one/isolated_c_string_concat_2"
+      "sha256": "ea8ebb9d46a370d560ead2a91bbbf8a43c36284f7bb0e407c242e00bd3f5a7d8"
     },
     {
       "case_id": "p_branch",
       "attempt": 1,
       "file": "attempts/p_branch-1.json",
-      "sha256": "1cd830b37dddd1c2ed655865590ff86f0ce2c4a989f96a896d3ed5653f703725",
-      "worker_task": "/root/semantic_generation_one/isolated_p_branch_1"
+      "sha256": "dea94e1dddd6b6eb2113024f301350812372bfbd03857bce1fd69ef235972bd6"
     },
     {
       "case_id": "p_branch",
       "attempt": 2,
       "file": "attempts/p_branch-2.json",
-      "sha256": "339254b2a6db5efe20934bbded2a883dc660623599ef01f4936f6b5d440b42b6",
-      "worker_task": "/root/semantic_generation_one/isolated_p_branch_2"
+      "sha256": "02cdb23b4237e301503486f34f0c464b666d3101e1b96d44f1b26c72a2c6384c"
     },
     {
       "case_id": "p_contributions",
       "attempt": 1,
       "file": "attempts/p_contributions-1.json",
-      "sha256": "5cbe6f322593479d7e4c7a7dcc2f9352d7267ccabd14ff9fcc523e11e23447fb",
-      "worker_task": "/root/semantic_generation_one/isolated_p_contributions_1"
+      "sha256": "7691d8303faea480a8f990f78beb5f4924ac103a8bf305ca71d46efe72d50f2c"
     },
     {
       "case_id": "p_contributions",
       "attempt": 2,
       "file": "attempts/p_contributions-2.json",
-      "sha256": "806684f3623f096d5dbce2346fc04818ceb47f3cc65a113bd4d27861d5d51b41",
-      "worker_task": "/root/semantic_generation_one/isolated_p_contributions_2"
+      "sha256": "406323d8543e940cb0bd9a8a5d585e7c38e52a78cb4c60c82737d2dc31ded999"
     },
     {
       "case_id": "p_sum",
       "attempt": 1,
       "file": "attempts/p_sum-1.json",
-      "sha256": "669ceea952920bd5ac9899989eccf6a478c7b74e9602b3e520b3e63cb98ed9c5",
-      "worker_task": "/root/semantic_generation_one/isolated_p_sum_1"
+      "sha256": "136eafc5dac604a85bf9db225b03d31c41eadb947354c29ba57727f4b5783604"
     },
     {
       "case_id": "p_sum",
       "attempt": 2,
       "file": "attempts/p_sum-2.json",
-      "sha256": "65f5ec94c2832547319c4b258ff5ea1478fa42df4ae5183c1c59e2472cd8957a",
-      "worker_task": "/root/semantic_generation_one/isolated_p_sum_2"
+      "sha256": "68f5cbf971264f1c080a054f97739df73305f5b084f9fa3fcf72035e55634ddd"
     },
     {
       "case_id": "q_acyclic",
       "attempt": 1,
       "file": "attempts/q_acyclic-1.json",
-      "sha256": "aeaebb8cec306f4c4f00cf881acd0e608cf8b8896aa2cf656c8dcca776fe3ce1",
-      "worker_task": "/root/final_acyclic_1"
+      "sha256": "5f8c9612a4b72ec585eaa0e3d4ed8b1a18a816885bba1cfc928f1f14e8aefab0"
     },
     {
       "case_id": "q_acyclic",
       "attempt": 2,
       "file": "attempts/q_acyclic-2.json",
-      "sha256": "2dc6b446c3fe7481e912d222c91553fd6237a085d4a72716aa661115fd95d937",
-      "worker_task": "/root/final_acyclic_2"
+      "sha256": "40a526b5930b467f3abf196e40e49fee20932c65bacfafb8555857e354e72950"
     },
     {
       "case_id": "q_anti",
       "attempt": 1,
       "file": "attempts/q_anti-1.json",
-      "sha256": "c809bf931befc8893a20d07c0b50ec338934ed92ed3a1c8b1ca4c19d96f5fb0c",
-      "worker_task": "/root/final_anti_1"
+      "sha256": "bdeb18d89b9f8b275e057cefcdd9c2d6025a7fc3a51b74d09de7de00ea204731"
     },
     {
       "case_id": "q_anti",
       "attempt": 2,
       "file": "attempts/q_anti-2.json",
-      "sha256": "6f5cd490b8003e86758b96aef73681cba83eea75fd80af0bc6fa3621095896d3",
-      "worker_task": "/root/final_anti_2"
+      "sha256": "041d3c0396b344b1a93988457a580c6ce438e27a1f5ffba82cd0fd866e7712f6"
     },
     {
       "case_id": "q_group",
       "attempt": 1,
       "file": "attempts/q_group-1.json",
-      "sha256": "7dbae6eb849952c04356e6d505de8973f902c3b2e212c060145e1ad48c71e709",
-      "worker_task": "/root/final_group_1"
+      "sha256": "e144f01c4674001ec48d990bef9d3f399fe0e9956f094565873e863332ff16db"
     },
     {
       "case_id": "q_group",
       "attempt": 2,
       "file": "attempts/q_group-2.json",
-      "sha256": "dae2c5359474147b64f9ef5eaaa8205a05b505609e7b88797f04f861aec0eaab",
-      "worker_task": "/root/final_group_2"
+      "sha256": "7806956be0217ca1748fe60db52a0c2b503e90d879d8882b747fd2b89423b5ce"
     },
     {
       "case_id": "q_optional",
       "attempt": 1,
       "file": "attempts/q_optional-1.json",
-      "sha256": "0ff406319d196dfe3f5239a3ffb67e6c452cdc9de031fc38806035f942f3b767",
-      "worker_task": "/root/final_optional_1"
+      "sha256": "801f7b9fb2a4a08b51e557e21eacb44be1c501c4d4e10d1e057b9ec767eccf26"
     },
     {
       "case_id": "q_optional",
       "attempt": 2,
       "file": "attempts/q_optional-2.json",
-      "sha256": "d89d4ad31616fd348085cabb9b63298797a716726ba7d6ef9706afdd10af680d",
-      "worker_task": "/root/final_optional_2"
+      "sha256": "ad2422940ee640c16f5feef3c42cb10aa13505e631373f9cf41f12aad2aa2377"
     },
     {
       "case_id": "q_page",
       "attempt": 1,
       "file": "attempts/q_page-1.json",
-      "sha256": "735b8a009fe8a6b701b866fb2dbb96bfa19d9d0b340b45435f5f752caab7aa75",
-      "worker_task": "/root/final_page_1"
+      "sha256": "dcaa69fd4b472b7f63b98e247514f22dadd289c58a8799a99d0821918ae77846"
     },
     {
       "case_id": "q_page",
       "attempt": 2,
       "file": "attempts/q_page-2.json",
-      "sha256": "ab33913b12a56af25ee327893ab8b029bd731d53586cd9cf0a47c7a79e5db1b9",
-      "worker_task": "/root/final_page_2"
+      "sha256": "a2e88a7b7d2d4874823de08fffd0ba3cb7ca6e7c69632ac71265fc8c0f4e3d6e"
     },
     {
       "case_id": "q_trail",
       "attempt": 1,
       "file": "attempts/q_trail-1.json",
-      "sha256": "47d3959eba3f8f89832c9a3d396a28ac306f057b58cff21fe458c37ce9fc1b10",
-      "worker_task": "/root/final_trail_1"
+      "sha256": "fa14dc74e93b7d4b72cc66c663447ce7aee5d0b3135bd9648723cb02a5cf9933"
     },
     {
       "case_id": "q_trail",
       "attempt": 2,
       "file": "attempts/q_trail-2.json",
-      "sha256": "6b5eae04a571583e05efdf8e0fed90862f40fafe318118078d31dacdd0858d06",
-      "worker_task": "/root/final_trail_2"
+      "sha256": "a2dbf6e5aad6adc288da2f5e14442dd99185ce70460516c88535538d7f3193c4"
     }
   ]
 }

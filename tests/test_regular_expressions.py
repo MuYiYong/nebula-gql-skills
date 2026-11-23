@@ -17,8 +17,8 @@ class RegularExpressionTests(unittest.TestCase):
         for root in SKILLS:
             for scope in ('database', 'analytics'):
                 for code in (
-                    r"RETURN lower('job.p_a') =~ '.+\\.[psv]_.+' AS matched",
-                    'RETURN NOT ($text =~ $pattern) AS matched',
+                    r"RETURN lower('job.p_a') =~ '.+\\.[psv]_.+' AS `matched`",
+                    'RETURN NOT ($text =~ $pattern) AS `matched`',
                     'IF name =~ pattern THEN RETURN TRUE END IF',
                 ):
                     with self.subTest(root=root.name, scope=scope, code=code):
@@ -29,13 +29,13 @@ class RegularExpressionTests(unittest.TestCase):
     def test_operator_in_values_identifiers_and_comments_is_ignored(self):
         for root in SKILLS:
             for code in (
-                'RETURN "=~" AS text_value',
-                "RETURN '=~' AS text_value",
+                'RETURN "=~" AS `text_value`',
+                "RETURN '=~' AS `text_value`",
                 'RETURN 1 AS `=~`',
-                'RETURN 1 AS n // =~',
-                'RETURN 1 AS n -- =~',
-                'RETURN 1 AS n /* =~ */',
-                'RETURN regexp_like("=~", "=~") AS matched',
+                'RETURN 1 AS `n` // =~',
+                'RETURN 1 AS `n` -- =~',
+                'RETURN 1 AS `n` /* =~ */',
+                'RETURN regexp_like("=~", "=~") AS `matched`',
             ):
                 with self.subTest(root=root.name, code=code):
                     self.assertEqual(lint(code, root)['issues'], [])
@@ -43,15 +43,15 @@ class RegularExpressionTests(unittest.TestCase):
     def test_documented_calls_preserve_patterns_and_parameters(self):
         for root in SKILLS:
             for code in (
-                r"RETURN regexp_like(lower('job.p_a'), '.+\\.[psv]_.+') AS matched",
-                'RETURN REGEXP_LIKE($text, $pattern, "i") AS matched',
-                'RETURN NOT regexp_like(NULL, ".*") AS matched',
-                'RETURN regexp_like("hello, world", "hello") AS matched',
-                r'RETURN split("a.b", "\\.") AS parts',
+                r"RETURN regexp_like(lower('job.p_a'), '.+\\.[psv]_.+') AS `matched`",
+                'RETURN REGEXP_LIKE($text, $pattern, "i") AS `matched`',
+                'RETURN NOT regexp_like(NULL, ".*") AS `matched`',
+                'RETURN regexp_like("hello, world", "hello") AS `matched`',
+                r'RETURN split("a.b", "\\.") AS `parts`',
             ):
                 with self.subTest(root=root.name, code=code):
                     self.assertEqual(lint(code, root)['issues'], [])
-        code = r"RETURN regexp_like('job.p_a', '.+\\.[psv]_.+') AS matched"
+        code = r"RETURN regexp_like('job.p_a', '.+\\.[psv]_.+') AS `matched`"
         self.assertIn(('string', r"'.+\\.[psv]_.+'"), tokens(code))
 
     def test_regexp_like_arity_uses_the_documented_signature(self):
@@ -63,7 +63,7 @@ class RegularExpressionTests(unittest.TestCase):
     def test_read_only_guard_cannot_admit_source_operator(self):
         for root in SKILLS:
             with self.subTest(root=root.name), self.assertRaises(ValueError):
-                read_only('RETURN "hello" =~ "hello" AS matched', root)
+                read_only('RETURN "hello" =~ "hello" AS `matched`', root)
 
     def test_regex_guidance_is_discoverable_in_standalone_skills(self):
         for root in SKILLS:
@@ -96,7 +96,7 @@ class RegularExpressionFixtureTests(unittest.TestCase):
             r"MATCH (n:`Job`) WHERE lower(n.job_name) =~ '.+\\.[psv]_.+' RETURN n.job_name AS job_name",
             query.replace(r'\\.', '.'),
             query.replace('[psv]', '[ps]'),
-            query.replace('lower(n.job_name)', 'lower(n.job.job_name)'),
+            query.replace('lower(`n`.`job_name`)', 'lower(`n`.`job`.`job_name`)'),
         ):
             with self.subTest(query=changed):
                 output = dict(id=case['id'], skill=case['skill'], query=changed, explanation='')

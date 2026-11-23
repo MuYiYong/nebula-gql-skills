@@ -12,31 +12,29 @@ Analytics 两份“标识符和关键字”文档逐类完全一致：
 [源检查记录](../evals/keywords/source-check.json)；完整词表在两项技能各自的
 `references/documented-keywords.json` 中，包含 `reserved` 和 `non_reserved`。
 
-两项技能按同一生成策略处理：名称命中任意一类关键字时，声明及所有引用使用
-反引号，忽略关键字大小写并保留名称本身；普通合法名称可以不加。语法关键字、
-内置函数、类型和字符串值按原语法生成。例如：
+两项技能生成、迁移和修复 GQL 时，对每个标识符的声明和引用使用反引号。
+此规则覆盖普通名称及关键字名称。限定名逐段引用，标签和类型集合逐项引用。
 
 ```gql
-USE `schema`
-MATCH (n:`date`)
-RETURN n.`property` AS `version`, n.id AS person_id
-ORDER BY `version` ASC, person_id ASC
+USE `social`
+MATCH (`p`@![`Archived`, `date`])
+RETURN `p`.`property` AS `version`, `p`.`id` AS `person_id`
+ORDER BY `version` ASC, `person_id` ASC
 ```
 
-文档允许非保留词直接作为常规标识符；本项目按任务要求采用更严格的生成策略。
-检查器报告的是该策略，不将其一概描述为数据库语法错误。
+语法关键字、内置类型、函数、字符串、外部参数 `$name` 和临时图 token `#name`
+使用各自的语法。包内 `quote-identifiers` 可格式化单个或多个原始名称，
+`lint` 检查可识别的名称位置。详见[生成规则](../src/gql-query-generator/references/identifiers.md)。
 
-本次同步更新了两项技能的工作流、清单、验证、修复参考及示例。包内
-`quote-identifiers` 命令接受单个原始名称，按完整清单输出其 GQL 写法；
-`lint` 扩展到能明确识别的标识符位置与绑定引用。它仍不是完整解析器，
-空报告不构成语法或语义通过证明。过程形参名属于标识符；外部查询参数
-`$left`、`$right` 等是独立词法 token，保持 `$name` 原语法，不在 `$` 后拼接反引号。
-服务端实测会拒绝这种拼接写法；执行器继续按原参数键核对，不放宽未知参数限制。
+## 当前源码的发布验证（2026-11-23）
 
-验证包括 72 项单元测试、全部 431 个关键字在两个包中的名称格式化与别名检查、
-保留词/非保留词两类来源一致性、已有 37 条参考回归、保存输出/路由回归，以及
-打包后的独立运行检查。自动生成的原始文档目录和原生 feature 资产保留原貌；
-人工参考中的 GQL 示例按生成策略修正，源方言输入不改写。
+37 条新模型输出通过静态契约，16 条新路由判断通过。12 条可独立执行的模型查询在 5.3.2 测试库上通过 EXPLAIN 和结果比对。历史输出中有 32 条漏引标识符，已保留原始文件供对照。[模型输出与生成条件](../evals/observations/README.md) · [数据库结果](../evals/reports/database-current.json)
+
+测试库验证了 431 个关键字的大写、小写两种别名，以及含中文、空格、外部参数、过程变量、记录字段和聚合器的用例。每一批均比对返回列的原始拼写与结果值。[标识符实测](../evals/keywords/runtime-check.json)
+
+语义评测为 13 个案例各启动两个独立上下文。26 份原始候选在隐藏输入上通过 92 次结果比对，其中图查询 48 次、Database 过程体 22 次、本地临时图计算 22 次。13 组校准均能区分正确程序与故意引入的语义错误，自有临时图清理成功。命名过程生命周期与分布式 Analytics 的执行覆盖仍属证据不足。[当前运行记录](../evals/quality/evidence/current/model-run.json) · [校准记录](../evals/quality/evidence/current/calibration.json)
+
+## 以往发布记录
 
 26.10.23 语义收据已按原样归档。本次发布准备为修改后源重新独立生成了 26 份候选，
 92 组输入结果比对与 13 组 oracle 校准全部通过，当前证据的离线重算和完整离线发布门禁也已通过。

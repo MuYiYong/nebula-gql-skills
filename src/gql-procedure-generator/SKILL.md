@@ -11,7 +11,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 
 1. 按意图路由：定义/管理过程、设计签名、过程内控制流或状态算法由本技能处理。已有签名的独立调用、CALL/YIELD 后的检索和只读内联子查询交给 gql-query-generator；不要仅因出现 CALL 同时加载两个技能。混合任务先完成定义，再按需读取查询参考。
 2. 提取过程名、参数、返回列、运行环境（Database 或 Analytics）、图类型、状态变量、控制流、副作用和终止条件。
-   标识符若命中保留或非保留关键字（忽略大小写），生成时一律用反引号包围，并同步处理声明和所有引用；普通合法标识符可以不加。按 [identifiers.md](references/identifiers.md) 核对完整清单，不给语法关键字、内置函数、数据类型或字符串值机械加反引号。 过程形参属于标识符；外部查询参数 `$name` 是独立词法 token，保持原语法，不在 `$` 后拼接反引号。
+   输出 GQL 前，给每个标识符的声明及每一次引用加反引号，保留原名和大小写。覆盖图、过程、元素类型、标签、属性、变量、形参、字段和别名，限定名逐段处理。从文档、feature、用户输入或示例复制的名称也适用。语法关键字、内置类型和函数按原语法输出，字符串值、外部参数 `$name` 和临时图 `#name` 保留原写法。见 [标识符规则](references/identifiers.md)。
 3. 区分 Database 本地临时图与 Analytics 分布式临时图：两者均有文档化的 match-compute；只有后者使用 PARTITION BY DEFAULT/PER PARTITION。聚合器和 ACTIVE_SET 在顶层过程作用域声明，不能塞进内联 CALL 子作用域。
 4. 在过程作用域开头声明全部变量。把运行中才得到的值先声明，再在后续语句中赋值。
 5. 普通过程逻辑使用 statement block；图遍历或算法逻辑使用 `match_compute_statement`。多跳算法拆成 `WHILE` 驱动的多轮 0/1 跳计算。
@@ -51,8 +51,8 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 
 ## Hard Guardrails
 
-- 过程条件中的正则用 `regexp_like(value, pattern[, options])`，不生成 `=~`。它按整个字符串匹配；迁移时保留原 pattern、转义、大小写、否定和 NULL 语义，不擅自补删 `.*` 或改写属性路径。
-- Database 文档允许过程体中的 `USE graph`。默认继承调用方的图；用户明确指定已知图时保留合法 USE，不臆造或强行删除图上下文。
+- 过程条件中的正则用 `` regexp_like(`value`, `pattern`[, `options`]) ``，不生成 `=~`。它按整个字符串匹配；迁移时保留原 pattern、转义、大小写、否定和 NULL 语义，不擅自补删 `.*` 或改写属性路径。
+- Database 文档允许过程体中的 `` USE `graph` ``。默认继承调用方的图；用户明确指定已知图时保留合法 USE，不臆造或强行删除图上下文。
 - 算法/遍历场景使用 `match_compute_statement`，不要退化成普通查询式 `MATCH ... RETURN`。
 - 匹配计算、局部表导出和后续 FOR 是顺序过程语句；不要在 MATCH ... PER PATH/PER NODE/FINALLY 与下一过程阶段之间插入 NEXT。NEXT 只连接文档允许的查询结果管线，不是通用阶段分隔符。
 - 每个 `match_compute_statement` 只生成 0 跳或 1 跳图模式。两条及以上边段必须拆成多轮单跳 stage。
@@ -62,7 +62,7 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 - `ACTIVE_SET` 默认只在 `FINALLY` 中更新；逐点状态优先使用 `NODE VALUE`，不要无理由提升为全局聚合器。
 - TigerGraph GSQL 多跳 `SELECT` 迁移时，分别保留 mode/优先级、逐跳扩展与副作用落地，不要把长链原样翻成一个 `MATCH ... PER PATH`。
 - 分布式表只能在 Analytics 能力明确且调用方以 `PARTITION BY DEFAULT` 声明时使用；读取、清空和遍历必须遵守 `PER PARTITION` 边界。
-- `TABLE` 参数可接收分布式表引用，但不要据此假设 `size(t)`、直接 `FOR ... IN t` 或任意过程调用可用。
+- `TABLE` 参数可接收分布式表引用，但不要据此假设 `` size(`t`) ``、直接 `` FOR ... IN `t` `` 或任意过程调用可用。
 - 严格 5.3.0 不支持把本地 BindingTable 导入 `PARTITION BY DEFAULT` 的分布式临时图；只有目标明确为已验证的 current master/后续版本时才允许该来源组合。
 - 不要在同一过程或其祖先调用链中执行 `IMPORT INTO GRAPH` 后继续 match-compute；将导入与计算拆成两个 sibling 子过程并顺序调用。
 - 逐项检查输出中的函数、成员方法和语法形态。只有 v5.3.0 用户文档明确记录同名、同签名或对应语法时才默认生成；feature 和代码只验证实现边界，不能单独授权未文档化能力。无法确认时输出保守 skeleton 或说明缺失信息。

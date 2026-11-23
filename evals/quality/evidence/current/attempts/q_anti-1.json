@@ -1,7 +1,7 @@
 {
   "case_id": "q_anti",
   "attempt": 1,
-  "query": "MATCH (p:player)\nWHERE NOT EXISTS {\n  MATCH (p)-[:follow]->()\n}\nRETURN p.id AS id;",
-  "skills_sha256": "55d103e64e3988764a5a9925f6b2d98bd55fda7e971b7011c2896a02af900304",
-  "notes": "Independent generation from the public prompt and bundled query skill."
+  "query": "MATCH (`p`:`player`)\nWHERE NOT EXISTS { MATCH (`p`)-[:`follow`]->() }\nRETURN `p`.`id` AS `id`",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "notes": ""
 }

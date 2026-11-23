@@ -81,23 +81,23 @@ FORBIDDEN_POLICY_SNIPPETS = {
 }
 PATH_PUSHDOWN_HEADING = "### M6B. Cypher path predicates to pattern constraints"
 PATH_PUSHDOWN_REQUIRED = {
-    "MATCH p = ACYCLIC",
-    "-[r:股权出资 WHERE r.percent > 0]->{1,6}",
-    "(company:Corporation {uid: $uid})",
+    "MATCH `p` = ACYCLIC",
+    "-[`r`:`股权出资` WHERE `r`.`percent` > 0]->{1,6}",
+    "(`company`:`Corporation` {`uid`: $uid})",
 }
 PATH_PUSHDOWN_FORBIDDEN = {
-    "size(filter(edges(p), rel -> rel.percent > 0))",
-    "size(nodes(p)) = size(list_distinct(nodes(p)))",
+    "size(filter(edges(`p`), `rel` -> `rel`.`percent` > 0))",
+    "size(nodes(`p`)) = size(list_distinct(nodes(`p`)))",
 }
 DUPLICATE_PATH_HEADING = "### M6A. Cypher toSet and list projection"
 DUPLICATE_PATH_REQUIRED = {
-    "MATCH path = TRAIL",
-    "FILTER WHERE length(pathNodes) <> length(list_distinct(pathNodes))",
+    "MATCH `path` = TRAIL",
+    "FILTER WHERE length(`pathNodes`) <> length(list_distinct(`pathNodes`))",
 }
-DUPLICATE_PATH_FORBIDDEN = {"MATCH path = ACYCLIC"}
+DUPLICATE_PATH_FORBIDDEN = {"MATCH `path` = ACYCLIC"}
 PROCEDURE_PUSHDOWN_REQUIRED = {
     "边局部谓词下推",
-    "[e:<edge_type> WHERE <edge_local_predicate>]",
+    "[`e`:`<edge_type>` WHERE <edge_local_predicate>]",
     "不要为谓词下推引入多跳或 `ACYCLIC`",
 }
 

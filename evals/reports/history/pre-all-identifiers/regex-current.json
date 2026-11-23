@@ -1,0 +1,72 @@
+{
+  "compatibility": "5.3.0",
+  "scope": "graph-free read-only fixtures",
+  "producer": {
+    "kind": "reference-fixture"
+  },
+  "results": [
+    {
+      "id": "regex-job-values",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 5,
+      "query_sha256": "559364a8cca90f2615864140701c90ced6eca3dfd9b0181a4eeade8a16547e87",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "regex-full-match",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "9e60645b397dbdddc290f41761745d74a31bc9db23269ff3f46b56c8ef5498a5",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "regex-options",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "7dd287a25f92305b067ecc6566f7e5105daf9b9466657d189f97cfed339dfff7",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "regex-newline",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "ce0fd20a4765deb2eef97a7b711ece67a67dc6f3d22a7b5bee9c1a7f665d72d0",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    },
+    {
+      "id": "regex-negation-null",
+      "passed": true,
+      "stage": "result-comparison",
+      "status": "00000",
+      "row_count": 1,
+      "query_sha256": "c39e0b9b19993bb77a7f8c04fc9823476f94fa7f7534e476c706e747719e468b",
+      "original_status": null,
+      "grammar": "server EXPLAIN passed",
+      "semantics": "fixture comparison passed"
+    }
+  ],
+  "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
+  "passed": true,
+  "validation_source": {
+    "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
+    "runner_sha256": "abac1c6b4128d3639a17838a6bc72aa40a865ffeba36b9ff1871ef05baa42e4c",
+    "suite_sha256": "3b85b3a342631cb0537be3e3d39d8af04b4ec5cb152c947413102dddd71a3f47",
+    "binding": "fresh execution while source/runner remained equal to the frozen prompt/calibration snapshots"
+  }
+}

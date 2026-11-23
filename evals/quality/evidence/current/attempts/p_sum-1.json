@@ -1,7 +1,7 @@
 {
   "case_id": "p_sum",
   "attempt": 1,
-  "query": "VALUE total INT64 = 0\nVALUE i INT64 = 1\nWHILE i <= $n THEN {\n  SET total = total + i\n  SET i = i + 1\n}\nRETURN total AS total",
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-  "notes": "假设评测器按公开 prompt 提供 $n INT64，且值在 -2 至 6 内。使用 INT64 标量累加；n<=0 时循环不进入并返回 0。依据技能所附 5.3.0 公开语法生成，未执行数据库。"
+  "query": "VALUE `i` INT64 = 1\nVALUE `total` INT64 = 0\nWHILE `i` <= $n THEN {\n  SET `total` = `total` + `i`\n  SET `i` = `i` + 1\n}\nRETURN `total` AS `total`",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "notes": ""
 }

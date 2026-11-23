@@ -2759,8 +2759,22 @@
   ],
   "programs": [
     {
+      "id": "ordinary_fields",
+      "query": "LET `客户` = RECORD{`display name`: 7} RETURN `客户`.`display name` AS `MixedCase`",
+      "status": "00000",
+      "actual_columns": [
+        "MixedCase"
+      ],
+      "actual_rows": [
+        [
+          7
+        ]
+      ],
+      "passed": true
+    },
+    {
       "id": "external_parameters",
-      "query": "PARAMETERS $left = 1, $right = 2 RETURN $left + $right AS result_value",
+      "query": "PARAMETERS $left = 1, $right = 2 RETURN $left + $right AS `result_value`",
       "status": "00000",
       "actual_columns": [
         "result_value"
@@ -2817,8 +2831,8 @@
   ],
   "passed": true,
   "keyword_spelling_checks": 862,
-  "skills_sha256": "b83188c0e520c214a93946059ae055562dba9f924fc6f122b076b20abf75176b",
-  "keyword_catalog_sha256": "0ec9068633cfb6bdf0b54e6fbdf1e8cedb9ced7954ff1262172610fdb937df18",
-  "server_version": "5.3.2, Build Time: 2026-09-21T11:32:24Z",
+  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "keyword_catalog_sha256": "3b7fa2a4cbb944ccc26a0bcffd8c633a1196f663f25960f9078de0713eea2f76",
+  "server_version": "5.3.2, Build Time: 2026-10-26T10:27:58Z",
   "client_sdk": "nebula5-python 5.3.0"
 }
