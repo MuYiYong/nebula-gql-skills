@@ -1,7 +1,7 @@
 {
   "case_id": "c_degrees",
   "attempt": 2,
-  "query": "NODE VALUE `out_degree` SumAgg<INT64> = 0\nTABLE `result` TYPED TABLE {`id` STRING, `degree` INT64}\n\nMATCH (`src`:`player`)-[`edge`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `src`.@`out_degree` += 1\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id` AS `id`, `p`.@`out_degree` AS `degree` INTO `result`\n}\n\nFOR `row` IN `result`\nRETURN `row`.`id` AS `id`, `row`.`degree` AS `degree`",
-  "notes": "已按冻结技能包中的 5.3.0 Database 语法参考核对，静态检查未报告问题。未在数据库中解析或执行。",
-  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
+  "query": "NODE VALUE `out_degree` SumAgg<INT64> = 0\nTABLE `degrees` TYPED TABLE {`id` STRING, `degree` INT64}\n\nMATCH (`src`:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `src`.@`out_degree` += 1\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id` AS `id`, `p`.@`out_degree` AS `degree` INTO `degrees`\n}\n\nFOR `row` IN `degrees`\nRETURN `row`.`id` AS `id`, `row`.`degree` AS `degree`",
+  "notes": "冻结技能的静态检查未发现问题。未在 NebulaGraph 5.3.0 服务端解析或执行。",
+  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
 }

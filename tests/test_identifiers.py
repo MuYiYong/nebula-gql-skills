@@ -191,6 +191,38 @@ class IdentifierTests(unittest.TestCase):
                     self.assertTrue(any(i['rule'] in {'keyword-identifier', 'unquoted-identifier'}
                                         for i in tools.lint(bare, root)['issues']), bare)
 
+    def test_quoted_graph_type_key_constraints(self):
+        for root in SKILLS:
+            for head in ('PRIMARY', 'MULTIEDGE'):
+                if head == 'PRIMARY':
+                    element = 'NODE `N` (LABEL `N` {%s})'
+                else:
+                    element = ('NODE `N` (LABEL `N` {`id` INT PRIMARY KEY}), '
+                               'EDGE `E` (`N`)-[LABEL `E` {%s}]->(`N`)')
+                clause = head + ' KEY'
+                for properties in ('`id` INT64 %s', '`id` INT64, %s (`id`)'):
+                    ddl = 'CREATE GRAPH TYPE `G` AS { ' + element % properties + ' }'
+                    self.assertEqual(tools.lint(ddl % clause, root)['issues'], [])
+                    for quoted in [f'`{clause}`', f'`{head}` KEY', f'{head} `KEY`',
+                                   f'`{head.lower()}` /* key */ `Key`']:
+                        with self.subTest(root=root.name, ddl=ddl, quoted=quoted):
+                            issues = tools.lint(ddl % quoted, root)['issues']
+                            self.assertEqual([i['rule'] for i in issues], ['ddl-key-quoting'])
+                            self.assertIn(clause, issues[0]['message'])
+
+    def test_key_keyword_identifiers_and_recovery(self):
+        for root in SKILLS:
+            ddl = ('CREATE GRAPH TYPE `G` AS { NODE `N` (LABEL `PRIMARY KEY` {'
+                   '`PRIMARY KEY` STRING, `PRIMARY` INT64, `KEY` INT64, '
+                   "`note` STRING DEFAULT '`PRIMARY KEY`', "
+                   'PRIMARY KEY (`PRIMARY KEY`, `PRIMARY`, `KEY`)}) }')
+            self.assertEqual(tools.lint(ddl, root)['issues'], [])
+            self.assertEqual(tools.lint('RETURN 1 AS `PRIMARY KEY`', root)['issues'], [])
+            malformed = ddl.replace('PRIMARY KEY (`PRIMARY KEY`,', '`PRIMARY KEY` (id,')
+            issues = tools.lint(malformed, root)['issues']
+            self.assertEqual({i['rule'] for i in issues}, {'ddl-key-quoting', 'unquoted-identifier'})
+            self.assertTrue(any('key member' in i['message'] for i in issues))
+
     def test_ddl_keywords_are_role_sensitive(self):
         for root in SKILLS:
             for query in [

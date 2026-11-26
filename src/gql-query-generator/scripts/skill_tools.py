@@ -145,8 +145,32 @@ def catalog_path_positions(ts, values):
     return found
 
 
-def identifier_positions(ts, keywords=(), non_reserved=()):
-    """Recognize clear identifier positions; this is not a complete GQL parser."""
+DDL_KEYS = {'PRIMARY KEY', 'MULTIEDGE KEY'}
+
+
+def ddl_key_clause(ts, values, i):
+    """Return the keyword phrase and its last token in a DDL constraint slot."""
+    head = ' '.join(values[i].removeprefix('`').removesuffix('`').upper().split())
+    end = i
+    if head in {'PRIMARY', 'MULTIEDGE'} and i + 1 < len(ts) and values[i+1].upper() in {'KEY', '`KEY`'}:
+        head += ' KEY'
+        end += 1
+    if head not in DDL_KEYS or end + 1 >= len(ts):
+        return None
+    prev, following = values[i-1], values[end+1]
+    if prev in {'{', ','}:
+        # A name such as `PRIMARY KEY` followed by a type declares a property.
+        if following == '(':
+            return head, end
+    elif following in {',', '}', 'NOT', 'NULL', 'DEFAULT'} and prev != 'DEFAULT':
+        # Inline constraints can follow a type, a nullability constraint or a default.
+        if ts[i-1][0] != 'symbol' or prev in {')', ']', '}', '>'}:
+            return head, end
+    return None
+
+
+def token_roles(ts, keywords=(), non_reserved=()):
+    """Recognize clear identifier and DDL constraint positions for lint."""
     values = [v.upper() if k == 'word' else v for k, v in ts]
     found = catalog_path_positions(ts, values)
     stack = []
@@ -184,6 +208,15 @@ def identifier_positions(ts, keywords=(), non_reserved=()):
         elif word == ';':
             graph_type_header = False
         parent = stack[-1][1] if stack else None
+        if parent == 'property definitions' and kind in {'word', 'quoted'}:
+            if found.get(i) in DDL_KEYS:
+                continue
+            clause = ddl_key_clause(ts, values, i)
+            if clause:
+                phrase, end = clause
+                for j in range(i, end + 1):
+                    found[j] = phrase
+                continue
         # Generic type arguments may contain commas, which do not start a new property.
         if parent in {'property definitions', 'type arguments'}:
             if word == '<' and prev in {'LIST', 'SET', 'MAP', 'VECTOR', 'RECORD'}:
@@ -240,7 +273,7 @@ def identifier_positions(ts, keywords=(), non_reserved=()):
                     mark(i+1, 'endpoint type')
             elif parent == 'element type filler' and value == '{':
                 context = 'property definitions'
-            elif parent == 'property definitions' and value == '(' and prev == 'KEY' and values[i-2] in {'PRIMARY', 'MULTIEDGE'}:
+            elif parent == 'property definitions' and value == '(' and found.get(i-1) in DDL_KEYS:
                 context = 'key members'
             stack.append((value, context, prev))
             if context == 'pattern' and after not in {'WHERE', 'IS', 'SAMPLE'}:
@@ -253,8 +286,7 @@ def identifier_positions(ts, keywords=(), non_reserved=()):
         if parent == 'element type filler' and prev in {':', 'IS', 'LABEL', 'LABELS', '&'}:
             mark(i, 'label')
         if parent == 'property definitions' and prev in {'{', ','}:
-            if word not in {'PRIMARY', 'MULTIEDGE'} or after != 'KEY':
-                mark(i, 'DDL property')
+            mark(i, 'DDL property')
             continue
         if parent == 'key members' and prev in {'(', ','}:
             mark(i, 'key member')
@@ -381,7 +413,7 @@ def lint(code, root, scope='database'):
     keyword_data = json.loads((root / 'references/documented-keywords.json').read_text())
     reserved = set(keyword_data['reserved'])
     non_reserved = set(keyword_data['non_reserved'])
-    positions = identifier_positions(ts, reserved | non_reserved, non_reserved)
+    positions = token_roles(ts, reserved | non_reserved, non_reserved)
     for i in range(1, len(ts) - 1):
         if values[i].upper() not in {'IS', '`IS`'}:
             continue
@@ -405,6 +437,10 @@ def lint(code, root, scope='database'):
             add('null-predicate-quoting', 'Write IS NULL or IS NOT NULL with no backticks on predicate keywords')
     for i, role in positions.items():
         kind, value = ts[i]
+        if role in DDL_KEYS:
+            if kind == 'quoted':
+                add('ddl-key-quoting', f'Write {role} without backticks and quote each key property name')
+            continue
         if kind == 'quoted' or (kind == 'string' and not value.startswith('"')):
             continue
         name = value.strip('"') if kind == 'string' else value
@@ -454,6 +490,8 @@ def lint(code, root, scope='database'):
         if (values[i] == 'LABELED' and prev in {'IS', 'NOT'}
                 or values[i] == 'IS' and prev != 'RETURN'
                 or values[i] == 'KEY' and prev in {'PRIMARY', 'MULTIEDGE'}):
+            continue
+        if positions.get(i) in DDL_KEYS:
             continue
         if prev in {':', '@'} or positions.get(i) in {'catalog path', 'element type', 'element or graph type'}:
             continue

@@ -2,6 +2,6 @@
   "case_id": "c_string_concat",
   "attempt": 1,
   "query": "VALUE `joined_ids` SumAgg<STRING> = \"\"\nMATCH (`src`:`player`)-[`edge`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`joined_ids` += `dst`.`id`\n}\nRETURN length(@`joined_ids`) AS `total_chars`",
-  "notes": "已通过冻结技能的 Database 静态检查，未在数据库中执行。",
-  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
+  "notes": "随包静态检查未报告问题，未在数据库中执行。随包函数目录确认了 length(STRING) 签名，但未说明多字节字符的计量规则。",
+  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
 }

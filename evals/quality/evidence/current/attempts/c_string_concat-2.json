@@ -1,7 +1,7 @@
 {
   "case_id": "c_string_concat",
   "attempt": 2,
-  "query": "VALUE `joined_ids` SumAgg<STRING> = \"\"\nMATCH (:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`joined_ids` += `dst`.`id`\n}\nRETURN length(@`joined_ids`) AS `total_chars`",
-  "notes": "已通过技能包的静态检查。未在数据库中执行，未验证平行边、空图及多字节字符的实际结果。",
-  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
+  "query": "VALUE `target_ids` SumAgg<STRING> = \"\"\nMATCH (:`player`)-[`edge`:`follow`]->(`target`:`player`)\nPER PATH {\n  SET @`target_ids` += `target`.`id`\n}\nRETURN length(@`target_ids`) AS `total_chars`",
+  "notes": "随附静态检查未报告问题。未在数据库中执行验证，随附函数目录仅确认了 length(STRING) 的签名，未说明多字节字符的计量规则。",
+  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
 }

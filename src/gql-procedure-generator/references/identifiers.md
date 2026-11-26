@@ -18,7 +18,9 @@ syntax error. The keyword catalog does not authorize syntax capabilities.
 In each node or edge definition, quote the type name, each label, each property
 name inside the braces, and each reference to an endpoint type or key property.
 For composite keys, quote each member in its original order. Keep DDL keywords
-and scalar type declarations in their grammar form.
+and scalar type declarations in their grammar form. In both inline and list
+constraints, keep PRIMARY KEY and MULTIEDGE KEY unquoted. For example,
+write `` `id` INT64 PRIMARY KEY `` for an inline primary key.
 
 ```gql
 CREATE GRAPH TYPE `LedgerType` AS {

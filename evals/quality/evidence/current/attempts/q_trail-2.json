@@ -1,7 +1,7 @@
 {
   "case_id": "q_trail",
   "attempt": 2,
-  "query": "MATCH `p` = TRAIL (:`player` {`id`: $seed})-[:`follow`]->{1,3}(:`player`)\nRETURN transform(nodes(`p`), `n` -> `n`.`id`) AS `node_ids`;",
-  "notes": "随包静态检查未报告问题，未在数据库中执行。",
-  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
+  "query": "MATCH `p` = TRAIL (:`player` {`id`: $seed})-[:`follow`]->{1,3}()\nRETURN transform(nodes(`p`), `n` -> `n`.`id`) AS `node_ids`;",
+  "notes": "已通过技能包的静态检查，未在数据库中执行验证。",
+  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
 }

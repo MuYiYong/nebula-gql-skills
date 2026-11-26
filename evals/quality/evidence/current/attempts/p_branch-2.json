@@ -2,6 +2,6 @@
   "case_id": "p_branch",
   "attempt": 2,
   "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS `label`\n} ELSEIF $x < 0 THEN {\n  RETURN 'negative' AS `label`\n} ELSEIF $x = 0 THEN {\n  RETURN 'zero' AS `label`\n} ELSE {\n  RETURN 'positive' AS `label`\n}",
-  "notes": "随附静态检查未发现问题。服务端解析和执行结果尚未验证。",
-  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
+  "notes": "已通过技能包的静态检查，未在数据库中执行。",
+  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
 }

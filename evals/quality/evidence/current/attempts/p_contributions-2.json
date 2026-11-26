@@ -1,7 +1,7 @@
 {
   "case_id": "p_contributions",
   "attempt": 2,
-  "query": "RETURN $left AS `contribution`\nUNION ALL\nRETURN $right AS `contribution`\nNEXT\nRETURN sum(`contribution`) AS `total`",
-  "notes": "已通过技能包的静态检查，未在 NebulaGraph 5.3.0 实例上执行验证。",
-  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
+  "query": "RETURN $left AS `contribution`\nUNION ALL\nRETURN $right AS `contribution`\nNEXT\nRETURN SUM(`contribution`) AS `total`",
+  "notes": "通过技能附带的静态检查，未在 NebulaGraph 5.3.0 实例上执行验证。",
+  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
 }

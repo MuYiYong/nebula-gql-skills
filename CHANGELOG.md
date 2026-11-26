@@ -6,11 +6,13 @@ Notable changes to the Nebula GQL skills are documented here. ZIP versions use t
 
 ### Fixed
 
+- Both bundled linters now flag backticks on `PRIMARY KEY` and `MULTIEDGE KEY` in inline and list constraints and identify bare property names in the same key list.
 - Both skills generate `IS NULL` and `IS NOT NULL` with bare predicate keywords. The bundled lint flags quoted predicate keywords and accepts quoted identifiers that share those names.
 - Graph Type DDL now quotes property declarations and every member of primary and multiedge keys. Both bundled checkers recognize the edge label introducer and accept parameterized decimal property types.
 
 ### Validation
 
+- On NebulaGraph 5.3.2, `EXPLAIN` accepted all four valid key declarations and returned syntax error 42001 for all 16 quoted-keyword variants. Both bundled linters cover these forms in regression tests.
 - Reproduced both syntax errors on NebulaGraph 5.3.2 and verified the corrected queries against synthetic fixtures. All 26 independently generated candidates passed 92 database result comparisons.
 - On 5.3.2, reproduced the 42001 error for a bare property named `balance` and verified the fully quoted schema with `EXPLAIN`.
 
