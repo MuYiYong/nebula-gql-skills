@@ -1,7 +1,7 @@
 {
   "case_id": "q_optional",
   "attempt": 1,
-  "query": "MATCH (`p`:`player`)\nOPTIONAL MATCH (`p`)-[:`follow`]->(`q`:`player` WHERE `q`.`age` > $min_age)\nRETURN `p`.`id` AS `src`, `q`.`id` AS `dst`;",
+  "query": "MATCH (`s`:`player`)\nOPTIONAL MATCH (`s`)-[:`follow`]->(`d`:`player` WHERE `d`.`age` > $min_age)\nRETURN `s`.`id` AS `src`, `d`.`id` AS `dst`",
   "notes": "已通过随包静态检查，未在数据库中执行。",
-  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
+  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
 }

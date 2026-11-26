@@ -175,6 +175,37 @@ class IdentifierTests(unittest.TestCase):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 tools.quote_identifier(invalid, SKILLS[0])
 
+    def test_graph_type_properties_and_key_lists(self):
+        ddl = (
+            'CREATE GRAPH TYPE `Ledger` AS { '
+            'NODE TYPE `Account` (LABEL `Account` {`account_id` STRING, '
+            '`balance` DECIMAL, `balance_date` DATE, PRIMARY KEY (`account_id`, `balance`)}), '
+            'EDGE TYPE `Holds` (`Account`)-[LABEL `Holds` {'
+            '`order` BYTES, `amount` DECIMAL(18,2), MULTIEDGE KEY (`order`)}]->(`Account`) }'
+        )
+        for root in SKILLS:
+            self.assertEqual(tools.lint(ddl, root)['issues'], [])
+            for match in re.finditer(r'`(\w+)`', ddl):
+                with self.subTest(root=root.name, position=match.start()):
+                    bare = ddl[:match.start()] + match[1] + ddl[match.end():]
+                    self.assertTrue(any(i['rule'] in {'keyword-identifier', 'unquoted-identifier'}
+                                        for i in tools.lint(bare, root)['issues']), bare)
+
+    def test_ddl_keywords_are_role_sensitive(self):
+        for root in SKILLS:
+            for query in [
+                'CREATE GRAPH TYPE `G` AS { NODE `T` (LABELS `label` & `key` '
+                '{`balance` MAP<STRING, DATE>, `key` TYPED DECIMAL(10), PRIMARY KEY (`key`)}) }',
+                'CREATE GRAPH TYPE `G` AS { NODE `T` (:`balance` {`id` INT PRIMARY KEY}), '
+                'EDGE `E` (`T`)-[LABEL `label` {MULTIEDGE KEY()}]->(`T`) }',
+                'MATCH ()-[`label`:`E`]->() WHERE `label`.`balance` IS NOT NULL RETURN `label`',
+            ]:
+                with self.subTest(root=root.name, query=query):
+                    self.assertFalse(tools.lint(query, root)['issues'])
+            self.assertTrue(self.keyword_issues('MATCH ()-[label]->() RETURN 1', root))
+            self.assertIn('undocumented-function', {i['rule'] for i in
+                          tools.lint('RETURN decimal(18,2)', root)['issues']})
+
     def test_single_omission_in_an_otherwise_quoted_statement(self):
         statements = [
             'USE /`Tenant`/`schema`.`social` MATCH `path` = TRAIL '

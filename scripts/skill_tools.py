@@ -168,6 +168,7 @@ def identifier_positions(ts, keywords=(), non_reserved=()):
     # Track comma-separated expressions at the depth of their clause. Nested
     # calls and type specifications have their own argument grammar.
     list_depth = None
+    graph_type_header = False
 
     def mark(index, role):
         if 0 <= index < len(ts) and ts[index][0] in {'word', 'quoted', 'string'}:
@@ -177,6 +178,22 @@ def identifier_positions(ts, keywords=(), non_reserved=()):
         word = values[i]
         prev = values[i-1] if i else ''
         after = values[i+1] if i+1 < len(ts) else ''
+        if prev == 'GRAPH' and word == 'TYPE':
+            before_graph = i-3 if i >= 3 and values[i-2] == 'PROPERTY' else i-2
+            graph_type_header = before_graph >= 0 and values[before_graph] in {'CREATE', 'REPLACE', 'ALTER'}
+        elif word == ';':
+            graph_type_header = False
+        parent = stack[-1][1] if stack else None
+        # Generic type arguments may contain commas, which do not start a new property.
+        if parent in {'property definitions', 'type arguments'}:
+            if word == '<' and prev in {'LIST', 'SET', 'MAP', 'VECTOR', 'RECORD'}:
+                stack.append(('<', 'type arguments', prev))
+                continue
+            if parent == 'type arguments':
+                if word == '>':
+                    stack.pop()
+                if word not in {'(', '[', '{'}:
+                    continue
         if kind == 'word' and word in {'RETURN', 'YIELD', 'BY', 'EXPORT'}:
             list_depth = len(stack)
         elif word in {'NEXT', 'MATCH', 'CALL', 'LIMIT', 'OFFSET', 'UNION', ';'}:
@@ -214,6 +231,17 @@ def identifier_positions(ts, keywords=(), non_reserved=()):
                 context = 'pattern'
             elif value == '[' and (prev in {'@', 'LABELED'} or values[max(0, i-2):i] in (['@', '!'], ['ELEMENT', 'TYPED'], ['TYPED', '!'])):
                 context = 'types'
+            if value == '{' and graph_type_header:
+                context = 'graph type body'
+                graph_type_header = False
+            elif parent == 'graph type body' and value in {'(', '['}:
+                context = 'element type filler'
+                if value == '(' and values[i+2:i+3] == [')']:
+                    mark(i+1, 'endpoint type')
+            elif parent == 'element type filler' and value == '{':
+                context = 'property definitions'
+            elif parent == 'property definitions' and value == '(' and prev == 'KEY' and values[i-2] in {'PRIMARY', 'MULTIEDGE'}:
+                context = 'key members'
             stack.append((value, context, prev))
             if context == 'pattern' and after not in {'WHERE', 'IS', 'SAMPLE'}:
                 mark(i+1, 'pattern binding')
@@ -221,6 +249,15 @@ def identifier_positions(ts, keywords=(), non_reserved=()):
             if stack:
                 stack.pop()
         if kind not in {'word', 'quoted', 'string'}:
+            continue
+        if parent == 'element type filler' and prev in {':', 'IS', 'LABEL', 'LABELS', '&'}:
+            mark(i, 'label')
+        if parent == 'property definitions' and prev in {'{', ','}:
+            if word not in {'PRIMARY', 'MULTIEDGE'} or after != 'KEY':
+                mark(i, 'DDL property')
+            continue
+        if parent == 'key members' and prev in {'(', ','}:
+            mark(i, 'key member')
             continue
         if prev == 'AS' and not (stack and stack[-1][2] == 'CAST'):
             found[i] = 'alias'
@@ -405,6 +442,15 @@ def lint(code, root, scope='database'):
         if kind not in {'word', 'quoted'} or ts[i+1][1] != '(': continue
         prev = values[i-1] if i else ''
         if name.upper() in STRUCTURAL or prev in {'CALL', 'PROCEDURE'}: continue
+        if values[i] in {'DEC', 'DECIMAL'}:
+            # property_name [TYPED | ::] DECIMAL(precision[, scale])
+            prop = i-1
+            if prev == 'TYPED':
+                prop -= 1
+            elif values[max(0, i-2):i] == [':', ':']:
+                prop -= 2
+            if positions.get(prop) == 'DDL property':
+                continue
         if (values[i] == 'LABELED' and prev in {'IS', 'NOT'}
                 or values[i] == 'IS' and prev != 'RETURN'
                 or values[i] == 'KEY' and prev in {'PRIMARY', 'MULTIEDGE'}):

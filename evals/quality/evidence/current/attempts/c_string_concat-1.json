@@ -1,7 +1,7 @@
 {
   "case_id": "c_string_concat",
   "attempt": 1,
-  "query": "VALUE `target_ids` SumAgg<STRING> = ''\nMATCH (`src`:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`target_ids` += `dst`.`id`\n}\nRETURN length(@`target_ids`) AS `total_chars`",
-  "notes": "已通过冻结技能包的静态检查，未在数据库中执行。",
-  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
+  "query": "VALUE `joined_ids` SumAgg<STRING> = \"\"\nMATCH (`src`:`player`)-[`edge`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`joined_ids` += `dst`.`id`\n}\nRETURN length(@`joined_ids`) AS `total_chars`",
+  "notes": "已通过冻结技能的 Database 静态检查，未在数据库中执行。",
+  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
 }

@@ -12,6 +12,7 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 1. 按意图路由：定义/管理过程、设计签名、过程内控制流或状态算法由本技能处理。已有签名的独立调用、CALL/YIELD 后的检索和只读内联子查询交给 gql-query-generator；不要仅因出现 CALL 同时加载两个技能。混合任务先完成定义，再按需读取查询参考。
 2. 提取过程名、参数、返回列、运行环境（Database 或 Analytics）、图类型、状态变量、控制流、副作用和终止条件。
    输出 GQL 前，给每个标识符的声明及每一次引用加反引号，保留原名和大小写。覆盖图、过程、元素类型、标签、属性、变量、形参、字段和别名，限定名逐段处理。从文档、feature、用户输入或示例复制的名称也适用。语法关键字、内置类型和函数按原语法输出。空值谓词写成 `IS NULL` 或 `IS NOT NULL`，这两个谓词中的关键字都不加反引号。字符串值、外部参数 `$name` 和临时图 `#name` 保留原写法。见 [标识符规则](references/identifiers.md)。
+   生成或修复 `CREATE GRAPH TYPE` 时，逐项检查点、边花括号内的属性声明，再检查 `PRIMARY KEY` 和 `MULTIEDGE KEY` 括号内的每个属性引用。按[图类型 DDL 示例](references/identifiers.md#graph-type-ddl)核对整条语句。
 3. 区分 Database 本地临时图与 Analytics 分布式临时图：两者均有文档化的 match-compute；只有后者使用 PARTITION BY DEFAULT/PER PARTITION。聚合器和 ACTIVE_SET 在顶层过程作用域声明，不能塞进内联 CALL 子作用域。
 4. 在过程作用域开头声明全部变量。把运行中才得到的值先声明，再在后续语句中赋值。
 5. 普通过程逻辑使用 statement block；图遍历或算法逻辑使用 `match_compute_statement`。多跳算法拆成 `WHILE` 驱动的多轮 0/1 跳计算。

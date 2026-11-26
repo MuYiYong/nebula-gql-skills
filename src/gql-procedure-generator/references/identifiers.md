@@ -13,6 +13,28 @@ The language permits non-reserved words as regular identifiers; this generation
 policy deliberately quotes them too. A policy finding is not proof of a server
 syntax error. The keyword catalog does not authorize syntax capabilities.
 
+## Graph Type DDL
+
+In each node or edge definition, quote the type name, each label, each property
+name inside the braces, and each reference to an endpoint type or key property.
+For composite keys, quote each member in its original order. Keep DDL keywords
+and scalar type declarations in their grammar form.
+
+```gql
+CREATE GRAPH TYPE `LedgerType` AS {
+  NODE TYPE `Account` (LABEL `Account` {
+    `account_id` STRING, `balance` DECIMAL, `as_of` DATE, PRIMARY KEY (`account_id`)
+  }),
+  EDGE TYPE `Transfer` (`Account`)-[LABEL `Transfer` {
+    `sequence` INT64, MULTIEDGE KEY (`sequence`)
+  }]->(`Account`)
+}
+```
+
+A bare property named `balance` collides with the reserved keyword `BALANCE`.
+For a 42001 at a property, check the whole definition and its key lists with
+the bundled lint command. Preserve the supplied numeric precision and scale.
+
 ## Apply to identifier positions
 
 - Graph/schema/procedure names, types and labels, properties and record/table fields.

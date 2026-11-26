@@ -1,7 +1,7 @@
 {
   "case_id": "q_page",
   "attempt": 1,
-  "query": "MATCH (`p`:`player`)\nRETURN `p`.`id` AS `id`, `p`.`age` AS `age`\nORDER BY `age` DESC NULLS LAST, `id` ASC\nOFFSET 1 LIMIT 2;",
-  "notes": "静态检查通过，未在数据库中执行。",
-  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
+  "query": "MATCH (`p`@`player`)\nRETURN `p`.`id` AS `id`, `p`.`age` AS `age`\nORDER BY `age` DESC NULLS LAST, `id` ASC\nOFFSET 1\nLIMIT 2;",
+  "notes": "已按 NebulaGraph 5.3.0 文档核对语法，静态检查未发现问题。未在数据库中执行。",
+  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
 }

@@ -325,6 +325,9 @@ def audit_skill(skill_name: str) -> tuple[int, int, int]:
                 name = match.group(1).lower()
                 if name in allowed or name in STRUCTURAL_WORDS:
                     continue
+                # PRIMARY KEY (...) and MULTIEDGE KEY (...) are DDL constraints.
+                if name == "key" and re.search(r"\b(?:PRIMARY|MULTIEDGE)\s+$", code[:match.start()], re.I):
+                    continue
                 if is_procedure_name(code, match.start()):
                     continue
                 checked_calls += 1

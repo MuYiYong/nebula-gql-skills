@@ -1,7 +1,7 @@
 {
   "case_id": "q_anti",
   "attempt": 2,
-  "query": "MATCH (`p`:`player`)\nWHERE NOT EXISTS { MATCH (`p`)-[:`follow`]->() }\nRETURN `p`.`id` AS `id`;",
-  "notes": "已通过技能包静态检查，未在数据库中执行。",
-  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
+  "query": "MATCH (`p`:`player`)\nWHERE NOT EXISTS {\n  MATCH (`p`)-[:`follow`]->()\n}\nRETURN `p`.`id` AS `id`;",
+  "notes": "静态检查未发现问题，未在数据库中执行验证。",
+  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
 }

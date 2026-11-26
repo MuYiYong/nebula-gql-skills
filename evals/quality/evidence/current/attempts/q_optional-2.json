@@ -1,7 +1,7 @@
 {
   "case_id": "q_optional",
   "attempt": 2,
-  "query": "MATCH (`s`:`player`)\nOPTIONAL MATCH (`s`)-[:`follow`]->(`t`:`player` WHERE `t`.`age` > $min_age)\nRETURN `s`.`id` AS `src`, `t`.`id` AS `dst`;",
-  "notes": "已通过技能包的静态检查，未在数据库中执行。",
-  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
+  "query": "MATCH (`s`:`player`)\nOPTIONAL MATCH (`s`)-[:`follow`]->(`d`:`player` WHERE `d`.`age` > $min_age)\nRETURN `s`.`id` AS `src`, `d`.`id` AS `dst`;",
+  "notes": "已通过技能包的静态检查，未在 NebulaGraph 5.3.0 中执行。",
+  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
 }

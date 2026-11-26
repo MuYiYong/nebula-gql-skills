@@ -2,6 +2,6 @@
   "case_id": "q_group",
   "attempt": 2,
   "query": "MATCH (`p`:`player`)\nRETURN `p`.`age` AS `age`, count(*) AS `total`\nGROUP BY `age`;",
-  "notes": "已通过静态检查，未在数据库中执行。",
-  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
+  "notes": "已通过技能附带的静态检查，未在数据库中执行。",
+  "skills_sha256": "610ca6c931e0da53bdb3c57b7ed11d95d6778da67ebd9be95c64d697419caa78"
 }
