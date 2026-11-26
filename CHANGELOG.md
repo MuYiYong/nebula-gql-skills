@@ -2,6 +2,16 @@
 
 Notable changes to the Nebula GQL skills are documented here. ZIP versions use the Beijing date in `YY.MM.DD` format. GitHub release tags use `vYY.MM.DD_BuildHHMM`, with `HHMM` from the Beijing time when the workflow resolves the version.
 
+## 26.11.26 - 2026-11-26
+
+### Fixed
+
+- Both skills generate `IS NULL` and `IS NOT NULL` with bare predicate keywords. The bundled lint flags quoted predicate keywords and accepts quoted identifiers that share those names.
+
+### Validation
+
+- Reproduced both syntax errors on NebulaGraph 5.3.2 and verified the corrected queries against synthetic fixtures. All 26 independently generated candidates passed 92 database result comparisons.
+
 ## 26.11.23 - 2026-11-23
 
 ### Fixed

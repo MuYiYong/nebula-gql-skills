@@ -85,6 +85,77 @@ class IdentifierTests(unittest.TestCase):
             'CREATE PROCEDURE `type`(`property` INT64) AS '
             '{ RETURN `property` AS `version` }'))
 
+    def test_repayment_null_predicate_repair(self):
+        query = (
+            'MATCH (`b`:`ReportBatch`)-[`cr`:`CONTAINS_RECORD`]->(`r`:`ReportRecord`)'
+            '-[`rl`:`REPORTS_LOAN`]->(`l`:`Loan`)-[`hr`:`HAS_REPAYMENT`]->(`rp`:`Repayment`)\n'
+            'WHERE `rp`.`due_amount` IS NULL OR `rp`.`paid_amount` < 0 OR `rp`.`due_amount` < 0 '
+            'OR (`rp`.`paid_amount` IS NOT NULL AND `rp`.`due_amount` IS NOT NULL '
+            'AND `rp`.`paid_amount` > `rp`.`due_amount`) OR `rp`.`due_date` IS NULL\n'
+            'RETURN `b`.`batch_id` AS `batch_id`, `r`.`record_id` AS `record_id`, '
+            '`l`.`loan_id` AS `loan_id`, `rp`.`repayment_id` AS `repayment_id`, '
+            '`rp`.`due_amount` AS `due_amount`, `rp`.`paid_amount` AS `paid_amount`\n'
+            'LIMIT 25'
+        )
+        self.assertFalse(tools.lint(query, SKILLS[0])['issues'])
+        invalid = query.replace('IS NOT NULL', 'IS `NOT` NULL')
+        self.assertEqual([issue['rule'] for issue in tools.lint(invalid, SKILLS[0])['issues']],
+                         ['null-predicate-quoting'])
+
+    def test_branch_null_predicate_repair(self):
+        query = (
+            'MATCH (`b`:`ReportBatch`)-[`cr1`:`CONTAINS_RECORD`]->(`r1`:`ReportRecord`)'
+            '-[`rc1`:`REPORTS_CUSTOMER`]->(`c1`:`Customer`)-[`oa1`:`OWNS_ACCOUNT`]->(`a1`:`Account`)'
+            '-[`as1`:`ACCOUNT_SERVICED_BY`]->(`br`:`Branch`), '
+            '(`b`)-[`cr2`:`CONTAINS_RECORD`]->(`r2`:`ReportRecord`)'
+            '-[`rc2`:`REPORTS_CUSTOMER`]->(`c2`:`Customer`)-[`oa2`:`OWNS_ACCOUNT`]->(`a2`:`Account`)'
+            '-[`as2`:`ACCOUNT_SERVICED_BY`]->(`br`)\n'
+            'WHERE `c1`.`customer_id` < `c2`.`customer_id` '
+            'AND `a1`.`account_id` <> `a2`.`account_id` '
+            'AND (`br`.`branch_code` IS NULL OR `br`.`branch_name` IS NULL)\n'
+            'RETURN `b`.`batch_id` AS `batch_id`, `c1`.`customer_id` AS `customer_id_1`, '
+            '`a1`.`account_id` AS `account_id_1`, `c2`.`customer_id` AS `customer_id_2`, '
+            '`a2`.`account_id` AS `account_id_2`, `br`.`branch_id` AS `branch_id`\n'
+            'LIMIT 25'
+        )
+        self.assertFalse(tools.lint(query, SKILLS[0])['issues'])
+        invalid = query.replace('IS NULL', 'IS `NULL`')
+        self.assertEqual([issue['rule'] for issue in tools.lint(invalid, SKILLS[0])['issues']],
+                         ['null-predicate-quoting'])
+
+    def test_quoted_null_predicate_tokens_are_flagged(self):
+        for root in SKILLS:
+            for predicate in ('IS `NULL`', '`IS` NULL', '`IS` `NULL`', 'is /* gap */ `nOt`\nnull',
+                              'IS NOT `NULL`', '`IS` NOT NULL', '`is` `not` `null`'):
+                query = f'RETURN (1 {predicate}) AS `checked`'
+                with self.subTest(root=root.name, predicate=predicate):
+                    rules = [issue['rule'] for issue in tools.lint(query, root)['issues']]
+                    self.assertIn('null-predicate-quoting', rules)
+
+    def test_grouped_null_predicate_is_not_a_pattern_label(self):
+        for root in SKILLS:
+            for query in [
+                'LET `n` = NULL RETURN (`n` IS `NULL`) AS `checked`',
+                'MATCH (`n`) WHERE ((`n` IS `NULL`)) RETURN `n`',
+                'MATCH (`n` WHERE (`n` IS `NULL`)) RETURN `n`',
+            ]:
+                with self.subTest(root=root.name, query=query):
+                    self.assertEqual([issue['rule'] for issue in tools.lint(query, root)['issues']],
+                                     ['null-predicate-quoting'])
+                    self.assertFalse(tools.lint(query.replace('IS `NULL`', 'IS NULL'), root)['issues'])
+
+    def test_null_predicates_preserve_keyword_identifiers_and_literals(self):
+        for root in SKILLS:
+            for query in [
+                'MATCH (`n` IS `NULL`)-[`e` IS `NOT`]->(IS `NULL`) '
+                'WHERE `n`.`NOT` IS NOT NULL RETURN `e`.`NULL` AS `IS`',
+                'MATCH (`NOT`) WHERE `NOT` IS NULL RETURN `NOT` AS `NULL`',
+                'VALUE `NOT` INT64 = 1 RETURN `NOT` is /* gap */ not\nnull AS `checked`',
+                'RETURN "IS `NOT` NULL" AS `text`, 1 AS `NOT` // IS `NOT` NULL',
+            ]:
+                with self.subTest(root=root.name, query=query):
+                    self.assertFalse(tools.lint(query, root)['issues'])
+
     def test_every_keyword_quotes_without_changing_identifier_spelling(self):
         for root in SKILLS:
             data = json.loads((root / 'references/documented-keywords.json').read_text())

@@ -2,6 +2,6 @@
   "case_id": "c_long_set",
   "attempt": 1,
   "query": "VALUE `collected_destination_ids` SetAgg<STRING>\nMATCH (:`player`)-[:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`collected_destination_ids` += `dst`.`id`\n}\nRETURN @`collected_destination_ids`.size() AS `distinct_targets`",
-  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
-  "notes": "沿用评测器已选的本地临时图。平行边指向同一目标时只计一次，空图返回 0。静态检查通过，未连接数据库执行。"
+  "notes": "已通过随包静态检查，未在数据库中执行。",
+  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
 }

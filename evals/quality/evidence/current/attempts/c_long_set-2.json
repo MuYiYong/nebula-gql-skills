@@ -1,7 +1,7 @@
 {
   "case_id": "c_long_set",
   "attempt": 2,
-  "query": "VALUE `collected_destination_ids` SetAgg<STRING>\nMATCH (`src`:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`collected_destination_ids` += `dst`.`id`\n}\nRETURN @`collected_destination_ids`.size() AS `distinct_targets`",
-  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
-  "notes": "使用评测器已选定的 Database 本地临时图。指向同一目标的边只计一次，无匹配边时返回 0。技能静态检查通过，未连接数据库执行。"
+  "query": "VALUE `collected_destination_ids` SetAgg<STRING>\nMATCH (:`player`)-[:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`collected_destination_ids` += `dst`.`id`\n}\nRETURN @`collected_destination_ids`.size() AS `distinct_targets`",
+  "notes": "已通过冻结技能的静态检查，未在数据库中执行。",
+  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
 }

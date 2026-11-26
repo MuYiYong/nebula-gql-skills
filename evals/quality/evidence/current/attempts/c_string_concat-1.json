@@ -1,7 +1,7 @@
 {
   "case_id": "c_string_concat",
   "attempt": 1,
-  "query": "VALUE `target_ids` SumAgg<STRING> = ''\nMATCH (`src`:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`target_ids` += `dst`.`id`\n}\nRETURN length(CAST(@`target_ids` AS STRING)) AS `total_chars`",
-  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
-  "notes": "每条 follow 边拼接一次目标节点的业务 id，平行边分别贡献。没有匹配边时，聚合器保留空串，total_chars 为 0。已通过技能静态检查，未连接数据库执行。"
+  "query": "VALUE `target_ids` SumAgg<STRING> = ''\nMATCH (`src`:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`target_ids` += `dst`.`id`\n}\nRETURN length(@`target_ids`) AS `total_chars`",
+  "notes": "已通过冻结技能包的静态检查，未在数据库中执行。",
+  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
 }

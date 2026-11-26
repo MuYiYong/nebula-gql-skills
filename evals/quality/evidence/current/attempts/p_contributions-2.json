@@ -1,7 +1,7 @@
 {
   "case_id": "p_contributions",
   "attempt": 2,
-  "query": "RETURN $left AS `contribution`\nUNION ALL\nRETURN $right AS `contribution`\nNEXT\nRETURN SUM(`contribution`) AS `total`",
-  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
-  "notes": "假设两数之和在 INT64 范围内。已通过技能静态检查，未连接数据库执行。"
+  "query": "RETURN $left AS `contribution`\nUNION ALL\nRETURN $right AS `contribution`\nNEXT\nRETURN sum(`contribution`) AS `total`",
+  "notes": "已通过静态检查，未在数据库中执行。",
+  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad"
 }

@@ -1,167 +1,167 @@
 {
   "kind": "fresh_independent_generation",
-  "skills_sha256": "151d5a13af72f5b91a6e693eea64dcb804c53c663ef4d15726d128780361985d",
+  "skills_sha256": "5551dba50c60cc5ccc7cb7772c12e0836c8ce7f8d163d9d3493d2f42ce2424ad",
   "model_snapshot": "gpt-6.2-astra",
   "reasoning_effort": "xhigh",
   "sampling_parameters": "temperature and seed not exposed",
-  "context_policy": "One ephemeral Codex process per case and attempt. Each received one public prompt and the selected skill. Its working copy and registered skill location used the same frozen source. The evaluation repository was masked during generation.",
+  "context_policy": "One ephemeral Codex process per case and attempt, with one public prompt and the frozen selected skill. The evaluation repository was masked during generation.",
   "suite_use": "Repeated regression on the existing 13-case suite. No reuse of historical generated queries or execution receipts.",
   "outputs": [
     {
       "case_id": "c_degrees",
       "attempt": 1,
       "file": "attempts/c_degrees-1.json",
-      "sha256": "58d5984b4dfa305d280283ab87a138cf659969c904b61c070e9ca5cd90cae608"
+      "sha256": "d583398e25463483b307064e378ef208c1256a4ef9caa44ea98bdbddba62addf"
     },
     {
       "case_id": "c_degrees",
       "attempt": 2,
       "file": "attempts/c_degrees-2.json",
-      "sha256": "78f166f2a8b67e978888121a30cf916add5f34ba77a17056d82292a0a274fb4b"
+      "sha256": "ee71e7b8ed307cc79c85e8ce7a9e0edc45696a67f2e27bc84f2cb3cf5d2792a0"
     },
     {
       "case_id": "c_incoming",
       "attempt": 1,
       "file": "attempts/c_incoming-1.json",
-      "sha256": "fccce4ce780f90bd223f6cb81c83319e1b61f8b8b652cb634cc53a15b6747b57"
+      "sha256": "1da23cb252e48dc805d15b80a6ccb025ba2ff2d911847835eee480ef141afa39"
     },
     {
       "case_id": "c_incoming",
       "attempt": 2,
       "file": "attempts/c_incoming-2.json",
-      "sha256": "6333f6fd0c7b703db4a1f48c219143456b28ff0dc6020050eba4850290145ea2"
+      "sha256": "650ec6ba821b1aaeba17518b412b05dcd1ad218595d31072762d4fcdfc12c6b3"
     },
     {
       "case_id": "c_long_set",
       "attempt": 1,
       "file": "attempts/c_long_set-1.json",
-      "sha256": "39e52efb301679cb5cd014e81a9387637fdcf754ce6773838cf423b1717bfea5"
+      "sha256": "8107eb4d6b980d0d64e00dcb51d25dfb85321987201496489a99c580e2ef5ea7"
     },
     {
       "case_id": "c_long_set",
       "attempt": 2,
       "file": "attempts/c_long_set-2.json",
-      "sha256": "568ed5ca3c31df76fe386399e7001b2cdcf3217ba95aff4647c358b54673668c"
+      "sha256": "3d52b62a0d329ccb30b762feb59fd273a69794ebcd1a831e37b531c15c751740"
     },
     {
       "case_id": "c_string_concat",
       "attempt": 1,
       "file": "attempts/c_string_concat-1.json",
-      "sha256": "43337f82619dbdcbf6db9009969ba75f3355680b3956ca31aebd7d5a392733c3"
+      "sha256": "263c74e030b14c2a74e0870a2697a607652021a8a9741d523f2a86d60f6972be"
     },
     {
       "case_id": "c_string_concat",
       "attempt": 2,
       "file": "attempts/c_string_concat-2.json",
-      "sha256": "ea8ebb9d46a370d560ead2a91bbbf8a43c36284f7bb0e407c242e00bd3f5a7d8"
+      "sha256": "65f16ca5f34ae194248e8ec8419615a6d0f73de08dc8d0759b52f7b75767ae09"
     },
     {
       "case_id": "p_branch",
       "attempt": 1,
       "file": "attempts/p_branch-1.json",
-      "sha256": "dea94e1dddd6b6eb2113024f301350812372bfbd03857bce1fd69ef235972bd6"
+      "sha256": "4c3077637c3606e2fac2374dd0ab215808ed25f4114e2026cf93ed58c84df76a"
     },
     {
       "case_id": "p_branch",
       "attempt": 2,
       "file": "attempts/p_branch-2.json",
-      "sha256": "02cdb23b4237e301503486f34f0c464b666d3101e1b96d44f1b26c72a2c6384c"
+      "sha256": "e4c52c9761bb00b3cdf5292dcae90bb344eeda46017ae70a4b8da3760423582d"
     },
     {
       "case_id": "p_contributions",
       "attempt": 1,
       "file": "attempts/p_contributions-1.json",
-      "sha256": "7691d8303faea480a8f990f78beb5f4924ac103a8bf305ca71d46efe72d50f2c"
+      "sha256": "255c15bd07a3c36c795f520f9e7fb96beb7375b5b268965359a12a0e0238c715"
     },
     {
       "case_id": "p_contributions",
       "attempt": 2,
       "file": "attempts/p_contributions-2.json",
-      "sha256": "406323d8543e940cb0bd9a8a5d585e7c38e52a78cb4c60c82737d2dc31ded999"
+      "sha256": "bdbabeef26b9e3dd813edb4e19548452971bbf5b8ab3ebffd7953d20a30ca913"
     },
     {
       "case_id": "p_sum",
       "attempt": 1,
       "file": "attempts/p_sum-1.json",
-      "sha256": "136eafc5dac604a85bf9db225b03d31c41eadb947354c29ba57727f4b5783604"
+      "sha256": "4e9d1ca4c7130daa25ff7786d4a255530158de7eb4091a39bcc38ad103fc8382"
     },
     {
       "case_id": "p_sum",
       "attempt": 2,
       "file": "attempts/p_sum-2.json",
-      "sha256": "68f5cbf971264f1c080a054f97739df73305f5b084f9fa3fcf72035e55634ddd"
+      "sha256": "0f439498ea29ec75168933f9063f544da946c59fee430aff50525d7dbadffb5e"
     },
     {
       "case_id": "q_acyclic",
       "attempt": 1,
       "file": "attempts/q_acyclic-1.json",
-      "sha256": "5f8c9612a4b72ec585eaa0e3d4ed8b1a18a816885bba1cfc928f1f14e8aefab0"
+      "sha256": "47d495665c204a608aaeddc1cbdd937be0e80ab53e4350652e5f1e6950849c47"
     },
     {
       "case_id": "q_acyclic",
       "attempt": 2,
       "file": "attempts/q_acyclic-2.json",
-      "sha256": "40a526b5930b467f3abf196e40e49fee20932c65bacfafb8555857e354e72950"
+      "sha256": "485aeeec4989a105a6f8cb76519f4bdd49c3c8042f30612a9cd599cc3a4c707c"
     },
     {
       "case_id": "q_anti",
       "attempt": 1,
       "file": "attempts/q_anti-1.json",
-      "sha256": "bdeb18d89b9f8b275e057cefcdd9c2d6025a7fc3a51b74d09de7de00ea204731"
+      "sha256": "f18b8f70c3697a1157991ddbc3c3132c0a5aed131e514d2897a2a3dc90fca83a"
     },
     {
       "case_id": "q_anti",
       "attempt": 2,
       "file": "attempts/q_anti-2.json",
-      "sha256": "041d3c0396b344b1a93988457a580c6ce438e27a1f5ffba82cd0fd866e7712f6"
+      "sha256": "b201bfe8bb2c611794643e2a04b088f95de2ed89993cb350e5f4792399c9dac9"
     },
     {
       "case_id": "q_group",
       "attempt": 1,
       "file": "attempts/q_group-1.json",
-      "sha256": "e144f01c4674001ec48d990bef9d3f399fe0e9956f094565873e863332ff16db"
+      "sha256": "4b173590f310ab142e56b8e052ef6bbe467cad3aea4dcb35b24509adbef94358"
     },
     {
       "case_id": "q_group",
       "attempt": 2,
       "file": "attempts/q_group-2.json",
-      "sha256": "7806956be0217ca1748fe60db52a0c2b503e90d879d8882b747fd2b89423b5ce"
+      "sha256": "1cf1f8095234df73a5243f73e133dc44613440480f5041954fb3335c13a890a1"
     },
     {
       "case_id": "q_optional",
       "attempt": 1,
       "file": "attempts/q_optional-1.json",
-      "sha256": "801f7b9fb2a4a08b51e557e21eacb44be1c501c4d4e10d1e057b9ec767eccf26"
+      "sha256": "3a42a1908351de1e0f9cb9ce586e7cf3c66b9e79b99ae23e8eb2eaab37dfbae1"
     },
     {
       "case_id": "q_optional",
       "attempt": 2,
       "file": "attempts/q_optional-2.json",
-      "sha256": "ad2422940ee640c16f5feef3c42cb10aa13505e631373f9cf41f12aad2aa2377"
+      "sha256": "3bbda902b1767e64cc0e32d8f130b3684a53b7f4655a703e7d8af22eeeb78252"
     },
     {
       "case_id": "q_page",
       "attempt": 1,
       "file": "attempts/q_page-1.json",
-      "sha256": "dcaa69fd4b472b7f63b98e247514f22dadd289c58a8799a99d0821918ae77846"
+      "sha256": "80c4d7fab65ae79ec5e1f52e5d3f31ae1ba9a3e6e30311a606f321a6c02c0bd0"
     },
     {
       "case_id": "q_page",
       "attempt": 2,
       "file": "attempts/q_page-2.json",
-      "sha256": "a2e88a7b7d2d4874823de08fffd0ba3cb7ca6e7c69632ac71265fc8c0f4e3d6e"
+      "sha256": "63538c7fe0b926bd16347402dde25c8747dfa12e8567df19582e2fa812e367d4"
     },
     {
       "case_id": "q_trail",
       "attempt": 1,
       "file": "attempts/q_trail-1.json",
-      "sha256": "fa14dc74e93b7d4b72cc66c663447ce7aee5d0b3135bd9648723cb02a5cf9933"
+      "sha256": "d3eb7d47e711adf9244abb18032396e9a37fe52a3f509978fbf6328baf6de54b"
     },
     {
       "case_id": "q_trail",
       "attempt": 2,
       "file": "attempts/q_trail-2.json",
-      "sha256": "a2dbf6e5aad6adc288da2f5e14442dd99185ce70460516c88535538d7f3193c4"
+      "sha256": "a3189eed0dcbb4480fc0564e102f2d5a3eac51bed5cf97a4e8846cda3b21229a"
     }
   ]
 }

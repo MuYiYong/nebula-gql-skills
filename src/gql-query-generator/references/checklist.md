@@ -10,6 +10,7 @@ catalog as the capability authority.
 - Functions: exact name, documented overload, receiver, arity, argument types and environment. Use bounded function lookup; static lint flags only known errors.
 - Regex: use `regexp_like`, never `=~`; preserve full-string matching, pattern escaping, case/options, negation and NULL. Check [regular-expressions.md](regular-expressions.md) when present.
 - Result contract: columns/types, grouping key, duplicates, NULL preservation, ordering/ties and paging remain unchanged. Backtick every identifier in declarations and references, including each segment of qualified names. See [identifiers.md](identifiers.md).
+- Write NULL predicates as `IS NULL` or `IS NOT NULL`. Check that every keyword is bare and that the identifiers in the operand are quoted. Run the bundled lint on the candidate when available.
 - Paths/optional/subqueries: preserve hop range, path mode, edge/node uniqueness, optional filter scope and correlation. Load the relevant validation section only when present.
 - Procedures: declarations precede statements; Database definitions may use a documented explicit USE; default to the caller graph; 0/1-hop match-compute; no RETURN inside PER NODE/PER PATH. Analytics does not use ordinary MATCH RETURN; export and return via documented table/partition patterns. Read specialized references for distributed tables or import/compute lifecycles.
 - Repair: retain diagnostic evidence; recheck the changed contract. Executability alone does not prove equivalence. Follow [repair.md](repair.md).

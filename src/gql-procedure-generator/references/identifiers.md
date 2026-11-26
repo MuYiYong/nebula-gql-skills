@@ -38,6 +38,15 @@ Do not quote language tokens used for their syntax (`MATCH`, `RETURN`, `AS`,
 built-in functions (`date(...)`, `CURRENT_DATE`). Keep string values as strings;
 changing `'version'` into a quoted identifier changes its meaning.
 
+Write NULL tests as `IS NULL` and `IS NOT NULL`. Quote only identifiers in the
+operand. A property named `NOT` still needs backticks when used as a name.
+
+```gql
+MATCH (`n`:`Report`)
+WHERE `n`.`NOT` IS NOT NULL OR `n`.`branch_code` IS NULL
+RETURN `n`.`branch_code` AS `code`
+```
+
 ## Example
 
 Here `schema` is reserved; `date`, `property` and `version` are non-reserved.

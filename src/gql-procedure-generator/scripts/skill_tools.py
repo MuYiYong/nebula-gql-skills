@@ -345,6 +345,27 @@ def lint(code, root, scope='database'):
     reserved = set(keyword_data['reserved'])
     non_reserved = set(keyword_data['non_reserved'])
     positions = identifier_positions(ts, reserved | non_reserved, non_reserved)
+    for i in range(1, len(ts) - 1):
+        if values[i].upper() not in {'IS', '`IS`'}:
+            continue
+        has_not = values[i+1].upper() in {'NOT', '`NOT`'}
+        end = i + 2 if has_not else i + 1
+        if end >= len(ts) or values[end].upper() not in {'NULL', '`NULL`'}:
+            continue
+        # In a pattern filler, IS can introduce a label named `NULL`.
+        if not has_not and values[i] == 'IS' and positions.get(end) == 'label':
+            opening = i - 2 if positions.get(i-1) == 'pattern binding' else i - 1
+            if values[opening] in {'(', '['}:
+                while opening > 0 and values[opening-1] == '(':
+                    opening -= 1
+                # The identifier heuristic can also see a label in a grouped expression.
+                if opening == 0 or values[opening-1] not in {
+                    'WHERE', 'FILTER', 'RETURN', 'AND', 'OR', 'XOR', 'NOT',
+                    'WHEN', 'THEN', 'ELSE', 'IF', 'WHILE',
+                }:
+                    continue
+        if any(kind == 'quoted' for kind, _ in ts[i:end+1]):
+            add('null-predicate-quoting', 'Write IS NULL or IS NOT NULL with no backticks on predicate keywords')
     for i, role in positions.items():
         kind, value = ts[i]
         if kind == 'quoted' or (kind == 'string' and not value.startswith('"')):
