@@ -1,7 +1,7 @@
 {
   "case_id": "c_degrees",
   "attempt": 1,
-  "query": "NODE VALUE `out_degree` SumAgg<INT64> = 0\nTABLE `degrees` {`id` STRING, `degree` INT64}\n\nMATCH (`src`:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `src`.@`out_degree` += 1\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id`, `p`.@`out_degree` INTO `degrees`\n}\n\nFOR `row` IN `degrees`\nRETURN `row`.`id` AS `id`, `row`.`degree` AS `degree`",
-  "notes": "已依据冻结技能包中的 5.3.0 文档参考核对语法，静态检查未报问题。未在数据库中解析或执行。",
-  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
+  "query": "NODE VALUE `out_degree` SumAgg<INT64> = 0\nTABLE `degrees` { `id` STRING, `degree` INT64 }\n\nMATCH (`src`:`player`)-[:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `src`.@`out_degree` += 1\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id` AS `id`, `p`.@`out_degree` AS `degree` INTO `degrees`\n}\n\nFOR `row` IN `degrees`\nRETURN `row`.`id` AS `id`, `row`.`degree` AS `degree`",
+  "notes": "已按随包的 5.3.0 文档核对语法，静态检查未报告问题。未进行数据库解析或执行验证。",
+  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
 }

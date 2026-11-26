@@ -12,10 +12,13 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 1. 按意图而非 `CALL` 关键字路由：已有签名的调用、YIELD 后过滤/聚合/分页和只读内联子查询由本技能处理；定义/管理过程、设计签名、状态循环和匹配计算由过程技能处理。纯 Neo4j 或 3.x nGQL 任务不触发；用户明确迁移到 5.3 GQL 时才触发。判断目标是查询还是过程。若用户要定义过程、实现图算法或使用 `match_compute_statement`，切换到 `gql-procedure-generator`。
 2. 提取图名、节点/边类型与标签、属性、方向、过滤、聚合、排序、分页和返回列。未知标识符使用 `<graph_name>`、`<node_type>` 等占位符，不臆造 schema。
    输出 GQL 前，给每个标识符的声明及每一次引用加反引号，保留原名和大小写。覆盖图、过程、元素类型、标签、属性、变量、形参、字段和别名，限定名逐段处理。从文档、feature、用户输入或示例复制的名称也适用。语法关键字、内置类型和函数按原语法输出。空值谓词写成 `IS NULL` 或 `IS NOT NULL`，这两个谓词中的关键字都不加反引号。字符串值、外部参数 `$name` 和临时图 `#name` 保留原写法。见 [标识符规则](references/identifiers.md)。
+   选择时间类型时，只有年月日的字段（包括源模型的 `LocalDate`）使用 `DATE`。`LOCAL TIME` 表示本地时间，`LOCAL DATETIME` 表示无时区的日期时间。禁止把日历日期类型写作 `LOCAL DATE`。
    生成或修复 `CREATE GRAPH TYPE` 时，逐项检查点、边花括号内的属性声明，再检查 `PRIMARY KEY` 和 `MULTIEDGE KEY` 括号内的每个属性引用。行内和独立声明都将 PRIMARY KEY、MULTIEDGE KEY 写作裸关键字，只给属性名加反引号。按[图类型 DDL 示例](references/identifiers.md#graph-type-ddl)核对整条语句。
 3. 每次生成都先确定结果契约，再选访问路径。点查用与参数同类型的原始键属性，遍历从符合语义的选择性端点展开，只携带结果所需的列。需要计数或判断存在时直接表达该意图。遇到多个可行起点、相关子查询、排序分页或性能调优请求时，按 [performance.md](references/performance.md) 比较等价候选，再输出所选查询。
 4. 按下方路由只加载与请求相关的参考。函数先在完整函数目录中按名称精确检索；其它语法先在完整语法目录中按关键字精确检索，再按需读取专题参考。
 5. 生成后执行短清单 [checklist.md](references/checklist.md)，再按当前语法定位完整 validation 的相关章节；文档目录内的能力不因缺少 feature 或常用示例而拒绝，只有文档限制或已确认的实现冲突才触发降级。性能结论还必须标明是结构推断、静态计划、隔离 PROFILE 还是业务数据验证。
+
+交付生成或改写的图类型 DDL、含日期类型的查询或过程前，对完整候选运行下方的 `lint` 命令，外部模型返回的草稿也按此检查，Markdown 围栏内的 GQL 先取出正文。若报告 `local-date-type`，取 `corrected_gql` 中的整条语句替换草稿，再运行 lint 并处理其余诊断。无法运行 Python 时，逐个把类型位置误写的 `LOCAL DATE` 改为 `DATE`，保留名称、注释、字符串及其他时间类型。
 
 ## Bounded Local Lookup
 

@@ -12,12 +12,15 @@ description: 根据自然语言生成、改写、补全或迁移 NebulaGraph 5.3
 1. 按意图路由：定义/管理过程、设计签名、过程内控制流或状态算法由本技能处理。已有签名的独立调用、CALL/YIELD 后的检索和只读内联子查询交给 gql-query-generator；不要仅因出现 CALL 同时加载两个技能。混合任务先完成定义，再按需读取查询参考。
 2. 提取过程名、参数、返回列、运行环境（Database 或 Analytics）、图类型、状态变量、控制流、副作用和终止条件。
    输出 GQL 前，给每个标识符的声明及每一次引用加反引号，保留原名和大小写。覆盖图、过程、元素类型、标签、属性、变量、形参、字段和别名，限定名逐段处理。从文档、feature、用户输入或示例复制的名称也适用。语法关键字、内置类型和函数按原语法输出。空值谓词写成 `IS NULL` 或 `IS NOT NULL`，这两个谓词中的关键字都不加反引号。字符串值、外部参数 `$name` 和临时图 `#name` 保留原写法。见 [标识符规则](references/identifiers.md)。
+   选择时间类型时，只有年月日的字段（包括源模型的 `LocalDate`）使用 `DATE`。`LOCAL TIME` 表示本地时间，`LOCAL DATETIME` 表示无时区的日期时间。禁止把日历日期类型写作 `LOCAL DATE`。
    生成或修复 `CREATE GRAPH TYPE` 时，逐项检查点、边花括号内的属性声明，再检查 `PRIMARY KEY` 和 `MULTIEDGE KEY` 括号内的每个属性引用。行内和独立声明都将 PRIMARY KEY、MULTIEDGE KEY 写作裸关键字，只给属性名加反引号。按[图类型 DDL 示例](references/identifiers.md#graph-type-ddl)核对整条语句。
 3. 区分 Database 本地临时图与 Analytics 分布式临时图：两者均有文档化的 match-compute；只有后者使用 PARTITION BY DEFAULT/PER PARTITION。聚合器和 ACTIVE_SET 在顶层过程作用域声明，不能塞进内联 CALL 子作用域。
 4. 在过程作用域开头声明全部变量。把运行中才得到的值先声明，再在后续语句中赋值。
 5. 普通过程逻辑使用 statement block；图遍历或算法逻辑使用 `match_compute_statement`。多跳算法拆成 `WHILE` 驱动的多轮 0/1 跳计算。
 6. 按下方路由加载相关参考；函数和成员方法先在完整函数目录中精确检索，其它语法先在完整语法目录中精确检索。涉及分布式表时必须读取 [distributed-tables.md](references/distributed-tables.md)，涉及 `IMPORT INTO GRAPH` 后的匹配计算时必须读取 [import-match-compute.md](references/import-match-compute.md)。
 7. 生成后执行短清单 [checklist.md](references/checklist.md)，按当前语法定位完整 validation 的相关章节；无法证明可执行时降级为 staged skeleton，并清楚保留用户的阶段、优先级和副作用意图。
+
+交付生成或改写的图类型 DDL、含日期类型的查询或过程前，对完整候选运行下方的 `lint` 命令，外部模型返回的草稿也按此检查，Markdown 围栏内的 GQL 先取出正文。若报告 `local-date-type`，取 `corrected_gql` 中的整条语句替换草稿，再运行 lint 并处理其余诊断。无法运行 Python 时，逐个把类型位置误写的 `LOCAL DATE` 改为 `DATE`，保留名称、注释、字符串及其他时间类型。
 
 ## Bounded Local Lookup
 

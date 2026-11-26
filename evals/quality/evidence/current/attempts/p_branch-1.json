@@ -1,7 +1,7 @@
 {
   "case_id": "p_branch",
   "attempt": 1,
-  "query": "IF $x IS NULL THEN {\n  RETURN 'missing' AS `label`\n} ELSEIF $x < 0 THEN {\n  RETURN 'negative' AS `label`\n} ELSEIF $x = 0 THEN {\n  RETURN 'zero' AS `label`\n} ELSE {\n  RETURN 'positive' AS `label`\n}",
-  "notes": "包内静态检查未发现问题。未在 NebulaGraph 5.3.0 服务端执行验证。",
-  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
+  "query": "IF $x IS NULL THEN {\n  RETURN \"missing\" AS `label`\n} ELSEIF $x < 0 THEN {\n  RETURN \"negative\" AS `label`\n} ELSEIF $x = 0 THEN {\n  RETURN \"zero\" AS `label`\n} ELSE {\n  RETURN \"positive\" AS `label`\n}",
+  "notes": "已依据随附的 5.3.0 文档核对语法，静态检查未发现问题。未在数据库中执行验证。",
+  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
 }

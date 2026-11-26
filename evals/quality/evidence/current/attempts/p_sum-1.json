@@ -2,6 +2,6 @@
   "case_id": "p_sum",
   "attempt": 1,
   "query": "VALUE `i` INT64 = 1\nVALUE `total` INT64 = 0\nWHILE `i` <= $n THEN {\n  SET `total` = `total` + `i`\n  SET `i` = `i` + 1\n}\nRETURN `total` AS `total`",
-  "notes": "已按冻结技能内的 5.3.0 语法参考核对，静态检查无报错。未经数据库解析或执行验证。",
-  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
+  "notes": "已依据技能包内的 NebulaGraph 5.3.0 文档核对语法，静态检查无报告项，未在数据库中执行。",
+  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
 }

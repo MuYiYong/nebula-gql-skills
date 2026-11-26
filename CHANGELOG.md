@@ -2,6 +2,16 @@
 
 Notable changes to the Nebula GQL skills are documented here. ZIP versions use the Beijing date in `YY.MM.DD` format. GitHub release tags use `vYY.MM.DD_BuildHHMM`, with `HHMM` from the Beijing time when the workflow resolves the version.
 
+## 26.11.27 - 2026-11-27
+
+### Fixed
+
+- Both skills use `DATE` for calendar-day fields, including source values of type `LocalDate`. Before delivery, the bundled lint reports the location of each mistyped `LOCAL DATE` and returns the repaired statement in `corrected_gql` for a second check. The repair preserves `LOCAL DATETIME`, `LOCAL TIME`, quoted names, strings and comments.
+
+### Validation
+
+- On NebulaGraph 5.3.2, `EXPLAIN` returned syntax error 42001 for a graph type with three `LOCAL DATE` declarations and accepted the corrected DDL. All 26 independent benchmark outputs passed 92 database result comparisons.
+
 ## 26.11.26 - 2026-11-26
 
 ### Fixed

@@ -51,9 +51,12 @@ def lookup(root, term, kind='function', offset=0, limit=6000, all_matches=False)
 TOKEN = re.compile(r'''(?P<space>\s+)|(?P<comment>--[^\n]*|//[^\n]*|/\*[\s\S]*?\*/)|(?P<string>'(?:''|\\.|[^'\\])*'|"(?:""|\\.|[^"\\])*")|(?P<quoted>`(?:``|[^`])*`)|(?P<param>\$(?:`(?:``|[^`])*`|[\w$]+))|(?P<temp>\#[^\W\d][\w$]*)|(?P<word>[^\W\d]\w*)|(?P<number>\d+(?:\.\d+)?)|(?P<symbol>.)''', re.UNICODE)
 
 
+def token_matches(code):
+    return (m for m in TOKEN.finditer(code) if m.lastgroup not in {'space', 'comment'})
+
+
 def tokens(code):
-    return [(m.lastgroup, m.group()) for m in TOKEN.finditer(code)
-            if m.lastgroup not in {'space', 'comment'}]
+    return [(m.lastgroup, m.group()) for m in token_matches(code)]
 
 
 def split_args(ts):
@@ -208,6 +211,21 @@ def token_roles(ts, keywords=(), non_reserved=()):
         elif word == ';':
             graph_type_header = False
         parent = stack[-1][1] if stack else None
+        if word == 'DATE' or (word == 'LOCAL' and after == 'DATE'):
+            end = i + 1 if word == 'LOCAL' else i
+            declaration = (i > 0 and ts[i-1][0] == 'quoted') or found.get(i-1) in {
+                'DDL property', 'field', 'declaration', 'name or binding',
+                'declaration or target', 'parameter or return column',
+            }
+            type_argument = (prev == '<' and values[i-2] in {'LIST', 'SET', 'MAP', 'VECTOR'}
+                             or prev == ',' and values[end+1:end+2] == ['>'])
+            cast_type = prev == 'AS' and stack and stack[-1][2] == 'CAST'
+            date_literal = end+1 < len(ts) and ts[end+1][0] == 'string'
+            if ((i == 0 and word == 'LOCAL') or declaration or type_argument or cast_type or date_literal
+                    or prev == 'TYPED' or values[max(0, i-2):i] == [':', ':']):
+                if word == 'LOCAL':
+                    found[i] = 'calendar date qualifier'
+                continue
         if parent == 'property definitions' and kind in {'word', 'quoted'}:
             if found.get(i) in DDL_KEYS:
                 continue
@@ -337,7 +355,8 @@ def token_roles(ts, keywords=(), non_reserved=()):
             mark(i, 'parameter or return column')
         # Parameter/column declarations and multi-variable LET declarations.
         scalar = r'(?:U?INT(?:EGER)?\d*|STRING|BOOL(?:EAN)?|DOUBLE|FLOAT\d*|DECIMAL|DATE|TIME|TIMESTAMP|DURATION|LIST|SET|MAP|RECORD|VECTOR|NODE|EDGE|PATH|TABLE)'
-        if re.fullmatch(scalar, after) or (after.endswith('AGG') and i+2 < len(ts) and values[i+2] == '<'):
+        if (re.fullmatch(scalar, after) or values[i+1:i+3] == ['LOCAL', 'DATE']
+                or after.endswith('AGG') and values[i+2:i+3] == ['<']):
             if prev in {'(', '{', ',', 'VALUE', 'PARAMETER', 'RETURNS'}:
                 mark(i, 'declaration')
         if (i == 0 and after == '=') or (prev == ',' and after in {'=', 'IN'}):
@@ -375,7 +394,8 @@ def token_roles(ts, keywords=(), non_reserved=()):
 
 def lint(code, root, scope='database'):
     issues, unknown = [], []
-    ts = tokens(code)
+    matches = list(token_matches(code))
+    ts = [(m.lastgroup, m.group()) for m in matches]
     values = [v.upper() if k == 'word' else v for k, v in ts]
     clean = ' '.join(v if k not in {'string', 'quoted', 'param', 'temp'} else '?' for k, v in ts)
     def add(rule, message):
@@ -414,6 +434,22 @@ def lint(code, root, scope='database'):
     reserved = set(keyword_data['reserved'])
     non_reserved = set(keyword_data['non_reserved'])
     positions = token_roles(ts, reserved | non_reserved, non_reserved)
+    # Apply edits to the original spans so comments, literals, line endings and
+    # the case of DATE survive. A field named `LOCAL` has an identifier role.
+    parts = []
+    cursor = 0
+    line = 1
+    for i, match in enumerate(matches):
+        if positions.get(i) != 'calendar date qualifier':
+            continue
+        start = match.start()
+        line += code.count('\n', cursor, start)
+        column = start - code.rfind('\n', 0, start)
+        add('local-date-type', f'Use DATE for a calendar date at line {line}, column {column}')
+        parts.append(code[cursor:start])
+        cursor = match.end()
+        while cursor < len(code) and code[cursor] in ' \t':
+            cursor += 1
     for i in range(1, len(ts) - 1):
         if values[i].upper() not in {'IS', '`IS`'}:
             continue
@@ -437,6 +473,8 @@ def lint(code, root, scope='database'):
             add('null-predicate-quoting', 'Write IS NULL or IS NOT NULL with no backticks on predicate keywords')
     for i, role in positions.items():
         kind, value = ts[i]
+        if role == 'calendar date qualifier':
+            continue
         if role in DDL_KEYS:
             if kind == 'quoted':
                 add('ddl-key-quoting', f'Write {role} without backticks and quote each key property name')
@@ -527,9 +565,12 @@ def lint(code, root, scope='database'):
                 add('function-type', 'element_id accepts NODE, not EDGE')
         if key == 'all_different' and count == 1 and args[0] and args[0][0][1].upper() == 'LIST':
             add('function-type', 'all_different is not a list-deduplication function')
-    return {'issues': issues, 'needs_review': sorted(set(unknown)),
-            'syntax': 'unverified: lint is not a server parser',
-            'semantics': 'unverified: requires case contracts and result comparison'}
+    report = {'issues': issues, 'needs_review': sorted(set(unknown)),
+              'syntax': 'unverified: lint is not a server parser',
+              'semantics': 'unverified: requires case contracts and result comparison'}
+    if parts:
+        report['corrected_gql'] = ''.join(parts) + code[cursor:]
+    return report
 
 
 def read_only(code, root):
@@ -574,7 +615,9 @@ def main():
             result = {name: quote_identifier(name, a.root) for name in a.names}
         except ValueError as exc:
             p.error(str(exc))
-    else: result = lint(a.file.read_text(encoding='utf-8'), a.root, a.scope)
+    else:
+        with a.file.open(encoding='utf-8', newline='') as candidate:
+            result = lint(candidate.read(), a.root, a.scope)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if a.command == 'lint' and result['issues']: raise SystemExit(1)
 

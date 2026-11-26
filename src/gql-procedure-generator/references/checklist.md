@@ -6,6 +6,7 @@ whole validation or examples file for a simple query. Preserve the complete
 catalog as the capability authority.
 
 - Intent/version: query versus procedure, Database versus Analytics, documented 5.3.0 forms. CALL alone does not select the procedure skill.
+- Calendar dates use `DATE`. Run the bundled lint on the complete draft. On `local-date-type`, use the full `corrected_gql` returned by lint, then lint it again before delivery.
 - Schema: graph/type/label/property, primary versus internal IDs, direction and parameter bindings come from the request. Never invent a missing filter or anchor.
 - Functions: exact name, documented overload, receiver, arity, argument types and environment. Use bounded function lookup; static lint flags only known errors.
 - Regex: use `regexp_like`, never `=~`; preserve full-string matching, pattern escaping, case/options, negation and NULL. Check [regular-expressions.md](regular-expressions.md) when present.

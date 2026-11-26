@@ -3,5 +3,5 @@
   "attempt": 2,
   "query": "MATCH (`s`:`player`)\nOPTIONAL MATCH (`s`)-[:`follow`]->(`d`:`player` WHERE `d`.`age` > $min_age)\nRETURN `s`.`id` AS `src`, `d`.`id` AS `dst`;",
   "notes": "已通过技能包的静态检查，未在数据库中执行。",
-  "skills_sha256": "211e9a57e5eb65178ca629e4e13ac630497be9243284f3ae3e24bafa8a142af1"
+  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
 }
