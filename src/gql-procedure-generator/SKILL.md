@@ -63,6 +63,9 @@ python3 scripts/skill_tools.py quote-identifiers property version person_id
 - `match_compute_statement` 中只引用当前边或点和常量/参数的局部条件直接写入对应 pattern `WHERE`；活动集、跨元素和结果级条件保留在 graph pattern `WHERE` 或过程块中。不要为谓词下推引入多跳或 `ACYCLIC`。
 - 将 `PER NODE`、`PER PATH` 和 `FINALLY` 直接放在 `MATCH <graph_pattern>` 后，不添加外层圆括号。
 - 不要在执行语句开始后新增变量定义。
+- 生成前逐作用域核对声明。普通 `VALUE` 和过程参数按原名引用；`@state` 需要可见的全局聚合器声明，`n.@state` 需要同名 `NODE VALUE`。名称区分大小写。
+- 单节点匹配按点计算时用 `PER NODE (n)` 并保留过滤条件；按边计算时先匹配业务要求的关系，再用 `PER PATH`。Database 按业务主键用 `MATCH` 绑定节点。跨点更新的专用写法见[过程语言](references/procedure-language.md)。
+- 数量赋值先核对重载：`size(list/set/map)` 返回 `INT32`，`size(table)` 返回 `INT64`，支持 `.size()` 的容器聚合器返回 `UINT64`。用包内 `lint <file> --scope database` 复核草稿，按[修复提示](references/repair.md)处理诊断。
 - `ACTIVE_SET` 默认只在 `FINALLY` 中更新；逐点状态优先使用 `NODE VALUE`，不要无理由提升为全局聚合器。
 - TigerGraph GSQL 多跳 `SELECT` 迁移时，分别保留 mode/优先级、逐跳扩展与副作用落地，不要把长链原样翻成一个 `MATCH ... PER PATH`。
 - 分布式表只能在 Analytics 能力明确且调用方以 `PARTITION BY DEFAULT` 声明时使用；读取、清空和遍历必须遵守 `PER PARTITION` 边界。

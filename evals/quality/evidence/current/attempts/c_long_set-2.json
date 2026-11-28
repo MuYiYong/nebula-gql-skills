@@ -1,7 +1,7 @@
 {
   "case_id": "c_long_set",
   "attempt": 2,
-  "query": "VALUE `collected_destination_ids` SetAgg<STRING>\nMATCH (:`player`)-[:`follow`]->(`destination`:`player`)\nPER PATH {\n  SET @`collected_destination_ids` += `destination`.`id`\n}\nRETURN @`collected_destination_ids`.size() AS `distinct_targets`",
-  "notes": "已依据冻结技能附带的 5.3.0 Database 文档核对，静态检查无诊断。尚未在数据库中执行验证。",
-  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
+  "query": "VALUE `collected_destination_ids` SetAgg<STRING>\nMATCH (:`player`)-[:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET @`collected_destination_ids` += `dst`.`id`\n}\nRETURN @`collected_destination_ids`.size() AS `distinct_targets`",
+  "notes": "已通过随附静态检查，未经数据库解析或执行验证。",
+  "skills_sha256": "f93bbad339c148268d8a64a09451fe3e59c9fe975778f0ba1cab580d29f142f6"
 }

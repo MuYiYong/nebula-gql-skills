@@ -35,7 +35,7 @@
 - `PER PATH` / `PER NODE` 内是否没有 `FOR`？
 - `NODE VALUE` 是否全部为点绑定聚合值变量？
 - 全局聚合值变量在所有使用位置是否都写成 `` @`agg_name` ``？
-- 点绑定聚合值变量在所有使用位置是否都写成 `` `node`.@`agg_name` `` 或 `` NODE(`id_expr`).@`agg_name` ``？
+- 点绑定聚合值变量在所有使用位置是否都写成 `` `node`.@`agg_name` ``？
 - 聚合器声明时是否只给“语法要求初始值”的类型写了 `= <value_expression>`？
 - 如果用了 `SumAgg` / `MinAgg` / `MaxAgg` / `AndAgg` / `OrAgg`，是否确认声明时都带了初始值？
 - 如果用了 `AvgAgg` / `ListAgg` / `SetAgg` / `MapAgg` / `TopKAgg`，是否确认声明时没有补初始值？
@@ -64,7 +64,7 @@
 - 如果严格 `v5.3.0` 过程把本地 BindingTable 导入分布式临时图，停止生成该组合并改用受支持来源；只有运行版本明确包含 current-master 扩展时才保留。
 - 如果 `PER PARTITION` 内出现不允许的外部状态、图匹配、过程调用或表导出，移出分区块；无法安全移动时删除该行为并保留最小分区处理骨架。
 - 如果导入和 match compute 位于同一过程或祖先调用链，拆成 sibling import/compute 子过程，并在父过程每次调用前显式 `` USE `g` ``。
-- 如果聚合值变量被裸用或被写成普通属性访问，统一重写成 `` @`agg_name` ``、`` `node`.@`agg_name` `` 或 `` NODE(`id_expr`).@`agg_name` ``。
+- 如果聚合值变量被裸用或被写成普通属性访问，统一重写成 `` @`agg_name` ``、`` `node`.@`agg_name` ``。
 - 如果给 `AvgAgg`、`ListAgg`、`SetAgg`、`MapAgg`、`TopKAgg` 声明补了初始值，直接删掉声明期初始化；若需求是重置内容，改写为后续 `SET` / `clear()`。
 - `SetAgg` 标识符遵循公开文档的 127 字符上限；旧的 15 字符规避建议源于基线发布前已修复的问题，不构成 5.3.0 限制。保留用户给定的合法长变量名。
 - 如果漏写了 `SumAgg`、`MinAgg`、`MaxAgg`、`AndAgg`、`OrAgg` 的声明初始值，停下来补齐与声明类型匹配的初始化右值。
@@ -83,3 +83,5 @@
 
 - 检查每个名称的声明与引用是否逐段加了反引号，包括类型、标签、属性、变量、形参和别名。保留原拼写和大小写，包括与[关键字](documented-keywords.json)同名的标识符。
 - 按 [identifiers.md](identifiers.md) 区分名称与语法角色；MATCH、RETURN、数据类型、内置函数和字符串值不能机械加反引号。非保留词的引号要求是生成策略，不要误报为数据库必然报错。
+
+Database 过程还应逐项核对[声明、聚合器、节点查找、基数与单节点计算的诊断及修复](repair.md#database-procedure-diagnostics)。

@@ -1,7 +1,7 @@
 {
   "case_id": "q_page",
   "attempt": 1,
-  "query": "MATCH (`p`:`player`)\nRETURN `p`.`id` AS `id`, `p`.`age` AS `age`\nORDER BY `age` DESC NULLS LAST, `id` ASC\nOFFSET 1\nLIMIT 2;",
-  "notes": "已按 5.3.0 公开语法核对，静态检查未报告问题。未在数据库中执行。",
-  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
+  "query": "MATCH (`p`@`player`)\nRETURN `p`.`id` AS `id`, `p`.`age` AS `age`\nORDER BY `age` DESC NULLS LAST, `id` ASC\nOFFSET 1\nLIMIT 2",
+  "notes": "已通过技能包的静态检查，未在数据库中执行。",
+  "skills_sha256": "f93bbad339c148268d8a64a09451fe3e59c9fe975778f0ba1cab580d29f142f6"
 }

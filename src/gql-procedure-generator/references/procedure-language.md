@@ -239,8 +239,8 @@ VALUE `<active_set_variable>` ACTIVE_SET
 - 原始值变量通过 `VALUE` 声明，保守写法包括：
 
 ```gql
-VALUE `name` TYPE = <value_expression>
-VALUE `name` = <value_expression>
+VALUE `typed_name` TYPE = <value_expression>
+VALUE `inferred_name` = <value_expression>
 ```
 
 - 文档也允许 `` VALUE `name` :: TYPE = ... `` 与 `` VALUE `name` TYPED TYPE = ... ``；默认优先更简洁的一般写法，只在用户明确要求时再保留 `::` 或 `TYPED` 变体。
@@ -263,7 +263,7 @@ VALUE `name` = <value_expression>
 - 这条规则不仅是语义偏好，也是执行策略偏好：能随着 `PER NODE` / `PER PATH` 自然分发的状态，应尽量留在节点局部、路径局部、表变量、文件变量或活动集中，让计算更接近数据并减少全局汇聚。
 - 只要某个状态能下沉到节点局部、路径局部、表变量、文件变量或活动集，就优先下沉，不要先生成全局聚合器版本。
 - 只有在需求本身就是“跨所有点/路径做单个全局汇总”时，才优先使用全局聚合值变量。
-- 如果某个聚合状态天然按点隔离、后续会按点读取，或可以通过 `` `node_var`.@`agg_name` `` / `` NODE(`id_var`).@`agg_name` `` 消费，默认优先改写成 `NODE VALUE`，不要先生成全局 `ListAgg` / `SetAgg` / `MapAgg` 再二次分发。
+- 按点隔离的状态优先声明为 `NODE VALUE`。对已经绑定的节点，用其变量访问状态。
 - 如果某个状态天然按路径批次、候选前沿或中间结果表来消费，优先改写成 `TABLE`、`EXPORT INTO <file_variable>` 或其它可流式消费的局部载体，不要先生成全局 `ListAgg<RECORD>` / `ListAgg<LIST<...>>` 再统一回放。
 
 ### 3. Node-bound aggregate variables
@@ -284,7 +284,7 @@ NODE VALUE `seed_id` INT
 - 在 `PER NODE` 中，点绑定聚合值变量既可 `+=`，也可 `=`。
 - `PER PATH` 中的点绑定聚合更新在该路径子句结束后才可见。
 - `PER NODE` 中的赋值和聚合更新立即可见。
-- 点绑定聚合值变量在任何使用位置都必须写成 `` `node_var`.@`agg_name` `` 或 `` NODE(`id_expr`).@`agg_name` ``；不要写成 `` `node_var`.`agg_name` ``、`` NODE(`id_expr`).`agg_name` ``，也不要把它当普通属性名。
+- 对已绑定的节点，读写点聚合器用 `n.@state`。跨点加贡献的专用形式为 `SET NODE(id_variable).@state += contribution`，其中 id_variable 持有内部元素 ID。5.3.0 引擎的 ExternalMessage.feature 使用从 `element_id()` 得到的 ID。
 - 这条 `@` 规则同时覆盖读取、赋值、聚合、成员函数调用、日志、返回、导出等所有消费场景；只要在用点绑定聚合值变量，就保留 `.@` 前缀。
 - 只要状态可以稳定地挂在节点上，且后续逻辑按节点局部读取、覆盖或累积，默认优先使用 `NODE VALUE`；这通常比把逐点状态先堆进全局聚合器再回查更高效。
 - 典型适用场景包括：节点分数、节点访问标记、逐轮传播值、按点累积候选记录、按点维护去重集合。
@@ -487,8 +487,8 @@ CONTINUE
   - `MapAgg`: `size()`, `clear()`, `contains_key()`, `get()`
   - `TopKAgg`: `size()`, `clear()`, `min()`
 - 凡是全局聚合值变量进入表达式、日志、返回、导出、`FOR`、成员函数或 `SET` 语句，都必须写成 `` @`agg_name` ``；不要裸写聚合变量名。
-- 点绑定聚合值变量在聚合、赋值、读取、日志、返回和成员函数场景中都通过 `` `node_var`.@`agg_name` `` 或 `` NODE(`id_var`).@`agg_name` `` 引用。
-- `` NODE(`id_var`).@`agg_name` `` 适合跨节点更新或回写其它节点上的点绑定聚合状态；只有当 `id_var` 明确是稳定元素 ID 时才生成。
+- 在聚合、读取和导出表达式中，通过已绑定节点的 `n.@state` 引用点状态。
+- 跨点回写见上文专用 SET 语法；数据库中按业务主键寻找节点时用 MATCH。
 - 如果聚合值变量在 `SET`、`LOG_*`、`RETURN`、`EXPORT`、表写入或其它表达式消费中遇到目标类型约束，先判断文档是否支持该隐式转换；只有不支持、会报错，或用户明确要求固定目标类型时，才显式 `CAST(... AS ...)`。
 - 日志语句保守语法：
 
@@ -620,7 +620,7 @@ EXPORT <value_expression> [AS `<identifier>`], ... INTO `<table_or_file_variable
 8. 如果用户想表达“下一轮 frontier / visited 集合”，先判断它是否真的是活动集；若是活动集，默认通过下一轮 `MATCH COMPUTE ... FINALLY` 重新更新；只有用户明确给出元素 ID 种子时，才考虑 `` SET `active_set` = [<id>, ...] `` 这类初始化。
 9. 如果要按点维护状态，优先使用 `` NODE VALUE `<name>` <AggType> = <init> ``。
 10. 如果某个聚合状态既能写成全局聚合器，也能自然挂在点上，默认先选 `NODE VALUE`；只有确实需要全局单值/全局单列表时才用全局聚合器。
-11. 一旦选择了聚合值变量，后续所有使用位置统一写成 `` @`agg_name` ``、`` `node`.@`agg_name` `` 或 `` NODE(`id_expr`).@`agg_name` ``，不要混入裸变量名或普通属性访问。
+11. 核对全局 `@state` 与点级 `n.@state` 的声明类别和名称，普通变量与形参直接按名读取。
 12. 每次对聚合值变量做赋值、聚合、返回、导出、记录日志或继续参与表达式时，都检查类型是否匹配；若文档已支持该隐式转换，则优先保持简洁；只有隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式补 `CAST(... AS ...)`。
 13. 如果某个状态只服务于单点、单路径或单轮局部计算，优先局部 `VALUE` 变量；不要把短生命周期临时状态抬升成全局值变量。
 14. 如果某个状态天然是路径批次、候选记录集或下一轮待扩展集合，优先使用 `TABLE`、文件变量或 `RETURN ... NEXT ...` 做中间状态传递，不要先生成全局聚合器双缓冲。
@@ -651,7 +651,7 @@ EXPORT <value_expression> [AS `<identifier>`], ... INTO `<table_or_file_variable
 - 如果状态表示的是路径前沿、候选路径批次、下一轮待扩展记录集，优先 `TABLE` / 文件变量 / `RETURN ... NEXT ...`，不要默认生成两个全局聚合器再做整体赋值切换。
 - 如果同一需求既能写成“全局聚合后再处理”，也能写成“局部生成后直接消费或导出”，默认选择后者；前者更容易造成局部内存峰值和非分布式瓶颈。
 - 如果用户要“保留前 K 条候选记录”，并且排序字段不止一个，优先显式生成多字段 `TopKAgg<K, field1 TYPE DESC|ASC, field2 TYPE DESC|ASC, ...>`，不要退回手写排序加截断。
-- 如果需求涉及跨节点消息传递、邻居回写或“把当前节点计算结果记到目标节点上”，优先考虑 `` NODE(`id_expr`).@`agg_name` ``，前提是 `id_expr` 明确为稳定元素 ID。
+- 对跨点消息，核实目标是内部元素 ID，并采用引擎支持的 `SET NODE(id_variable).@state += contribution` 形式。
 - 如果用户明确要维护“前 K 条记录”而不是简单 max/min/sum，优先考虑 `TopKAgg`。
 - 如果用户要表达子图抽取再处理，才考虑图变量；否则保持活动集和匹配计算骨架。
 - 如果用户要过程内导入导出文件，再考虑文件变量；否则不主动引入。
@@ -682,7 +682,7 @@ EXPORT <value_expression> [AS `<identifier>`], ... INTO `<table_or_file_variable
 - 禁止把天然可下沉到 `NODE VALUE`、表变量、文件变量或活动集的状态默认提升成全局聚合器。
 - 禁止把路径前沿、候选记录批次或 `next_frontier` 一类中间状态默认写成 `` SET `frontier_paths` = `next_frontier_paths` `` 这种全局聚合器整体赋值切换。
 - 禁止在使用全局聚合值变量时裸写变量名；必须写成 `` @`agg_name` ``。
-- 禁止把点绑定聚合值变量写成 `` `node`.`agg_name` ``、`` NODE(`id_expr`).`agg_name` `` 或普通属性访问；必须写成 `` `node`.@`agg_name` `` / `` NODE(`id_expr`).@`agg_name` ``。
+- 点聚合状态通过 `n.@state` 访问；`n.property` 读取节点属性。
 - 禁止把所有类型差异都机械地改写成 `CAST(... AS ...)`；只有文档不支持隐式转换、会报错，或用户明确要求固定目标类型时才显式转换。
 - SumAgg<STRING> 是文档支持的拼接。其它聚合器按各自声明核对类型；例如不要给 AvgAgg 使用 RECORD/BOOLEAN。不能用统一的“仅数值”规则覆盖所有聚合器。
 - 禁止生成 `AndAgg<BOOLEAN>`、`OrAgg<BOOLEAN>` 或任何给 `AndAgg` / `OrAgg` 添加类型参数的写法。
@@ -716,7 +716,7 @@ EXPORT <value_expression> [AS `<identifier>`], ... INTO `<table_or_file_variable
 - 如果存在逐点状态，是否优先使用了 `NODE VALUE`，而不是默认退回全局聚合器？
 - 如果使用了全局聚合器，是否确实因为需要全局单值、全局列表、全局排序或跨点整体合并？
 - 所有全局聚合值变量在使用位置是否都写成了 `` @`agg_name` ``？
-- 所有点绑定聚合值变量在使用位置是否都写成了 `` `node`.@`agg_name` `` 或 `` NODE(`id_expr`).@`agg_name` ``？
+- 点聚合读写是否使用已绑定的节点变量及可见的 `NODE VALUE` 声明？
 - 如果存在类型差异，是否先判断过文档是否支持该隐式转换，而不是机械地一律补 `CAST(... AS ...)`？
 - 只有在隐式转换不支持、会报错，或用户明确要求固定目标类型时，才显式补上了 `CAST(... AS ...)`？
 - 是否按每个聚合器自己的公开类型签名检查？SumAgg<STRING> 是合法的字符串拼接，不应按数值规则拒绝。
@@ -730,7 +730,7 @@ EXPORT <value_expression> [AS `<identifier>`], ... INTO `<table_or_file_variable
 - 如果用了 `TopKAgg`，是否显式写清了每个排序字段的类型与方向，并确认 `min()` 被理解为“当前 top-k 中最差的一条”？
 - 如果用了 `TopKAgg`，右值是否严格落在 `RECORD` / `LIST<RECORD>` / 同类型 `TopKAgg` 上，而不是标量或其它容器？
 - 如果过程有 `RETURNS`，是否确认没有把任一返回列声明成 `LIST<RECORD>`，也没有把 `TopKAgg` 的内部结果直接外露为 procedure 返回类型？
-- 如果用了跨节点更新，`` NODE(`id_expr`).@`agg_name` `` 中的 `id_expr` 是否真的是稳定元素 ID？
+- 跨点 `SET NODE(id_variable).@state += contribution` 的 ID 是否由内部元素 ID 得到？
 - `PER PATH` / `PER NODE` 内是否没有 `FOR`？
 - `ACTIVE_SET` 更新是否放在 `FINALLY`？
 - 如果用了活动集，消费方式是否稳定为 `` WHERE `n` IN `active_set` `` 一类写法？

@@ -1,7 +1,7 @@
 {
   "case_id": "c_degrees",
   "attempt": 1,
-  "query": "NODE VALUE `out_degree` SumAgg<INT64> = 0\nTABLE `degrees` { `id` STRING, `degree` INT64 }\n\nMATCH (`src`:`player`)-[:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `src`.@`out_degree` += 1\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id` AS `id`, `p`.@`out_degree` AS `degree` INTO `degrees`\n}\n\nFOR `row` IN `degrees`\nRETURN `row`.`id` AS `id`, `row`.`degree` AS `degree`",
-  "notes": "已按随包的 5.3.0 文档核对语法，静态检查未报告问题。未进行数据库解析或执行验证。",
-  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
+  "query": "NODE VALUE `out_degree` SumAgg<INT64> = 0\nTABLE `result` { `id` STRING, `degree` INT64 }\n\nMATCH (`src`:`player`)-[`edge`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `src`.@`out_degree` += 1\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id`, `p`.@`out_degree` INTO `result`\n}\n\nFOR `row` IN `result`\nRETURN `row`.`id` AS `id`, `row`.`degree` AS `degree`",
+  "notes": "随包静态检查未发现问题。未在 NebulaGraph 5.3.0 服务端解析或执行。",
+  "skills_sha256": "f93bbad339c148268d8a64a09451fe3e59c9fe975778f0ba1cab580d29f142f6"
 }

@@ -7,9 +7,12 @@ contracts; an empty finding list means only that these checks found no issue.
 from __future__ import annotations
 
 import argparse
+from bisect import bisect_right
+from collections import ChainMap
 import json
 import re
 from pathlib import Path
+from typing import NamedTuple
 
 
 def sections(path):
@@ -369,6 +372,8 @@ def token_roles(ts, keywords=(), non_reserved=()):
             mark(i, 'label expression')
         # Exclude calls, typed literals and constructors before looking at
         # expression slots. The same spelling can be a label, function or type.
+        if prev == ',' and after == '<' and values[max(0, i-4):i-2] == ['MAPAGG', '<']:
+            continue  # MapAgg<key_type, nested_aggregator<...>>
         if (kind != 'word' or after == '(' or word in expression_forms
                 or constructors.get(word) == after or word in constructors and after == '<'
                 or i+1 < len(ts) and ts[i+1][0] == 'string'):
@@ -390,6 +395,298 @@ def token_roles(ts, keywords=(), non_reserved=()):
                      or values[max(0, i-2):i] == ['-', '>'])):
             mark(i, 'expression name')
     return found
+
+
+# Only infer cardinalities and assignments with a known overload and a complete RHS.
+SIZE_TYPES = {'LIST': 'INT32', 'SET': 'INT32', 'MAP': 'INT32', 'TABLE': 'INT64'}
+SIZED_AGGS = {'LISTAGG', 'SETAGG', 'MAPAGG', 'TOPKAGG'}
+AGG_TYPES = SIZED_AGGS | {'SUMAGG', 'AVGAGG', 'MINAGG', 'MAXAGG', 'ANDAGG', 'ORAGG'}
+INTEGER_TYPES = {'INT8', 'INT16', 'INT32', 'INT64', 'UINT8', 'UINT16', 'UINT32', 'UINT64'}
+PROCEDURE_STATEMENTS = {'VALUE', 'NODE', 'TABLE', 'MATCH', 'OPTIONAL', 'SET', 'RETURN',
+                        'FINISH', 'IF', 'FOR', 'WHILE', 'CALL', 'NEXT', 'EXPORT', 'USE',
+                        'LET', 'FILTER', 'LOG_INFO', 'PER', 'FINALLY', '}', ';'}
+
+
+class Declaration(NamedTuple):
+    kind: str
+    type: str
+    index: int
+
+
+def symbol_name(ts, i):
+    if 0 <= i < len(ts):
+        kind, value = ts[i]
+        if kind == 'quoted':
+            return value[1:-1]
+        if kind == 'word':
+            return value
+    return None
+
+
+def delimiter_ends(values):
+    stack, closing = [], {}
+    for i, token in enumerate(values):
+        if token in ('(', '[', '{'):
+            stack.append(i)
+        elif token in (')', ']', '}') and stack:
+            start = stack.pop()
+            if (values[start], token) in (('(', ')'), ('[', ']'), ('{', '}')):
+                closing[start] = i
+    return closing
+
+
+def declaration_type(values, i):
+    if values[i:i+2] == [':', ':']:
+        i += 2
+    elif values[i:i+1] in (['TYPED'], ['TYPE']):
+        i += 1
+    value = values[i] if i < len(values) else ''
+    return {'INT': 'INT64', 'INTEGER': 'INT64'}.get(value, value), i
+
+
+def procedure_parameters(ts, values, closing, name_index):
+    """Bind typed inputs only inside this named procedure's body."""
+    if values[name_index:name_index+3] == ['IF', 'NOT', 'EXISTS']:
+        name_index += 3
+    opening = name_index + 1
+    if values[opening:opening+1] != ['('] or opening not in closing:
+        return None, {}
+    end = closing[opening]
+    params = {}
+    i = opening + 1
+    while i < end:
+        name = symbol_name(ts, i)
+        typ, _ = declaration_type(values, i+1)
+        if name is not None and ts[i+1][0] == 'word':
+            params[name] = Declaration('value', typ, i)
+        # Skip a whole parameter, including nested types and default expressions.
+        angles = 0
+        while i < end and (angles or values[i] != ','):
+            if values[i] in {'(', '{', '['} and i in closing:
+                i = closing[i]
+            elif values[i] == '<' and values[i-1] in {'LIST', 'SET', 'MAP', 'VECTOR'}:
+                angles += 1
+            elif values[i] == '>' and angles:
+                angles -= 1
+            i += 1
+        i += 1
+    i = end + 1
+    while i < len(ts) and values[i] not in {';', 'CREATE'}:
+        if values[i] == '{' and values[i-1] not in {'RECORD', 'TABLE'}:
+            return i, params
+        i = closing.get(i, i) + 1
+    return None, {}
+
+
+def global_agg_operand(values, i, functions):
+    """Only treat @ as a global reference at an expression operand."""
+    prev = values[i-1] if i else ''
+    if prev in {'(', '['}:
+        # (@Type), [@Edge] and n@Type are pattern/type tests. Parenthesized
+        # operands are unambiguous after RETURN/WHERE or a known scalar call.
+        j = i-1
+        while j > 0 and values[j] in {'(', '['}:
+            j -= 1
+        head = values[j]
+        if head == '=' and values[max(0, j-2):j-1] == ['SET']:
+            return True
+        return (head in {'CAST', 'RETURN', 'DISTINCT', 'WHERE', 'IF', 'WHEN', 'NOT', 'AND', 'OR', 'LIST'}
+                or head.lower() in functions)
+    return prev in {'', 'RETURN', 'SET', 'WHERE', 'FILTER', 'DISTINCT', 'EXPORT', 'BY', 'IN',
+                    'THEN', 'ELSE', 'WHEN', 'CASE', 'IF', 'WHILE', 'AND', 'OR', 'NOT', '=', '+', '-',
+                    '*', '/', '%', ',', ':', '<', '>'}
+
+
+def single_node_per_path(values, closing, start):
+    """Recognize one flat node factor and an optional, balanced graph WHERE."""
+    i = start
+    if values[i+1:i+2] == ['=']:
+        i += 2
+    while i < len(values) and values[i] in {'ALL', 'WALK', 'PATH', 'PATHS'}:
+        i += 1
+    if values[i:i+1] != ['('] or i not in closing or values[i+1:i+2] == ['(']:
+        return None
+    i = closing[i]+1
+    if values[i:i+1] == ['WHERE']:
+        i += 1
+        boundaries = {'PER', 'MATCH', 'RETURN', 'NEXT', 'FINALLY', 'CALL', 'FINISH', ';', ')', ']', '}'}
+        while i < len(values) and values[i] not in boundaries:
+            i = closing.get(i, i)+1
+    return i if values[i:i+3] == ['PER', 'PATH', '{'] else None
+
+
+def procedure_diagnostics(code, matches, ts, values, scope, functions):
+    """Track explicit lexical declarations, not general query result schemas."""
+    closing = delimiter_ends(values)
+    symbols = ChainMap({})
+    parents = []
+    named_bodies = {}
+    initializers = {}
+    receivers = {}
+    diagnostics = []
+    starts = [0] + [m.end() for m in re.finditer('\n', code)]
+
+    def location(index):
+        offset = matches[index].start()
+        line = bisect_right(starts, offset)
+        return line, offset - starts[line-1] + 1
+
+    def report(index, rule, error, message):
+        line, column = location(index)
+        diagnostics.append(dict(rule=rule, code=error, line=line, column=column, message=message))
+
+    def lookup(index):
+        return symbols.get(symbol_name(ts, index))
+
+    def rhs_ends(end):
+        return end == len(ts) or (end < len(ts) and values[end] in PROCEDURE_STATEMENTS)
+
+    def literal_collection(start):
+        if values[start:start+1] == ['['] and start in closing:
+            return 'LIST', closing[start]+1
+        if values[start:start+2] in (['LIST', '['], ['SET', '{'], ['MAP', '{']) and start+1 in closing:
+            return values[start], closing[start+1]+1
+        return '', start
+
+    def size_result(start):
+        # Consume exactly one call, optionally parenthesized. A larger
+        # expression (e.g. size(x) > 0) can have a different result type.
+        outer_ends = []
+        while values[start:start+1] == ['('] and start in closing:
+            outer_ends.append(closing[start])
+            start += 1
+        source = None
+        if values[start:start+2] == ['SIZE', '(']:
+            end = closing.get(start+1)
+            if end is None:
+                return None
+            arg = start+2
+            if arg+1 == end:
+                decl = lookup(arg)
+                if decl and decl.kind == 'value':
+                    source = SIZE_TYPES.get(decl.type)
+            else:
+                typ, stop = literal_collection(arg)
+                if stop == end:
+                    source = SIZE_TYPES.get(typ)
+            stop = end+1
+        else:
+            node_member = symbol_name(ts, start) is not None and values[start+1:start+3] == ['.', '@']
+            at = start+2 if node_member else start
+            if values[at:at+1] != ['@'] or values[at+2:at+6] != ['.', 'SIZE', '(', ')']:
+                return None
+            decl = lookup(at+1)
+            if decl and decl.kind == ('node' if node_member else 'global') and decl.type in SIZED_AGGS:
+                source = 'UINT64'
+            stop = at+6
+        for end in reversed(outer_ends):
+            if stop != end:
+                return None
+            stop += 1
+        if source and rhs_ends(stop):
+            return source, stop
+        return None
+
+    for i, token in enumerate(values):
+        prev = values[i-1] if i else ''
+        if token == 'MATCH':
+            per = single_node_per_path(values, closing, i+1)
+            if per is not None:
+                report(per, 'single-node-per-path', 'NS238',
+                       'PER PATH cannot consume a single-node MATCH. Keep the WHERE filters; '
+                       'use PER NODE on the matched binding for per-node work, or match the actual '
+                       'relationship for per-edge work.')
+        if token == 'PROCEDURE' and prev in {'CREATE', 'REPLACE'}:
+            body, params = procedure_parameters(ts, values, closing, i+1)
+            if body is not None:
+                named_bodies[body] = params
+        if token == '{':
+            parents.append(symbols)
+            symbols = ChainMap(named_bodies[i]) if i in named_bodies else symbols.new_child()
+        elif token == '}' and parents:
+            symbols = parents.pop()
+        elif token == ';' and not parents:
+            symbols = ChainMap({})
+
+        if token in {'VALUE', 'TABLE'} and prev not in {'.', '@', 'AS'}:
+            name = symbol_name(ts, i+1)
+            if name is None:
+                continue
+            typ, t = declaration_type(values, i+2)
+            if token == 'TABLE':
+                typ = 'TABLE'
+            elif typ == '=':
+                # Untyped declarations still take part in duplicate-name checks.
+                typ, stop = literal_collection(t+1)
+                if not rhs_ends(stop):
+                    typ = ''
+                if values[t+1:t+3] == ['CAST', '('] and t+2 in closing:
+                    end = closing[t+2]
+                    if values[end-2:end-1] == ['AS'] and rhs_ends(end+1):
+                        typ, _ = declaration_type(values, end-1)
+            elif t >= len(ts) or ts[t][0] != 'word':
+                continue
+            kind = 'value'
+            if typ in AGG_TYPES:
+                kind = 'node' if prev == 'NODE' else 'global'
+            decl = Declaration(kind, typ, i+1)
+            original = symbols.get(name)
+            if original:
+                line, col = location(original.index)
+                report(i+1, 'duplicate-declaration', 'NS002',
+                       f'{name} was already declared at {line}:{col} in a visible scope. Reuse or rename the declaration.')
+            else:
+                symbols[name] = decl
+            if values[t+1:t+2] == ['=']:
+                initializers[t+1] = decl
+
+        if token == '@':
+            name = symbol_name(ts, i+1)
+            decl = lookup(i+1)
+            if name is not None and prev == '.' and (not decl or decl.kind != 'node'):
+                report(i+1, 'undeclared-node-aggregator', '42N56',
+                       f'No visible NODE VALUE declaration for {name}. Use the exact declared name or '
+                       'declare a distinct node aggregator before use.')
+            elif name is not None and global_agg_operand(values, i, functions) and (not decl or decl.kind != 'global'):
+                report(i+1, 'undeclared-global-aggregator', '42N56',
+                       f'No visible global aggregator named {name}. Reference a scalar VALUE or procedure '
+                       f'parameter directly as `{name}`; use @ only for a VALUE declared with an aggregator type.')
+
+        if token == '(' and i >= 3 and values[i-2] == '.':
+            decl = lookup(i-3)
+            node = i >= 5 and values[i-5] == '.'
+            explicit_agg = i >= 4 and values[i-4] == '@'
+            if decl and decl.kind in {'node', 'global'} and (
+                    not explicit_agg or decl.kind == ('node' if node else 'global')):
+                receivers[i-1] = decl.type.lower()
+
+        if token == 'NODE' and values[i+1:i+2] == ['('] and prev in {
+                'RETURN', 'DISTINCT', 'WHERE', 'WHEN', 'THEN', 'ELSE', '=', '(', '[', ',',
+                '+', '-', '*', '/', '%', '<', '>', 'AND', 'OR', 'NOT', 'IN', 'FILTER', 'BY', 'YIELD', 'EXPORT'}:
+            end = closing.get(i+1)
+            if end is not None and values[end+1:end+2] != ['FROM']:  # NODE(...) FROM is an import specification
+                report(i, 'scalar-node-lookup', 'NR002',
+                       f'{scope.title()} has no documented node(id) scalar lookup. Bind the node with MATCH on its business primary key.')
+
+        if token == '=':
+            target = initializers.get(i)
+            if i >= 2 and values[i-2] == 'SET':
+                target = lookup(i-1)
+            if not target or target.kind != 'value' or target.type not in INTEGER_TYPES | {'BOOL', 'BOOLEAN', 'STRING', 'DATE'}:
+                continue
+            result = size_result(i+1)
+            if result:
+                source, stop = result
+                if target.type == source or (source, target.type) == ('INT32', 'INT64'):
+                    continue
+                name = symbol_name(ts, target.index)
+                fix = f'Use {source} for the count.'
+                if target.type in INTEGER_TYPES:
+                    expr = code[matches[i+1].start():matches[stop-1].end()]
+                    fix += f' For an intentional conversion, range-check and use CAST({expr} AS {target.type}).'
+                report(i+1, 'size-assignment-type', 'NS208',
+                       f'This size result is {source} and cannot be implicitly assigned to {name} ({target.type}). {fix}')
+    return diagnostics, receivers
 
 
 def lint(code, root, scope='database'):
@@ -512,6 +809,8 @@ def lint(code, root, scope='database'):
             if len(before_return)>1 and not re.search(r'\bPER\s+(?:NODE|PATH)\b|\bFINALLY\b',before_return[0],re.I):
                 add('analytics-match', 'Analytics uses match-compute, not ordinary MATCH RETURN')
     records = catalog(root)
+    semantic_issues, receivers = procedure_diagnostics(code, matches, ts, values, scope, records)
+    issues.extend(semantic_issues)
     for i, (kind, name) in enumerate(ts[:-1]):
         if kind not in {'word', 'quoted'} or ts[i+1][1] != '(': continue
         prev = values[i-1] if i else ''
@@ -541,9 +840,8 @@ def lint(code, root, scope='database'):
         key = name.strip('`').lower()
         if prev == '.':
             receiver = ts[i-2][1] if i >= 2 else ''
-            declared = next((ts[j+1][1] for j in range(len(ts)-1)
-                             if ts[j][1] == receiver and values[j+1].endswith('AGG')), None)
-            if declared: key = declared.lower() + '.' + key
+            declared = receivers.get(i)
+            if declared: key = declared + '.' + key
             else:
                 unknown.append(f'Receiver type needed for {receiver}.{name}'); continue
         entry = records.get(key)

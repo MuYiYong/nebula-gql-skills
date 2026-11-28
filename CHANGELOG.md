@@ -2,6 +2,16 @@
 
 Notable changes to the Nebula GQL skills are documented here. ZIP versions use the Beijing date in `YY.MM.DD` format. GitHub release tags use `vYY.MM.DD_BuildHHMM`, with `HHMM` from the Beijing time when the workflow resolves the version.
 
+## 26.11.28 - 2026-11-28
+
+### Fixed
+
+- Procedure lint reports conflicting declarations, unresolved node and global aggregators, scalar `node()` lookups, incompatible cardinality assignments and single-node `PER PATH` clauses. Diagnostics include positions and repair guidance. The procedure skill now distinguishes business-key lookup, internal-ID cross-node updates, and the return types of collection, table and aggregator cardinality operations.
+
+### Validation
+
+- Reproduced NS002, both 42N56 reference errors, NR002, NS208 and NS238 on a NebulaGraph 5.3.2 temporary graph. Confirmed the native size return types and successful explicit conversion to UINT64.
+
 ## 26.11.27 - 2026-11-27
 
 ### Fixed

@@ -1,7 +1,7 @@
 {
   "case_id": "q_acyclic",
   "attempt": 2,
-  "query": "MATCH `p` = ACYCLIC (:`player` {`id`: $seed})-[:`follow`]->{1,3}(:`player`)\nRETURN transform(nodes(`p`), `n` -> `n`.`id`) AS `node_ids`;",
-  "notes": "静态检查未发现问题。未在数据库中执行，平行边路径的行数未经实测。",
-  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
+  "query": "MATCH `p` = ACYCLIC (`src`:`player` {`id`: $seed})-[:`follow`]->{1,3}()\nRETURN transform(nodes(`p`), `n` -> `n`.`id`) AS `node_ids`;",
+  "notes": "静态检查未报告问题。未在数据库中执行。",
+  "skills_sha256": "f93bbad339c148268d8a64a09451fe3e59c9fe975778f0ba1cab580d29f142f6"
 }

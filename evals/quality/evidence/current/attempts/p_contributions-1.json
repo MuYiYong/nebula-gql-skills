@@ -1,7 +1,7 @@
 {
   "case_id": "p_contributions",
   "attempt": 1,
-  "query": "RETURN $left AS `contribution`\nUNION ALL\nRETURN $right AS `contribution`\nNEXT\nRETURN sum(`contribution`) AS `total`",
-  "notes": "已通过技能包静态检查，未在 NebulaGraph 5.3.0 实例上执行验证。",
-  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
+  "query": "RETURN $left AS `contribution`\nUNION ALL\nRETURN $right AS `contribution`\nNEXT\nRETURN SUM(`contribution`) AS `total`",
+  "notes": "包内静态检查未报告问题。未在 NebulaGraph 5.3.0 服务端解析或执行。",
+  "skills_sha256": "f93bbad339c148268d8a64a09451fe3e59c9fe975778f0ba1cab580d29f142f6"
 }

@@ -1,7 +1,7 @@
 {
   "case_id": "c_incoming",
   "attempt": 2,
-  "query": "NODE VALUE `incoming_degree` SumAgg<INT64> = 0\nTABLE `result` TYPED TABLE {`id` STRING, `total` INT64}\n\nMATCH (:`player`)-[`edge`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `dst`.@`incoming_degree` += coalesce(`edge`.`degree`, 0)\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id` AS `id`, `p`.@`incoming_degree` AS `total` INTO `result`\n}\n\nFOR `row` IN `result`\nRETURN `row`.`id` AS `id`, `row`.`total` AS `total`",
-  "notes": "已按冻结技能中的 5.3.0 公开文档核对并完成静态检查，未在数据库中解析或执行。",
-  "skills_sha256": "d8347f1ed1134ff73cfe17188df63f0f1f1039ec19921505c277e770d8e450ad"
+  "query": "NODE VALUE `in_degree_sum` SumAgg<INT64> = 0\nTABLE `result` { `id` STRING, `total` INT64 }\n\nMATCH (`src`:`player`)-[`e`:`follow`]->(`dst`:`player`)\nPER PATH {\n  SET `dst`.@`in_degree_sum` += coalesce(`e`.`degree`, 0)\n}\n\nMATCH (`p`:`player`)\nPER NODE (`p`) {\n  EXPORT `p`.`id`, `p`.@`in_degree_sum` INTO `result`\n}\n\nFOR `row` IN `result`\nRETURN `row`.`id` AS `id`, `row`.`total` AS `total`",
+  "notes": "已按冻结技能中的 5.3.0 文档核对语法和 coalesce 签名。静态 lint 未报告错误，服务端解析和执行结果未经验证。",
+  "skills_sha256": "f93bbad339c148268d8a64a09451fe3e59c9fe975778f0ba1cab580d29f142f6"
 }
